@@ -156,3 +156,4 @@ ipyflex/labextension/*.tgz
 ipyflex/labextension
 
 .vscode/
+docs/source/_static/*.txt

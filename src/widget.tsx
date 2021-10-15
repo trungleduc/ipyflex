@@ -9,9 +9,12 @@ import {
 } from '@jupyter-widgets/base';
 
 // import { UUID } from '@lumino/coreutils';
-// import { Widget } from '@lumino/widgets';
+import { Widget } from '@lumino/widgets';
+import React from 'react';
+import { ReactWidget } from '@jupyterlab/apputils';
+import FlexWidget from './reactWidget';
 import { MODULE_NAME, MODULE_VERSION } from './version';
-
+import { MessageLoop } from '@lumino/messaging';
 // Import the CSS
 import '../css/widget.css';
 
@@ -59,20 +62,40 @@ export class FlexLayoutModel extends DOMWidgetModel {
   static view_module_version = MODULE_VERSION;
 }
 
+class WidgetWrapper extends ReactWidget {
+  _send_msg: any;
+  _model: any;
+  constructor(send_msg: any, model: any) {
+    super();
+    this._send_msg = send_msg;
+    this._model = model;
+  }
+
+  onResize = (msg: any) => {
+    window.dispatchEvent(new Event('resize'));
+  };
+
+  render() {
+    return <FlexWidget send_msg={this._send_msg} model={this._model} />;
+  }
+}
+
 export class FlexLayoutView extends DOMWidgetView {
   render() {
     super.render();
-    this.el.classList.add('custom-widget');
-    // this.el.innerHTML = 'hello trung';
-    const children = this.model.get('children');
-    const manager = this.model.widget_manager;
-    console.log('children', children);
-    manager
-      .create_view(children[0], {})
-      .then((view) => this.el.appendChild(view.pWidget.node));
-  }
 
-  value_changed() {
-    this.el.textContent = this.model.get('value');
+    this.el.classList.add('custom-widget');
+
+    const widget = new WidgetWrapper(this.send.bind(this), this.model);
+    MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
+    this.el.insertBefore(widget.node, null);
+    MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);
+    // this.el.innerHTML = 'hello trung';
+    // const children = this.model.get('children');
+    // const manager = this.model.widget_manager;
+    // // console.log('children', children);
+    // // manager
+    // //   .create_view(children[0], {})
+    // //   .then((view) => this.el.appendChild(view.pWidget.node));
   }
 }

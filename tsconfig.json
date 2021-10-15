@@ -12,10 +12,11 @@
     "rootDir": "src",
     "skipLibCheck": true,
     "sourceMap": true,
-    "strict": true,
+    "strict": false,
     "strictPropertyInitialization": false,
     "target": "es2015",
-    "types": ["jest"]
+    "types": ["node"],
+    "jsx": "react"
   },
   "include": [
     "src/**/*.ts",

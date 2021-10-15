@@ -1,11 +1,17 @@
+const webpack = require('webpack');
 const path = require('path');
 const version = require('./package.json').version;
 
 // Custom webpack rules
 const rules = [
-  { test: /\.ts$/, loader: 'ts-loader' },
-  { test: /\.js$/, loader: 'source-map-loader' },
-  { test: /\.css$/, use: ['style-loader', 'css-loader']}
+  // { test: /\.ts$/, loader: 'ts-loader' },
+  {
+    test: /\.js$/,
+    loader: 'source-map-loader',
+    exclude: path.resolve(__dirname, 'node_modules'),
+  },
+  { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+  { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader' }
 ];
 
 // Packages that shouldn't be bundled but loaded at runtime
@@ -13,8 +19,14 @@ const externals = ['@jupyter-widgets/base'];
 
 const resolve = {
   // Add '.ts' and '.tsx' as resolvable extensions.
-  extensions: [".webpack.js", ".web.js", ".ts", ".js"]
+  extensions: ['.webpack.js', '.web.js', '.js'],
 };
+
+const plugins =  [
+  new webpack.ProvidePlugin({
+         process: 'process/browser',
+  }),
+];
 
 module.exports = [
   /**
@@ -24,7 +36,7 @@ module.exports = [
    * the notebook.
    */
   {
-    entry: './src/extension.ts',
+    entry: './lib/extension.js',
     output: {
       filename: 'index.js',
       path: path.resolve(__dirname, 'ipyflex', 'nbextension'),
@@ -32,11 +44,12 @@ module.exports = [
       publicPath: '',
     },
     module: {
-      rules: rules
+      rules: rules,
     },
     devtool: 'source-map',
     externals,
     resolve,
+    plugins
   },
 
   /**
@@ -50,22 +63,22 @@ module.exports = [
    * the custom widget embedder.
    */
   {
-    entry: './src/index.ts',
+    entry: './lib/index.js',
     output: {
-        filename: 'index.js',
-        path: path.resolve(__dirname, 'dist'),
-        libraryTarget: 'amd',
-        library: "ipyflex",
-        publicPath: 'https://unpkg.com/ipyflex@' + version + '/dist/'
+      filename: 'index.js',
+      path: path.resolve(__dirname, 'dist'),
+      libraryTarget: 'amd',
+      library: 'ipyflex',
+      publicPath: 'https://unpkg.com/ipyflex@' + version + '/dist/',
     },
     devtool: 'source-map',
     module: {
-        rules: rules
+      rules: rules,
     },
     externals,
     resolve,
+    plugins
   },
-
 
   /**
    * Documentation widget bundle
@@ -73,19 +86,19 @@ module.exports = [
    * This bundle is used to embed widgets in the package documentation.
    */
   {
-    entry: './src/index.ts',
+    entry: './lib/index.js',
     output: {
       filename: 'embed-bundle.js',
       path: path.resolve(__dirname, 'docs', 'source', '_static'),
-      library: "ipyflex",
-      libraryTarget: 'amd'
+      library: 'ipyflex',
+      libraryTarget: 'amd',
     },
     module: {
-      rules: rules
+      rules: rules,
     },
     devtool: 'source-map',
     externals,
     resolve,
-  }
-
+    plugins
+  },
 ];

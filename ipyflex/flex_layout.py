@@ -27,4 +27,4 @@ class FlexLayout(DOMWidget):
     children = TypedTuple(
         trait=Instance(Widget), help="List of widget children"
     ).tag(sync=True, **widget_serialization)
-    value = Unicode("Hello World").tag(sync=True)
+
