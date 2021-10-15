@@ -154,3 +154,5 @@ ipyflex/labextension/*.tgz
 
 # Packed lab extensions
 ipyflex/labextension
+
+.vscode/
