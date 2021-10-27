@@ -8,9 +8,12 @@
 TODO: Add module docstring
 """
 
+from typing import Union
+from typing import Dict as TypeDict
+from typing import List as TypeList
 from ipywidgets import Widget, widget_serialization, DOMWidget
 from ipywidgets.widgets.trait_types import TypedTuple
-from traitlets import Unicode, Instance
+from traitlets.traitlets import TraitType, Unicode, Instance, Dict
 from ._frontend import module_name, module_version
 
 
@@ -24,7 +27,20 @@ class FlexLayout(DOMWidget):
     _view_module = Unicode(module_name).tag(sync=True)
     _view_module_version = Unicode(module_version).tag(sync=True)
 
-    children = TypedTuple(
-        trait=Instance(Widget), help="List of widget children"
+    # children = TypedTuple(
+    #     trait=Instance(Widget), help="List of widget children"
+    # ).tag(sync=True, **widget_serialization)
+    children = Dict(
+        key_trait=Unicode,
+        value_trait=Instance(Widget),
+        help="Dict of widget children",
     ).tag(sync=True, **widget_serialization)
 
+    def __init__(self, widgets: Union[TypeDict, TypeList], **kwargs):
+        if isinstance(widgets, dict):
+            self.children = widgets
+        else:
+            self.children = {
+                f'Widget {i}': widgets[i] for i in range(0, len(widgets))
+            }
+        super().__init__(**kwargs)

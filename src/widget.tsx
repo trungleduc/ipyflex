@@ -90,12 +90,6 @@ export class FlexLayoutView extends DOMWidgetView {
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     this.el.insertBefore(widget.node, null);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);
-    // this.el.innerHTML = 'hello trung';
-    // const children = this.model.get('children');
-    // const manager = this.model.widget_manager;
-    // // console.log('children', children);
-    // // manager
-    // //   .create_view(children[0], {})
-    // //   .then((view) => this.el.appendChild(view.pWidget.node));
+
   }
 }

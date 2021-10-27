@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import 'flexlayout-react/style/light.css';
 import Button from '@mui/material/Button';
-import Toolbar from '@mui/material/Toolbar';
 import { WidgetWrapper } from './widgetWrapper';
+import { WidgetMenu } from './widgetMenu';
+import { StyledEngineProvider } from '@mui/material/styles';
+
+// import AddIcon from '@mui/icons-material/Add';
+
 interface IProps {
   send_msg: any;
   model: any;
@@ -94,7 +98,7 @@ export class FlexWidget extends Component<IProps, IState> {
   layoutRef = React.createRef<FlexLayout.Layout>();
   innerlayoutRef: { [key: string]: React.RefObject<FlexLayout.Layout> };
   model: any;
-
+  widgetList: Array<string>;
   static COMPONENT_DICT: COMPONENT_TYPE = {
     grid: 'Chart widget',
     dataView: 'Data widget',
@@ -114,13 +118,14 @@ export class FlexWidget extends Component<IProps, IState> {
       model: FlexLayout.Model.fromJson(DEFAULT_OUTER_MODEL as any),
     };
     this.model = props.model;
+    this.widgetList = Object.keys(this.model.get('children'));
   }
 
   factory = (node: FlexLayout.TabNode): JSX.Element => {
-    const component = node.getComponent() as keyof COMPONENT_TYPE | 'sub';
+    const component = node.getComponent() as 'Widget' | 'sub';
     // const config = node.getConfig();
     const nodeId = node.getId();
-    // const name = node.getName();
+    const name = node.getName();
     const nameList = Object.values(FlexWidget.COMPONENT_DICT);
     nameList.push('Section');
     // if (nameList.includes(name)) {
@@ -133,35 +138,8 @@ export class FlexWidget extends Component<IProps, IState> {
     //   }
     // }
     switch (component) {
-      case 'grid': {
-        return <div>grid</div>;
-      }
-      case 'controller': {
-        return <div>controller</div>;
-      }
-      case '3Dview': {
-        return <div>3Dview</div>;
-      }
-      case 'structureView': {
-        return <div>structureView</div>;
-      }
-      case 'PBS': {
-        return <WidgetWrapper model={this.model} widget_idx={0} />;
-      }
-      case 'connectionView': {
-        return <div>connectionView</div>;
-      }
-      case 'infoView': {
-        return <div>infoView</div>;
-      }
-      case 'dataView': {
-        return <div>dataView</div>;
-      }
-      case 'widgetView': {
-        return <div>widgetView</div>;
-      }
-      case 'documentView': {
-        return <div>documentView</div>;
+      case 'Widget': {
+        return <WidgetWrapper model={this.model} widget_name={name} />;
       }
       case 'sub': {
         return this.generateSection(node, nodeId);
@@ -263,20 +241,33 @@ export class FlexWidget extends Component<IProps, IState> {
     },
     nodeId: string
   ): void => {
-    // const tabsetId = tabSetNode.getId();
+    const tabsetId = tabSetNode.getId();
     renderValues.buttons.push(
-      <Button
-        onClick={() => {
-          const tabsetId = tabSetNode.getId();
+      // <Button
+      //   onClick={() => {
+      //     const tabsetId = tabSetNode.getId();
+      //     this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
+      //       component: 'PBS',
+      //       name: FlexWidget.COMPONENT_DICT['PBS'],
+      //       config: { layoutID: nodeId },
+      //     });
+      //   }}
+      // >
+      //   Add widget{' '}
+      // </Button>
+      <WidgetMenu
+        widgetList={this.widgetList}
+        nodeId={nodeId}
+        tabsetId={tabsetId}
+        addTabToTabset={(name: string) => {
+          console.log('called', name, nodeId, tabsetId);
           this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
-            component: 'PBS',
-            name: FlexWidget.COMPONENT_DICT['PBS'],
+            component: 'Widget',
+            name: name,
             config: { layoutID: nodeId },
           });
         }}
-      >
-        Add widget{' '}
-      </Button>
+      />
     );
   };
 
@@ -287,39 +278,62 @@ export class FlexWidget extends Component<IProps, IState> {
     });
   };
 
+  onRenderOuterTabSet = (
+    tabSetNode: FlexLayout.TabSetNode | FlexLayout.BorderNode,
+    renderValues: {
+      headerContent?: React.ReactNode;
+      buttons: React.ReactNode[];
+    }
+  ): void => {
+    renderValues.buttons.push(
+      <Button
+        size="small"
+        variant="outlined"
+        onClick={this.onAddRow}
+        style={{ height: '27px', minWidth: '40px' }}
+      >
+        <i className="fas fa-plus"></i>
+      </Button>
+    );
+  };
+
   render(): JSX.Element {
     return (
-      <div style={{ height: '100%' }}>
-        <div
-          style={{
-            width: '100%',
-            height: 'calc(100% - 36px)',
-          }}
-        >
-          <FlexLayout.Layout
-            ref={this.layoutRef}
-            model={this.state.model}
-            factory={this.factory}
-            classNameMapper={(className) => {
-              if (className === 'flexlayout__layout') {
-                className =
-                  'chartviewer__flexlayout__layout flexlayout__layout ';
-              } else if (className === 'flexlayout__tabset-selected') {
-                className =
-                  'outer__flexlayout__tabset-selected flexlayout__tabset-selected ';
-              }
-              return className;
+      <StyledEngineProvider injectFirst>
+        <div style={{ height: '100%' }}>
+          <div
+            style={{
+              width: '100%',
+              height: 'calc(100%)',
             }}
-            onAction={this.onAction}
-          />
+          >
+            <FlexLayout.Layout
+              ref={this.layoutRef}
+              model={this.state.model}
+              factory={this.factory}
+              classNameMapper={(className) => {
+                if (className === 'flexlayout__layout') {
+                  className = 'ipyflex flexlayout__layout';
+                } else if (className === 'flexlayout__tabset-selected') {
+                  className =
+                    'outer__flexlayout__tabset-selected flexlayout__tabset-selected ';
+                }
+                return className;
+              }}
+              onAction={this.onAction}
+              onRenderTabSet={(
+                tabSetNode: FlexLayout.TabSetNode | FlexLayout.BorderNode,
+                renderValues: {
+                  headerContent?: React.ReactNode;
+                  buttons: React.ReactNode[];
+                }
+              ) => {
+                this.onRenderOuterTabSet(tabSetNode, renderValues);
+              }}
+            />
+          </div>
         </div>
-        <Toolbar variant="dense" style={{ height: '36px', minHeight: '36px' }}>
-          <Button onClick={this.onAddRow}>
-            {/* <AddCircleOutlineIcon /> */}
-            Add section
-          </Button>
-        </Toolbar>
-      </div>
+      </StyledEngineProvider>
     );
   }
 }
