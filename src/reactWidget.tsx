@@ -3,6 +3,7 @@ import * as FlexLayout from 'flexlayout-react';
 import 'flexlayout-react/style/light.css';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
+import { WidgetWrapper } from './widgetWrapper';
 interface IProps {
   send_msg: any;
   model: any;
@@ -92,6 +93,7 @@ interface COMPONENT_TYPE {
 export class FlexWidget extends Component<IProps, IState> {
   layoutRef = React.createRef<FlexLayout.Layout>();
   innerlayoutRef: { [key: string]: React.RefObject<FlexLayout.Layout> };
+  model: any;
 
   static COMPONENT_DICT: COMPONENT_TYPE = {
     grid: 'Chart widget',
@@ -111,6 +113,7 @@ export class FlexWidget extends Component<IProps, IState> {
     this.state = {
       model: FlexLayout.Model.fromJson(DEFAULT_OUTER_MODEL as any),
     };
+    this.model = props.model;
   }
 
   factory = (node: FlexLayout.TabNode): JSX.Element => {
@@ -143,7 +146,7 @@ export class FlexWidget extends Component<IProps, IState> {
         return <div>structureView</div>;
       }
       case 'PBS': {
-        return <div>PBS</div>;
+        return <WidgetWrapper model={this.model} widget_idx={0} />;
       }
       case 'connectionView': {
         return <div>connectionView</div>;
@@ -261,7 +264,20 @@ export class FlexWidget extends Component<IProps, IState> {
     nodeId: string
   ): void => {
     // const tabsetId = tabSetNode.getId();
-    renderValues.buttons.push(<Button>test </Button>);
+    renderValues.buttons.push(
+      <Button
+        onClick={() => {
+          const tabsetId = tabSetNode.getId();
+          this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
+            component: 'PBS',
+            name: FlexWidget.COMPONENT_DICT['PBS'],
+            config: { layoutID: nodeId },
+          });
+        }}
+      >
+        Add widget{' '}
+      </Button>
+    );
   };
 
   onAddRow = (): void => {
@@ -278,7 +294,6 @@ export class FlexWidget extends Component<IProps, IState> {
           style={{
             width: '100%',
             height: 'calc(100% - 36px)',
-            background: 'radial-gradient(#efeded, #8f9091)',
           }}
         >
           <FlexLayout.Layout
@@ -298,7 +313,7 @@ export class FlexWidget extends Component<IProps, IState> {
             onAction={this.onAction}
           />
         </div>
-        <Toolbar variant="dense">
+        <Toolbar variant="dense" style={{ height: '36px', minHeight: '36px' }}>
           <Button onClick={this.onAddRow}>
             {/* <AddCircleOutlineIcon /> */}
             Add section

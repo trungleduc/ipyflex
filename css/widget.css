@@ -1,6 +1,7 @@
 .custom-widget {
   padding: 0px 2px;
-  height: 500px
+  height: 500px;
+  border: solid 0.5px #ddd9d9
 }
 .custom-widget>.p-Widget {
   height: 100%;
