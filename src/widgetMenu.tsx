@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-
+import { JUPYTER_BUTTON_CLASS } from './utils';
 interface IProps {
   nodeId: string;
   tabsetId: string;
@@ -47,13 +46,13 @@ export class WidgetMenu extends Component<IProps, IState> {
     const menuId = `add_widget_menu_${this.props.tabsetId}@${this.props.nodeId}`;
     return (
       <div key={menuId}>
-        <Button
-          aria-controls="simple-menu"
-          aria-haspopup="true"
+        <button
+          className={JUPYTER_BUTTON_CLASS}
+          style={{ height: '27px', width: '40px' }}
           onClick={this.handleClick}
         >
-          Add widget
-        </Button>
+          <i className="fas fa-plus"></i>
+        </button>
         <Menu
           id="simple-menu"
           anchorEl={this.state.anchorEl}

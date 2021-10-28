@@ -90,6 +90,5 @@ export class FlexLayoutView extends DOMWidgetView {
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     this.el.insertBefore(widget.node, null);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);
-
   }
 }

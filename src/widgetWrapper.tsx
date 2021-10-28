@@ -36,6 +36,6 @@ export class WidgetWrapper extends Component<IProps, IState> {
   }
 
   render(): JSX.Element {
-    return <div ref={this.myRef}></div>;
+    return <div className="ipyflex-widget-box" ref={this.myRef}></div>;
   }
 }

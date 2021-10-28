@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import 'flexlayout-react/style/light.css';
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 import { WidgetWrapper } from './widgetWrapper';
 import { WidgetMenu } from './widgetMenu';
 import { StyledEngineProvider } from '@mui/material/styles';
-
-// import AddIcon from '@mui/icons-material/Add';
+import Toolbar from '@mui/material/Toolbar';
+import { JUPYTER_BUTTON_CLASS } from './utils';
 
 interface IProps {
   send_msg: any;
@@ -81,36 +81,12 @@ const DEFAULT_OUTER_MODEL = {
   borders: [],
 };
 
-interface COMPONENT_TYPE {
-  grid: string;
-  dataView: string;
-  controller: string;
-  '3Dview': string;
-  structureView: string;
-  infoView: string;
-  PBS: string;
-  connectionView: string;
-  documentView: string;
-  widgetView: string;
-}
-
 export class FlexWidget extends Component<IProps, IState> {
   layoutRef = React.createRef<FlexLayout.Layout>();
   innerlayoutRef: { [key: string]: React.RefObject<FlexLayout.Layout> };
   model: any;
   widgetList: Array<string>;
-  static COMPONENT_DICT: COMPONENT_TYPE = {
-    grid: 'Chart widget',
-    dataView: 'Data widget',
-    controller: 'Controller widget',
-    '3Dview': '3D widget',
-    structureView: 'Structure widget',
-    infoView: 'System info widget',
-    PBS: 'PBS widget',
-    connectionView: 'Connection widget',
-    documentView: 'Document widget',
-    widgetView: 'Custom widget',
-  };
+
   constructor(props: IProps) {
     super(props);
     this.innerlayoutRef = {};
@@ -126,17 +102,7 @@ export class FlexWidget extends Component<IProps, IState> {
     // const config = node.getConfig();
     const nodeId = node.getId();
     const name = node.getName();
-    const nameList = Object.values(FlexWidget.COMPONENT_DICT);
-    nameList.push('Section');
-    // if (nameList.includes(name)) {
-    //   try {
-    //     node
-    //       .getModel()
-    //       .doAction(FlexLayout.Actions.renameTab(nodeId, `${name} ${nodeId}`));
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
+
     switch (component) {
       case 'Widget': {
         return <WidgetWrapper model={this.model} widget_name={name} />;
@@ -149,7 +115,7 @@ export class FlexWidget extends Component<IProps, IState> {
     return null;
   };
 
-  generateSection = (node: FlexLayout.TabNode, nodeId: string) => {
+  generateSection = (node: FlexLayout.TabNode, nodeId: string): JSX.Element => {
     let model = node.getExtraData().model;
     let defaultModel: any;
     this.innerlayoutRef[nodeId] = React.createRef<FlexLayout.Layout>();
@@ -243,18 +209,6 @@ export class FlexWidget extends Component<IProps, IState> {
   ): void => {
     const tabsetId = tabSetNode.getId();
     renderValues.buttons.push(
-      // <Button
-      //   onClick={() => {
-      //     const tabsetId = tabSetNode.getId();
-      //     this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
-      //       component: 'PBS',
-      //       name: FlexWidget.COMPONENT_DICT['PBS'],
-      //       config: { layoutID: nodeId },
-      //     });
-      //   }}
-      // >
-      //   Add widget{' '}
-      // </Button>
       <WidgetMenu
         widgetList={this.widgetList}
         nodeId={nodeId}
@@ -286,14 +240,22 @@ export class FlexWidget extends Component<IProps, IState> {
     }
   ): void => {
     renderValues.buttons.push(
-      <Button
-        size="small"
-        variant="outlined"
+      <button
+        className={JUPYTER_BUTTON_CLASS}
         onClick={this.onAddRow}
-        style={{ height: '27px', minWidth: '40px' }}
+        style={{
+          width: '50px',
+          height: '25px',
+          paddingLeft: 'unset',
+          paddingRight: 'unset',
+          margin: 0,
+        }}
       >
-        <i className="fas fa-plus"></i>
-      </Button>
+        <i
+          style={{ color: 'var(--jp-ui-font-color1)' }}
+          className="fas fa-folder-plus fa-2x"
+        ></i>
+      </button>
     );
   };
 
@@ -304,7 +266,7 @@ export class FlexWidget extends Component<IProps, IState> {
           <div
             style={{
               width: '100%',
-              height: 'calc(100%)',
+              height: 'calc(100% - 31px)',
             }}
           >
             <FlexLayout.Layout
@@ -332,6 +294,15 @@ export class FlexWidget extends Component<IProps, IState> {
               }}
             />
           </div>
+          <Toolbar
+            variant="dense"
+            style={{
+              height: '30px',
+              minHeight: '30px',
+            }}
+          >
+            <button className={JUPYTER_BUTTON_CLASS}>Save layout</button>
+          </Toolbar>
         </div>
       </StyledEngineProvider>
     );

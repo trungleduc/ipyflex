@@ -1,22 +1,86 @@
 .custom-widget {
-  padding: 0px 2px;
-  height: 500px;
-  border: solid 0.5px #ddd9d9
+  height: 700px;
+  border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
 }
-.custom-widget>.p-Widget {
+.custom-widget > .p-Widget {
   height: 100%;
 }
+
+.ipyflex-widget-box {
+  height: calc(100% - 12px);
+  width: calc(100% - 10px);
+  margin: 0px 5px 10px 5px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  border-width: 0px 0px 0px 0px;
+  border-style: solid;
+  border-color: #e2e2e2;
+  border-radius: 0px;
+  outline-width: 0px;
+  outline-style: solid;
+  outline-color: #e2e2e2;
+}
+
 
 .flexlayout__layout {
-  left: unset!important;
-  top: unset!important;
-  right: unset!important;
-  bottom: unset!important;
-  position: unset!important;
-  overflow: unset!important;
+  left: unset !important;
+  top: unset !important;
+  right: unset !important;
+  bottom: unset !important;
+  position: unset !important;
+  overflow: unset !important;
   height: 100%;
 }
 
+.flexlayout__tabset-selected {
+  background-color: var(--jp-layout-color3);
+  border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
+}
+
+.flexlayout__tab_button--selected {
+  background-color: var(--jp-layout-color0);
+  color: var(--jp-ui-font-color1);
+}
+.inner__flexlayout__tabset .flexlayout__tab_button--selected {
+  background-color: var(--jp-layout-color1) !important;
+}
+.inner__flexlayout__tabset .inner__flexlayout__tabset-selected {
+  background-color: var(--jp-layout-color2) !important;
+}
+.inner__flexlayout__tabset .flexlayout__tabset_tabbar_outer {
+  background-color: var(--jp-layout-color2) !important;
+}
+.inner__flexlayout__tabset .inner__flexlayout__tabset {
+  background-color: var(--jp-cell-editor-background) !important;
+}
+.inner__flexlayout__tabset.flexlayout__tabset{
+  background: var(--jp-layout-color0);
+}
+.inner__flexlayout__tab {
+  background: var(--jp-layout-color0);
+}
+
+.flexlayout__splitter {
+  background-color: var(--jp-cell-editor-background);
+}
+
+@media (hover: hover) {
+  .flexlayout__splitter:hover {
+    background-color: var(--jp-layout-color2);
+  }
+}
+.flexlayout__splitter_drag {
+  z-index: 1000;
+  background-color: var(--jp-layout-color2);
+}
+
+div.inner__flexlayout__tabset > div.flexlayout__tabset_tabbar_outer_top {
+  margin-left: 5px;
+  margin-right: 5px;
+  box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
+  border-width: 1px 0px 0px 0px;
+  border-style: solid;
+  border-color: #e2e2e2;
+}
 /* .custom-widget .panel {
   height:100%;
   display:flex;
