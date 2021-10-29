@@ -4,9 +4,11 @@ import * as FlexLayout from 'flexlayout-react';
 import React, { Component } from 'react';
 
 import { JUPYTER_BUTTON_CLASS, IDict } from './utils';
-import { WidgetMenu } from './widgetMenu';
+import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
 import { defaultModelFactoty, ILayoutConfig } from './defaultModelFactory';
+import dialogBody from './dialogWidget';
+import {  showDialog } from '@jupyterlab/apputils';
 // import Button from '@mui/material/Button';
 interface IProps {
   send_msg: any;
@@ -18,6 +20,7 @@ interface IState {
   model: FlexLayout.Model;
   default_outer_model: IDict;
   default_model: IDict;
+  save_template_dialog: boolean;
 }
 
 export class FlexWidget extends Component<IProps, IState> {
@@ -32,6 +35,7 @@ export class FlexWidget extends Component<IProps, IState> {
       model: FlexLayout.Model.fromJson(default_outer_model as any),
       default_outer_model,
       default_model,
+      save_template_dialog: false,
     };
     this.model = props.model;
     this.widgetList = Object.keys(this.model.get('children'));
@@ -199,8 +203,20 @@ export class FlexWidget extends Component<IProps, IState> {
     );
   };
 
-  saveLayout = (): void => {
-    console.log(this.state.model.toJson());
+  saveLayout = async (): Promise<void> => {
+    const result = await showDialog<string>(dialogBody('Save template'));
+    if (result.button.label === 'Save') {
+      console.log('save', result.value);
+    } else {
+      console.log('null');
+    }
+  };
+
+  toggleSaveDialog = (): void => {
+    this.setState((old) => ({
+      ...old,
+      save_template_dialog: !old.save_template_dialog,
+    }));
   };
 
   render(): JSX.Element {
