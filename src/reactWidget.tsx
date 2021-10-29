@@ -1,13 +1,15 @@
-import React, { Component } from 'react';
-import * as FlexLayout from 'flexlayout-react';
 import 'flexlayout-react/style/light.css';
-// import Button from '@mui/material/Button';
-import { WidgetWrapper } from './widgetWrapper';
-import { WidgetMenu } from './widgetMenu';
+
 import { StyledEngineProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import { JUPYTER_BUTTON_CLASS } from './utils';
+import * as FlexLayout from 'flexlayout-react';
+import React, { Component } from 'react';
 
+import { JUPYTER_BUTTON_CLASS, IDict } from './utils';
+import { WidgetMenu } from './widgetMenu';
+import { WidgetWrapper } from './widgetWrapper';
+import { defaultModelFactoty, ILayoutConfig } from './defaultModelFactory';
+// import Button from '@mui/material/Button';
 interface IProps {
   send_msg: any;
   model: any;
@@ -15,83 +17,22 @@ interface IProps {
 
 interface IState {
   model: FlexLayout.Model;
+  default_outer_model: IDict;
+  default_model: IDict;
 }
 
-const DEFAULT_MODEL = {
-  global: {
-    tabEnableRename: true,
-  },
-  layout: {
-    type: 'row',
-    id: '#1',
-    children: [
-      {
-        type: 'tabset',
-        id: '#2',
-        children: [],
-        active: true,
-      },
-    ],
-  },
-  borders: [],
-};
-
-const DEFAULT_OUTER_MODEL = {
-  global: {
-    tabEnableRename: true,
-    tabSetTabLocation: 'bottom',
-  },
-  layout: {
-    type: 'row',
-    id: '#1',
-    children: [
-      {
-        type: 'tabset',
-        id: '#2',
-        children: [
-          {
-            type: 'tab',
-            id: '#3',
-            name: 'New section ',
-            component: 'sub',
-            config: {
-              model: {
-                global: {},
-                layout: {
-                  type: 'row',
-                  id: '#1',
-                  children: [
-                    {
-                      type: 'tabset',
-                      id: '#3',
-                      children: [],
-                      active: true,
-                    },
-                  ],
-                },
-                borders: [],
-              },
-            },
-          },
-        ],
-        active: true,
-      },
-    ],
-  },
-  borders: [],
-};
-
 export class FlexWidget extends Component<IProps, IState> {
-  layoutRef = React.createRef<FlexLayout.Layout>();
-  innerlayoutRef: { [key: string]: React.RefObject<FlexLayout.Layout> };
-  model: any;
-  widgetList: Array<string>;
-
   constructor(props: IProps) {
     super(props);
     this.innerlayoutRef = {};
+    this.layoutConfig = this.props.model.get('layout_config') as ILayoutConfig;
+    const { default_outer_model, default_model } = defaultModelFactoty(
+      this.layoutConfig
+    );
     this.state = {
-      model: FlexLayout.Model.fromJson(DEFAULT_OUTER_MODEL as any),
+      model: FlexLayout.Model.fromJson(default_outer_model as any),
+      default_outer_model,
+      default_model,
     };
     this.model = props.model;
     this.widgetList = Object.keys(this.model.get('children'));
@@ -122,7 +63,7 @@ export class FlexWidget extends Component<IProps, IState> {
     if (node.getConfig() && node.getConfig().model) {
       defaultModel = node.getConfig().model;
     } else {
-      defaultModel = DEFAULT_MODEL;
+      defaultModel = this.state.default_model;
     }
 
     if (!model) {
@@ -259,6 +200,10 @@ export class FlexWidget extends Component<IProps, IState> {
     );
   };
 
+  saveLayout = (): void => {
+    console.log(this.state.model.toJson());
+  };
+
   render(): JSX.Element {
     return (
       <StyledEngineProvider injectFirst>
@@ -273,6 +218,7 @@ export class FlexWidget extends Component<IProps, IState> {
               ref={this.layoutRef}
               model={this.state.model}
               factory={this.factory}
+              supportsPopout={true}
               classNameMapper={(className) => {
                 if (className === 'flexlayout__layout') {
                   className = 'ipyflex flexlayout__layout';
@@ -301,12 +247,20 @@ export class FlexWidget extends Component<IProps, IState> {
               minHeight: '30px',
             }}
           >
-            <button className={JUPYTER_BUTTON_CLASS}>Save layout</button>
+            <button className={JUPYTER_BUTTON_CLASS} onClick={this.saveLayout}>
+              Save layout
+            </button>
           </Toolbar>
         </div>
       </StyledEngineProvider>
     );
   }
+
+  private layoutRef = React.createRef<FlexLayout.Layout>();
+  private innerlayoutRef: { [key: string]: React.RefObject<FlexLayout.Layout> };
+  private model: any;
+  private widgetList: Array<string>;
+  private layoutConfig: ILayoutConfig;
 }
 
 export default FlexWidget;
