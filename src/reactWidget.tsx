@@ -1,6 +1,4 @@
 import 'flexlayout-react/style/light.css';
-
-import { StyledEngineProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import * as FlexLayout from 'flexlayout-react';
 import React, { Component } from 'react';
@@ -13,6 +11,7 @@ import { defaultModelFactoty, ILayoutConfig } from './defaultModelFactory';
 interface IProps {
   send_msg: any;
   model: any;
+  style: any;
 }
 
 interface IState {
@@ -206,53 +205,51 @@ export class FlexWidget extends Component<IProps, IState> {
 
   render(): JSX.Element {
     return (
-      <StyledEngineProvider injectFirst>
-        <div style={{ height: '100%' }}>
-          <div
-            style={{
-              width: '100%',
-              height: 'calc(100% - 31px)',
+      <div style={{ height: '500px', ...this.props.style }}>
+        <div
+          style={{
+            width: '100%',
+            height: 'calc(100% - 31px)',
+          }}
+        >
+          <FlexLayout.Layout
+            ref={this.layoutRef}
+            model={this.state.model}
+            factory={this.factory}
+            supportsPopout={true}
+            classNameMapper={(className) => {
+              if (className === 'flexlayout__layout') {
+                className = 'ipyflex flexlayout__layout';
+              } else if (className === 'flexlayout__tabset-selected') {
+                className =
+                  'outer__flexlayout__tabset-selected flexlayout__tabset-selected ';
+              }
+              return className;
             }}
-          >
-            <FlexLayout.Layout
-              ref={this.layoutRef}
-              model={this.state.model}
-              factory={this.factory}
-              supportsPopout={true}
-              classNameMapper={(className) => {
-                if (className === 'flexlayout__layout') {
-                  className = 'ipyflex flexlayout__layout';
-                } else if (className === 'flexlayout__tabset-selected') {
-                  className =
-                    'outer__flexlayout__tabset-selected flexlayout__tabset-selected ';
-                }
-                return className;
-              }}
-              onAction={this.onAction}
-              onRenderTabSet={(
-                tabSetNode: FlexLayout.TabSetNode | FlexLayout.BorderNode,
-                renderValues: {
-                  headerContent?: React.ReactNode;
-                  buttons: React.ReactNode[];
-                }
-              ) => {
-                this.onRenderOuterTabSet(tabSetNode, renderValues);
-              }}
-            />
-          </div>
-          <Toolbar
-            variant="dense"
-            style={{
-              height: '30px',
-              minHeight: '30px',
+            onAction={this.onAction}
+            onRenderTabSet={(
+              tabSetNode: FlexLayout.TabSetNode | FlexLayout.BorderNode,
+              renderValues: {
+                headerContent?: React.ReactNode;
+                buttons: React.ReactNode[];
+              }
+            ) => {
+              this.onRenderOuterTabSet(tabSetNode, renderValues);
             }}
-          >
-            <button className={JUPYTER_BUTTON_CLASS} onClick={this.saveLayout}>
-              Save layout
-            </button>
-          </Toolbar>
+          />
         </div>
-      </StyledEngineProvider>
+        <Toolbar
+          variant="dense"
+          style={{
+            height: '30px',
+            minHeight: '30px',
+          }}
+        >
+          <button className={JUPYTER_BUTTON_CLASS} onClick={this.saveLayout}>
+            Save layout
+          </button>
+        </Toolbar>
+      </div>
     );
   }
 

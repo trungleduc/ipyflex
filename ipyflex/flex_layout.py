@@ -41,17 +41,24 @@ class FlexLayout(DOMWidget):
         help="Dict of layout configuration",
     ).tag(sync=True)
 
+    style = Dict(
+        {},
+        help="Dict of style configuration",
+    ).tag(sync=True)
+
     def __init__(
         self,
         widgets: Union[TypeDict, TypeList],
-        layout_config: TypeDict,
+        # layout_config: TypeDict,
         **kwargs,
     ):
+        super().__init__(**kwargs)
+
         if isinstance(widgets, dict):
             self.children = widgets
         else:
             self.children = {
                 f"Widget {i}": widgets[i] for i in range(0, len(widgets))
             }
-        self.layout_config = layout_config
-        super().__init__(**kwargs)
+
+

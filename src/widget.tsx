@@ -30,6 +30,7 @@ export class FlexLayoutModel extends DOMWidgetModel {
       _view_module_version: FlexLayoutModel.view_module_version,
       children: [],
       layout_config: { borderLeft: false, borderRight: false },
+      style: {},
     };
   }
 
@@ -65,10 +66,12 @@ export class FlexLayoutModel extends DOMWidgetModel {
 class WidgetWrapper extends ReactWidget {
   _send_msg: any;
   _model: any;
-  constructor(send_msg: any, model: any) {
+  _style: any;
+  constructor(send_msg: any, model: any, style: any = {}) {
     super();
     this._send_msg = send_msg;
     this._model = model;
+    this._style = style;
   }
 
   onResize = (msg: any) => {
@@ -76,17 +79,39 @@ class WidgetWrapper extends ReactWidget {
   };
 
   render() {
-    return <FlexWidget send_msg={this._send_msg} model={this._model} />;
+    return (
+      <FlexWidget
+        style={this._style}
+        send_msg={this._send_msg}
+        model={this._model}
+      />
+    );
   }
 }
 
 export class FlexLayoutView extends DOMWidgetView {
+  setStyle() {
+    const style: { [key: string]: string } = this.model.get('style');
+    if (!style) {
+      return;
+    }
+    for (const [key, value] of Object.entries(style)) {
+      const fixedKey = key
+        .split(/(?=[A-Z])/)
+        .map((s) => s.toLowerCase())
+        .join('-');
+      console.log('setting', fixedKey, value);
+
+      this.el.style[fixedKey] = value;
+    }
+  }
+
   render() {
     super.render();
-
+    this.setStyle();
     this.el.classList.add('custom-widget');
-
-    const widget = new WidgetWrapper(this.send.bind(this), this.model);
+    const style: { [key: string]: string } = this.model.get('style');
+    const widget = new WidgetWrapper(this.send.bind(this), this.model, style);
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     this.el.insertBefore(widget.node, null);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);

@@ -1,6 +1,5 @@
 .custom-widget {
   height: 100%;
-  min-height: 700px;
   border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
 }
 .custom-widget > .p-Widget {
