@@ -8,10 +8,10 @@ import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
 import { defaultModelFactoty, ILayoutConfig } from './defaultModelFactory';
 import dialogBody from './dialogWidget';
-import {  showDialog } from '@jupyterlab/apputils';
+import { showDialog } from '@jupyterlab/apputils';
 // import Button from '@mui/material/Button';
 interface IProps {
-  send_msg: any;
+  send_msg: ({ action: string, payload: any }) => void;
   model: any;
   style: any;
 }
@@ -206,9 +206,18 @@ export class FlexWidget extends Component<IProps, IState> {
   saveLayout = async (): Promise<void> => {
     const result = await showDialog<string>(dialogBody('Save template'));
     if (result.button.label === 'Save') {
-      console.log('save', result.value);
-    } else {
-      console.log('null');
+      const fileName = result.value;
+      if (fileName) {
+        this.props.send_msg({
+          action: 'save_layout',
+          payload: {
+            file_name: result.value,
+            json_data: this.state.model.toJson(),
+          },
+        });
+      } else {
+        alert('Invalid file name!');
+      }
     }
   };
 

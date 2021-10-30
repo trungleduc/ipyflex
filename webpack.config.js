@@ -46,7 +46,7 @@ module.exports = [
     module: {
       rules: rules,
     },
-    devtool: 'source-map',
+    // devtool: 'source-map',
     externals,
     resolve,
     plugins
