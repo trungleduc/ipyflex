@@ -8,6 +8,7 @@
 TODO: Add module docstring
 """
 
+import json
 import os
 from enum import Enum
 from typing import Dict as TypeDict
@@ -15,15 +16,14 @@ from typing import List as TypeList
 from typing import Union
 
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from ipywidgets.widgets.trait_types import TypedTuple
-from traitlets.traitlets import Dict, Instance, TraitType, Unicode
+from traitlets.traitlets import Dict, Instance, Unicode
 
 from ._frontend import module_name, module_version
 from .utils import get_nonexistant_path
-import json
+
 
 class MESSAGE_ACTION(str, Enum):
-    SAVE_LAYOUT = 'save_layout'
+    SAVE_TEMPLATE = "save_template"
 
 
 class FlexLayout(DOMWidget):
@@ -55,6 +55,14 @@ class FlexLayout(DOMWidget):
         help="Dict of style configuration",
     ).tag(sync=True)
 
+    template = Unicode(
+        None, help="Path to template configuration json file.", allow_none=True
+    )
+
+    template_json = Dict(
+        None, help="Template configuration", allow_none=True
+    ).tag(sync=True)
+
     def __init__(
         self,
         widgets: Union[TypeDict, TypeList],
@@ -72,22 +80,31 @@ class FlexLayout(DOMWidget):
         else:
             raise TypeError("Invalid input!")
 
+        self.template_json = None
+        if self.template is not None:
+            try:
+                with open(self.template, "r") as f:
+                    self.template_json = json.load(f)
+            except FileNotFoundError:
+                self.log.warning(
+                    f"Failed to read {self.template}! Using default template."
+                )
+                self.template_json = None
         self.on_msg(self._handle_frontend_msg)
 
     def _handle_frontend_msg(
         self, model: "FlexLayout", msg: Dict, buffers: TypeList
     ) -> None:
-        action = msg.get('action')
-        payload = msg.get('payload', None)
-        if action == MESSAGE_ACTION.SAVE_LAYOUT:
-            file_name = str(payload.get('file_name'))
-            json_data = payload.get('json_data')
-            if not file_name.endswith('.json'):
-                file_name += '.json'
+        action = msg.get("action")
+        payload = msg.get("payload", None)
+        if action == MESSAGE_ACTION.SAVE_TEMPLATE:
+            file_name = str(payload.get("file_name"))
+            json_data = payload.get("json_data")
+            if not file_name.endswith(".json"):
+                file_name += ".json"
             file_path = get_nonexistant_path(
-                    os.path.join(os.getcwd(), file_name)
-                )
+                os.path.join(os.getcwd(), file_name)
+            )
 
             with open(file_path, "w") as f:
                 json.dump(json_data, f)
-

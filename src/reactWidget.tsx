@@ -27,12 +27,28 @@ export class FlexWidget extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.innerlayoutRef = {};
-    this.layoutConfig = this.props.model.get('layout_config') as ILayoutConfig;
+    this.layoutConfig = props.model.get('layout_config') as ILayoutConfig;
     const { default_outer_model, default_model } = defaultModelFactoty(
       this.layoutConfig
     );
+    let template_json = props.model.get('template_json') as IDict;
+
+    if (!template_json || Object.keys(template_json).length === 0) {
+      template_json = default_outer_model;
+    }
+    let flexModel: FlexLayout.Model;
+    try {
+      flexModel = FlexLayout.Model.fromJson(template_json as any);
+    } catch (e) {
+      console.error(e);
+      console.warn(
+        'Failed to build model with saved templated, using default template.'
+      );
+      flexModel = FlexLayout.Model.fromJson(default_outer_model as any);
+    }
+
     this.state = {
-      model: FlexLayout.Model.fromJson(default_outer_model as any),
+      model: flexModel,
       default_outer_model,
       default_model,
       save_template_dialog: false,
@@ -158,7 +174,6 @@ export class FlexWidget extends Component<IProps, IState> {
         nodeId={nodeId}
         tabsetId={tabsetId}
         addTabToTabset={(name: string) => {
-          console.log('called', name, nodeId, tabsetId);
           this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
             component: 'Widget',
             name: name,
@@ -203,13 +218,13 @@ export class FlexWidget extends Component<IProps, IState> {
     );
   };
 
-  saveLayout = async (): Promise<void> => {
+  saveTemplate = async (): Promise<void> => {
     const result = await showDialog<string>(dialogBody('Save template'));
     if (result.button.label === 'Save') {
       const fileName = result.value;
       if (fileName) {
         this.props.send_msg({
-          action: 'save_layout',
+          action: 'save_template',
           payload: {
             file_name: result.value,
             json_data: this.state.model.toJson(),
@@ -270,8 +285,8 @@ export class FlexWidget extends Component<IProps, IState> {
             minHeight: '30px',
           }}
         >
-          <button className={JUPYTER_BUTTON_CLASS} onClick={this.saveLayout}>
-            Save layout
+          <button className={JUPYTER_BUTTON_CLASS} onClick={this.saveTemplate}>
+            Save template
           </button>
         </Toolbar>
       </div>

@@ -31,6 +31,7 @@ export class FlexLayoutModel extends DOMWidgetModel {
       children: [],
       layout_config: { borderLeft: false, borderRight: false },
       style: {},
+      template_json: null,
     };
   }
 
