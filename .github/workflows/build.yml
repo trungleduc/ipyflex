@@ -15,7 +15,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v1
         with:
-          node-version: "12.x"
+          node-version: "16.x"
       - name: Install Python
         uses: actions/setup-python@v2
         with:
@@ -46,6 +46,7 @@ jobs:
         run: |
           python -m pip install -U pip setuptools codecov
           npm install -g codecov
+          npm install -g yarn
       - name: Test the extension
         run: |
           python -m pip install --upgrade -v -e ".[test, examples, docs]"
