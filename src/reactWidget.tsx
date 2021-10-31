@@ -147,7 +147,10 @@ export class FlexWidget extends Component<IProps, IState> {
     return action;
   };
 
-  innerOnAction = (outerNodeID: string, action: FlexLayout.Action) => {
+  innerOnAction = (
+    outerNodeID: string,
+    action: FlexLayout.Action
+  ): FlexLayout.Action => {
     if (
       action.type === 'FlexLayout_MoveNode' ||
       action.type === 'FlexLayout_AdjustSplit' ||
@@ -219,7 +222,12 @@ export class FlexWidget extends Component<IProps, IState> {
   };
 
   saveTemplate = async (): Promise<void> => {
-    const result = await showDialog<string>(dialogBody('Save template'));
+    const oldTemplate = this.props.model.get('template');
+    console.log('old templae', oldTemplate);
+    
+    const result = await showDialog<string>(
+      dialogBody('Save template', oldTemplate)
+    );
     if (result.button.label === 'Save') {
       const fileName = result.value;
       if (fileName) {

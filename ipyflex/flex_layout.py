@@ -57,7 +57,7 @@ class FlexLayout(DOMWidget):
 
     template = Unicode(
         None, help="Path to template configuration json file.", allow_none=True
-    )
+    ).tag(sync=True)
 
     template_json = Dict(
         None, help="Template configuration", allow_none=True
@@ -102,9 +102,12 @@ class FlexLayout(DOMWidget):
             json_data = payload.get("json_data")
             if not file_name.endswith(".json"):
                 file_name += ".json"
-            file_path = get_nonexistant_path(
-                os.path.join(os.getcwd(), file_name)
-            )
-
+            if file_name != self.template:
+                file_path = get_nonexistant_path(
+                    os.path.join(os.getcwd(), file_name)
+                )
+            else:
+                file_path = self.template
             with open(file_path, "w") as f:
                 json.dump(json_data, f)
+            self.template = file_path

@@ -11,7 +11,10 @@ class BodyWidget extends Widget {
   }
 }
 
-export default function dialogBody(title: string): {
+export default function dialogBody(
+  title: string,
+  defaultValue: string = null
+): {
   title: string;
   body: BodyWidget;
   buttons: Array<any>;
@@ -19,5 +22,9 @@ export default function dialogBody(title: string): {
   const saveBtn = Dialog.okButton({ label: 'Save' });
   const cancelBtn = Dialog.cancelButton({ label: 'Cancel' });
   const input = document.createElement('input');
+
+  if (defaultValue) {
+    input.value = defaultValue;
+  }
   return { title, body: new BodyWidget(input), buttons: [cancelBtn, saveBtn] };
 }

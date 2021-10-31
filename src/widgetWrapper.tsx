@@ -26,13 +26,22 @@ export class WidgetWrapper extends Component<IProps, IState> {
   }
   componentDidMount(): void {
     const children = this.model.get('children');
+
     const widgetModel = children[this.widget_name];
     const manager = this.model.widget_manager;
-    manager.create_view(widgetModel, {}).then((view) => {
-      MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
-      this.myRef.current.insertBefore(view.pWidget.node, null);
-      MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
-    });
+    if (widgetModel) {
+      manager.create_view(widgetModel, {}).then((view) => {
+        MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
+        this.myRef.current.insertBefore(view.pWidget.node, null);
+        MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
+      });
+    } else {
+      const placeHolder = document.createElement('p');
+      placeHolder.style.textAlign = 'center';
+      placeHolder.style.margin = '20px';
+      placeHolder.innerText = `Placeholder for ${this.widget_name} widget`;
+      this.myRef.current.insertBefore(placeHolder, null);
+    }
   }
 
   render(): JSX.Element {
