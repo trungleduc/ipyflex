@@ -24,6 +24,7 @@ from .utils import get_nonexistant_path
 
 class MESSAGE_ACTION(str, Enum):
     SAVE_TEMPLATE = "save_template"
+    UPDATE_CHILDREN = "update_children"
 
 
 class FlexLayout(DOMWidget):
@@ -91,6 +92,15 @@ class FlexLayout(DOMWidget):
                 )
                 self.template_json = None
         self.on_msg(self._handle_frontend_msg)
+
+    def add(self, name: str, widget: Widget) -> None:
+        self.children[name] = widget
+        self.send(
+            {
+                "action": MESSAGE_ACTION.UPDATE_CHILDREN,
+                "payload": {"name": name},
+            }
+        )
 
     def _handle_frontend_msg(
         self, model: "FlexLayout", msg: Dict, buffers: TypeList

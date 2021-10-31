@@ -24,7 +24,7 @@ export function defaultModelFactoty(config: ILayoutConfig): IDict {
       children: [],
     });
   }
-  const default_model = {
+  const defaultModel = {
     global: {
       tabEnableRename: true,
     },
@@ -43,7 +43,7 @@ export function defaultModelFactoty(config: ILayoutConfig): IDict {
     borders,
   };
 
-  const default_outer_model = {
+  const defaultOuterModel = {
     global: {
       tabEnableRename: true,
       tabSetTabLocation: 'bottom',
@@ -87,5 +87,5 @@ export function defaultModelFactoty(config: ILayoutConfig): IDict {
     },
     borders: [],
   };
-  return { default_outer_model, default_model };
+  return { defaultOuterModel, defaultModel };
 }

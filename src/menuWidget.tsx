@@ -7,31 +7,43 @@ interface IProps {
   tabsetId: string;
   widgetList: Array<string>;
   addTabToTabset: (name: string, nodeId: string, tabsetId: string) => void;
+  model: any;
 }
-
 interface IState {
   anchorEl: HTMLElement;
+  widgetList: Array<string>;
 }
 
 export class WidgetMenu extends Component<IProps, IState> {
-  menuItem: Array<JSX.Element>;
   constructor(props: IProps) {
     super(props);
-    this.menuItem = props.widgetList.map((name) => (
-      <MenuItem
-        key={`${name}}@${props.tabsetId}@${props.nodeId}`}
-        onClick={() => {
-          props.addTabToTabset(name, props.nodeId, props.tabsetId);
-          this.handleClose();
-        }}
-      >
-        {name}
-      </MenuItem>
-    ));
+    props.model.listenTo(props.model, 'msg:custom', this.on_msg);
     this.state = {
       anchorEl: null,
+      widgetList: props.widgetList,
     };
   }
+
+  on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
+    const { action, payload } = data;
+    switch (action) {
+      case 'update_children':
+        {
+          const wName: string = payload.name;
+          this.setState(
+            (old) => ({
+              ...old,
+              widgetList: [...old.widgetList, wName],
+            }),
+            () => {
+              console.log('in widgetmenu', this.state);
+            }
+          );
+        }
+
+        return null;
+    }
+  };
 
   handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     const target = event.currentTarget;
@@ -44,6 +56,21 @@ export class WidgetMenu extends Component<IProps, IState> {
 
   render(): JSX.Element {
     const menuId = `add_widget_menu_${this.props.tabsetId}@${this.props.nodeId}`;
+    const menuItem = this.state.widgetList.map((name) => (
+      <MenuItem
+        key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
+        onClick={() => {
+          this.props.addTabToTabset(
+            name,
+            this.props.nodeId,
+            this.props.tabsetId
+          );
+          this.handleClose();
+        }}
+      >
+        {name}
+      </MenuItem>
+    ));
     return (
       <div key={menuId}>
         <button
@@ -60,7 +87,7 @@ export class WidgetMenu extends Component<IProps, IState> {
           open={Boolean(this.state.anchorEl)}
           onClose={this.handleClose}
         >
-          {this.menuItem}
+          {menuItem}
         </Menu>
       </div>
     );

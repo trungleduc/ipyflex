@@ -18,23 +18,24 @@ interface IProps {
 
 interface IState {
   model: FlexLayout.Model;
-  default_outer_model: IDict;
-  default_model: IDict;
-  save_template_dialog: boolean;
+  defaultOuterModel: IDict;
+  defaultModel: IDict;
+  widgetList: Array<string>;
 }
 
 export class FlexWidget extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
+    props.model.listenTo(props.model, 'msg:custom', this.on_msg);
     this.innerlayoutRef = {};
     this.layoutConfig = props.model.get('layout_config') as ILayoutConfig;
-    const { default_outer_model, default_model } = defaultModelFactoty(
+    const { defaultOuterModel, defaultModel } = defaultModelFactoty(
       this.layoutConfig
     );
     let template_json = props.model.get('template_json') as IDict;
 
     if (!template_json || Object.keys(template_json).length === 0) {
-      template_json = default_outer_model;
+      template_json = defaultOuterModel;
     }
     let flexModel: FlexLayout.Model;
     try {
@@ -44,19 +45,38 @@ export class FlexWidget extends Component<IProps, IState> {
       console.warn(
         'Failed to build model with saved templated, using default template.'
       );
-      flexModel = FlexLayout.Model.fromJson(default_outer_model as any);
+      flexModel = FlexLayout.Model.fromJson(defaultOuterModel as any);
     }
 
     this.state = {
       model: flexModel,
-      default_outer_model,
-      default_model,
-      save_template_dialog: false,
+      defaultOuterModel,
+      defaultModel,
+      widgetList: Object.keys(this.props.model.get('children')),
     };
     this.model = props.model;
-    this.widgetList = Object.keys(this.model.get('children'));
   }
 
+  on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
+    const { action, payload } = data;
+    switch (action) {
+      case 'update_children':
+        {
+          const wName: string = payload.name;
+          this.setState(
+            (old) => ({
+              ...old,
+              widgetList: [...old.widgetList, wName],
+            }),
+            () => {
+              console.log(this.state);
+            }
+          );
+        }
+
+        return null;
+    }
+  };
   factory = (node: FlexLayout.TabNode): JSX.Element => {
     const component = node.getComponent() as 'Widget' | 'sub';
     // const config = node.getConfig();
@@ -82,7 +102,7 @@ export class FlexWidget extends Component<IProps, IState> {
     if (node.getConfig() && node.getConfig().model) {
       defaultModel = node.getConfig().model;
     } else {
-      defaultModel = this.state.default_model;
+      defaultModel = this.state.defaultModel;
     }
 
     if (!model) {
@@ -173,7 +193,7 @@ export class FlexWidget extends Component<IProps, IState> {
     const tabsetId = tabSetNode.getId();
     renderValues.buttons.push(
       <WidgetMenu
-        widgetList={this.widgetList}
+        widgetList={this.state.widgetList}
         nodeId={nodeId}
         tabsetId={tabsetId}
         addTabToTabset={(name: string) => {
@@ -183,6 +203,7 @@ export class FlexWidget extends Component<IProps, IState> {
             config: { layoutID: nodeId },
           });
         }}
+        model={this.props.model}
       />
     );
   };
@@ -224,7 +245,7 @@ export class FlexWidget extends Component<IProps, IState> {
   saveTemplate = async (): Promise<void> => {
     const oldTemplate = this.props.model.get('template');
     console.log('old templae', oldTemplate);
-    
+
     const result = await showDialog<string>(
       dialogBody('Save template', oldTemplate)
     );
@@ -242,13 +263,6 @@ export class FlexWidget extends Component<IProps, IState> {
         alert('Invalid file name!');
       }
     }
-  };
-
-  toggleSaveDialog = (): void => {
-    this.setState((old) => ({
-      ...old,
-      save_template_dialog: !old.save_template_dialog,
-    }));
   };
 
   render(): JSX.Element {
@@ -304,7 +318,6 @@ export class FlexWidget extends Component<IProps, IState> {
   private layoutRef = React.createRef<FlexLayout.Layout>();
   private innerlayoutRef: { [key: string]: React.RefObject<FlexLayout.Layout> };
   private model: any;
-  private widgetList: Array<string>;
   private layoutConfig: ILayoutConfig;
 }
 
