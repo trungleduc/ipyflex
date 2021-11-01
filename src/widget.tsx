@@ -32,6 +32,7 @@ export class FlexLayoutModel extends DOMWidgetModel {
       layout_config: { borderLeft: false, borderRight: false },
       style: {},
       template_json: null,
+      update_signal: 0,
     };
   }
 
@@ -64,7 +65,7 @@ export class FlexLayoutModel extends DOMWidgetModel {
   static view_module_version = MODULE_VERSION;
 }
 
-class WidgetWrapper extends ReactWidget {
+class ReactWidgetWrapper extends ReactWidget {
   _send_msg: any;
   _model: any;
   _style: any;
@@ -101,7 +102,6 @@ export class FlexLayoutView extends DOMWidgetView {
         .split(/(?=[A-Z])/)
         .map((s) => s.toLowerCase())
         .join('-');
-      console.log('setting', fixedKey, value);
 
       this.el.style[fixedKey] = value;
     }
@@ -112,7 +112,11 @@ export class FlexLayoutView extends DOMWidgetView {
     this.setStyle();
     this.el.classList.add('custom-widget');
     const style: { [key: string]: string } = this.model.get('style');
-    const widget = new WidgetWrapper(this.send.bind(this), this.model, style);
+    const widget = new ReactWidgetWrapper(
+      this.send.bind(this),
+      this.model,
+      style
+    );
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     this.el.insertBefore(widget.node, null);
     MessageLoop.sendMessage(widget, Widget.Msg.AfterAttach);

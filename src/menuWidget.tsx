@@ -30,15 +30,10 @@ export class WidgetMenu extends Component<IProps, IState> {
       case 'update_children':
         {
           const wName: string = payload.name;
-          this.setState(
-            (old) => ({
-              ...old,
-              widgetList: [...old.widgetList, wName],
-            }),
-            () => {
-              console.log('in widgetmenu', this.state);
-            }
-          );
+          this.setState((old) => ({
+            ...old,
+            widgetList: [...old.widgetList, wName],
+          }));
         }
 
         return null;

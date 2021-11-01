@@ -16,10 +16,11 @@ from typing import List as TypeList
 from typing import Union
 
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from traitlets.traitlets import Dict, Instance, Unicode
+from traitlets.traitlets import Dict, Instance, Int, Unicode
 
 from ._frontend import module_name, module_version
 from .utils import get_nonexistant_path
+import copy
 
 
 class MESSAGE_ACTION(str, Enum):
@@ -64,6 +65,8 @@ class FlexLayout(DOMWidget):
         None, help="Template configuration", allow_none=True
     ).tag(sync=True)
 
+    update_signal = Int(0).tag(sync=True)
+
     def __init__(
         self,
         widgets: Union[TypeDict, TypeList],
@@ -94,7 +97,9 @@ class FlexLayout(DOMWidget):
         self.on_msg(self._handle_frontend_msg)
 
     def add(self, name: str, widget: Widget) -> None:
-        self.children[name] = widget
+        old = copy.copy(self.children)
+        old[name] = widget
+        self.children = old
         self.send(
             {
                 "action": MESSAGE_ACTION.UPDATE_CHILDREN,

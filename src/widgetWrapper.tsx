@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { MessageLoop } from '@lumino/messaging';
 import { Widget } from '@lumino/widgets';
+import { IDict } from './utils';
 interface IProps {
-  widget_name: string;
+  widgetName: string;
   model: any;
 }
 
@@ -11,40 +12,60 @@ interface IState {
 }
 
 export class WidgetWrapper extends Component<IProps, IState> {
-  widget_name: string;
-  model: any;
-  divId: string;
-  myRef: any;
   constructor(props: IProps) {
     super(props);
     this.model = props.model;
-    this.widget_name = props.widget_name;
+    this.model.listenTo(this.model, 'change:children', this.on_children_change);
+    this.widgetName = props.widgetName;
     this.state = {
       state: 0,
     };
-    this.myRef = React.createRef<HTMLElement>();
+    this.myRef = React.createRef<HTMLDivElement>();
   }
+
+  on_children_change = (model, newValue: IDict, change: IDict): void => {
+    if (this.placeholder && this.widgetName in newValue) {
+      this.myRef.current.firstChild.remove();
+      this._render_widget(newValue[this.widgetName]);
+      this.placeholder = false;
+    }
+  };
+
+  private _render_widget = (model: any) => {
+    const manager = this.model.widget_manager;
+    manager.create_view(model, {}).then((view) => {
+      
+      MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
+      this.myRef.current.insertBefore(view.pWidget.node, null);
+      MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
+    });
+  };
+
   componentDidMount(): void {
     const children = this.model.get('children');
 
-    const widgetModel = children[this.widget_name];
-    const manager = this.model.widget_manager;
+    const widgetModel = children[this.widgetName];
+
     if (widgetModel) {
-      manager.create_view(widgetModel, {}).then((view) => {
-        MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
-        this.myRef.current.insertBefore(view.pWidget.node, null);
-        MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
-      });
+      this._render_widget(widgetModel);
+      this.placeholder = false;
     } else {
       const placeHolder = document.createElement('p');
       placeHolder.style.textAlign = 'center';
-      placeHolder.style.margin = '20px';
-      placeHolder.innerText = `Placeholder for ${this.widget_name} widget`;
+      placeHolder.style.padding = '20px';
+      placeHolder.innerText = `Placeholder for ${this.widgetName} widget`;
       this.myRef.current.insertBefore(placeHolder, null);
+      this.placeholder = true;
     }
   }
 
   render(): JSX.Element {
     return <div className="ipyflex-widget-box" ref={this.myRef}></div>;
   }
+
+  widgetName: string;
+  model: any;
+  divId: string;
+  myRef:  React.RefObject<HTMLDivElement>;
+  private placeholder: boolean;
 }

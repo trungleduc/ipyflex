@@ -67,10 +67,7 @@ export class FlexWidget extends Component<IProps, IState> {
             (old) => ({
               ...old,
               widgetList: [...old.widgetList, wName],
-            }),
-            () => {
-              console.log(this.state);
-            }
+            })
           );
         }
 
@@ -85,7 +82,7 @@ export class FlexWidget extends Component<IProps, IState> {
 
     switch (component) {
       case 'Widget': {
-        return <WidgetWrapper model={this.model} widget_name={name} />;
+        return <WidgetWrapper model={this.model} widgetName={name} />;
       }
       case 'sub': {
         return this.generateSection(node, nodeId);
@@ -244,7 +241,6 @@ export class FlexWidget extends Component<IProps, IState> {
 
   saveTemplate = async (): Promise<void> => {
     const oldTemplate = this.props.model.get('template');
-    console.log('old templae', oldTemplate);
 
     const result = await showDialog<string>(
       dialogBody('Save template', oldTemplate)
