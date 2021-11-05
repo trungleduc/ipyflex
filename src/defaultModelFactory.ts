@@ -27,6 +27,7 @@ export function defaultModelFactoty(config: ILayoutConfig): IDict {
   const defaultModel = {
     global: {
       tabEnableRename: true,
+      tabSetEnableClose: true,
     },
     layout: {
       type: 'row',
@@ -63,7 +64,7 @@ export function defaultModelFactoty(config: ILayoutConfig): IDict {
               component: 'sub',
               config: {
                 model: {
-                  global: {},
+                  global: { tabSetEnableClose: true },
                   layout: {
                     type: 'row',
                     id: '#1',

@@ -34,7 +34,6 @@ export class WidgetWrapper extends Component<IProps, IState> {
   private _render_widget = (model: any) => {
     const manager = this.model.widget_manager;
     manager.create_view(model, {}).then((view) => {
-      
       MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
       this.myRef.current.insertBefore(view.pWidget.node, null);
       MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
@@ -66,6 +65,6 @@ export class WidgetWrapper extends Component<IProps, IState> {
   widgetName: string;
   model: any;
   divId: string;
-  myRef:  React.RefObject<HTMLDivElement>;
+  myRef: React.RefObject<HTMLDivElement>;
   private placeholder: boolean;
 }

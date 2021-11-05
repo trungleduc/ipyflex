@@ -63,12 +63,10 @@ export class FlexWidget extends Component<IProps, IState> {
       case 'update_children':
         {
           const wName: string = payload.name;
-          this.setState(
-            (old) => ({
-              ...old,
-              widgetList: [...old.widgetList, wName],
-            })
-          );
+          this.setState((old) => ({
+            ...old,
+            widgetList: [...old.widgetList, wName],
+          }));
         }
 
         return null;
@@ -150,7 +148,7 @@ export class FlexWidget extends Component<IProps, IState> {
     );
   };
 
-  onAction = (action: FlexLayout.Action) => {
+  onAction = (action: FlexLayout.Action): FlexLayout.Action => {
     if (
       action.type === 'FlexLayout_MoveNode' ||
       action.type === 'FlexLayout_AdjustSplit' ||
@@ -216,25 +214,25 @@ export class FlexWidget extends Component<IProps, IState> {
     tabSetNode: FlexLayout.TabSetNode | FlexLayout.BorderNode,
     renderValues: {
       headerContent?: React.ReactNode;
+      stickyButtons: React.ReactNode[];
       buttons: React.ReactNode[];
+      headerButtons: React.ReactNode[];
     }
   ): void => {
-    renderValues.buttons.push(
+    renderValues.headerContent = <div>test </div>;
+    renderValues.stickyButtons.push(
       <button
         className={JUPYTER_BUTTON_CLASS}
         onClick={this.onAddRow}
         style={{
-          width: '50px',
+          width: '25px',
           height: '25px',
           paddingLeft: 'unset',
           paddingRight: 'unset',
           margin: 0,
         }}
       >
-        <i
-          style={{ color: 'var(--jp-ui-font-color1)' }}
-          className="fas fa-folder-plus fa-2x"
-        ></i>
+        <i className="fas fa-plus"></i>
       </button>
     );
   };
@@ -289,7 +287,9 @@ export class FlexWidget extends Component<IProps, IState> {
               tabSetNode: FlexLayout.TabSetNode | FlexLayout.BorderNode,
               renderValues: {
                 headerContent?: React.ReactNode;
+                stickyButtons: React.ReactNode[];
                 buttons: React.ReactNode[];
+                headerButtons: React.ReactNode[];
               }
             ) => {
               this.onRenderOuterTabSet(tabSetNode, renderValues);
