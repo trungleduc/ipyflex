@@ -69,7 +69,7 @@ class FlexLayout(DOMWidget):
 
     def __init__(
         self,
-        widgets: Union[TypeDict, TypeList],
+        widgets: Union[TypeDict, TypeList] = [],
         # layout_config: TypeDict,
         **kwargs,
     ):

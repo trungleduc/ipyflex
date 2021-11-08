@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import dialogBody from './dialogWidget';
+import { showDialog } from '@jupyterlab/apputils';
+
 import { JUPYTER_BUTTON_CLASS } from './utils';
 interface IProps {
   nodeId: string;
@@ -14,13 +17,14 @@ interface IState {
   widgetList: Array<string>;
 }
 
+const CREATE_NEW = 'Create new';
 export class WidgetMenu extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     props.model.listenTo(props.model, 'msg:custom', this.on_msg);
     this.state = {
       anchorEl: null,
-      widgetList: props.widgetList,
+      widgetList: [...props.widgetList, CREATE_NEW],
     };
   }
 
@@ -51,21 +55,56 @@ export class WidgetMenu extends Component<IProps, IState> {
 
   render(): JSX.Element {
     const menuId = `add_widget_menu_${this.props.tabsetId}@${this.props.nodeId}`;
-    const menuItem = this.state.widgetList.map((name) => (
+    const menuItem = [];
+    for (const name of this.state.widgetList) {
+      if (name !== CREATE_NEW) {
+        menuItem.push(
+          <MenuItem
+            key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
+            onClick={() => {
+              this.props.addTabToTabset(
+                name,
+                this.props.nodeId,
+                this.props.tabsetId
+              );
+              this.handleClose();
+            }}
+          >
+            {name}
+          </MenuItem>
+        );
+      }
+    }
+    const createNew: JSX.Element = (
       <MenuItem
-        key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
-        onClick={() => {
+        key={`$#{this.props.tabsetId}@${this.props.nodeId}`}
+        onClick={async () => {
+          this.handleClose();
+          let widgetName: string;
+          const result = await showDialog<string>(
+            dialogBody('Widget name', '')
+          );
+          if (result.button.label === 'Save' && result.value) {
+            widgetName = result.value;
+            this.setState((old) => ({
+              ...old,
+              widgetList: [...old.widgetList, widgetName],
+            }));
+          } else {
+            return;
+          }
+
           this.props.addTabToTabset(
-            name,
+            widgetName,
             this.props.nodeId,
             this.props.tabsetId
           );
-          this.handleClose();
         }}
       >
-        {name}
+        {CREATE_NEW}
       </MenuItem>
-    ));
+    );
+    menuItem.push(createNew);
     return (
       <div key={menuId}>
         <button
