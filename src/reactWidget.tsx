@@ -6,14 +6,19 @@ import React, { Component } from 'react';
 import { JUPYTER_BUTTON_CLASS, IDict } from './utils';
 import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
-import { defaultModelFactoty, ILayoutConfig } from './defaultModelFactory';
+import {
+  defaultModelFactoty,
+  ILayoutConfig,
+  updateModelEditable,
+} from './defaultModelFactory';
 import dialogBody from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
 // import Button from '@mui/material/Button';
 interface IProps {
   send_msg: ({ action: string, payload: any }) => void;
   model: any;
-  style: any;
+  style: IDict;
+  editable: boolean;
 }
 
 interface IState {
@@ -29,13 +34,18 @@ export class FlexWidget extends Component<IProps, IState> {
     props.model.listenTo(props.model, 'msg:custom', this.on_msg);
     this.innerlayoutRef = {};
     this.layoutConfig = props.model.get('layout_config') as ILayoutConfig;
+
     const { defaultOuterModel, defaultModel } = defaultModelFactoty(
-      this.layoutConfig
+      this.layoutConfig,
+      props.editable
     );
+
     let template_json = props.model.get('template_json') as IDict;
 
     if (!template_json || Object.keys(template_json).length === 0) {
       template_json = defaultOuterModel;
+    } else {
+      template_json = updateModelEditable(template_json, props.editable);
     }
     let flexModel: FlexLayout.Model;
     try {

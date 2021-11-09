@@ -32,7 +32,7 @@ export class FlexLayoutModel extends DOMWidgetModel {
       layout_config: { borderLeft: false, borderRight: false },
       style: {},
       template_json: null,
-      update_signal: 0,
+      editable: true,
     };
   }
 
@@ -66,14 +66,13 @@ export class FlexLayoutModel extends DOMWidgetModel {
 }
 
 class ReactWidgetWrapper extends ReactWidget {
-  _send_msg: any;
-  _model: any;
-  _style: any;
-  constructor(send_msg: any, model: any, style: any = {}) {
+
+  constructor(send_msg: any, model: any, style: any = {}, editable = true) {
     super();
     this._send_msg = send_msg;
     this._model = model;
     this._style = style;
+    this._editable = editable;
   }
 
   onResize = (msg: any) => {
@@ -86,9 +85,14 @@ class ReactWidgetWrapper extends ReactWidget {
         style={this._style}
         send_msg={this._send_msg}
         model={this._model}
+        editable={this._editable}
       />
     );
   }
+  private _send_msg: any;
+  private _model: any;
+  private _style: any;
+  private _editable: boolean;
 }
 
 export class FlexLayoutView extends DOMWidgetView {
@@ -112,10 +116,12 @@ export class FlexLayoutView extends DOMWidgetView {
     this.setStyle();
     this.el.classList.add('custom-widget');
     const style: { [key: string]: string } = this.model.get('style');
+    const editable = this.model.get('editable');
     const widget = new ReactWidgetWrapper(
       this.send.bind(this),
       this.model,
-      style
+      style,
+      editable
     );
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     this.el.insertBefore(widget.node, null);
