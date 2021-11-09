@@ -5,7 +5,10 @@ export interface ILayoutConfig {
   borderRight: boolean;
 }
 
-export function defaultModelFactoty(config: ILayoutConfig): IDict {
+export function defaultModelFactoty(
+  config: ILayoutConfig,
+  editable = true
+): IDict {
   const { borderLeft, borderRight } = config;
   const borders = [];
   if (borderLeft) {
@@ -24,11 +27,15 @@ export function defaultModelFactoty(config: ILayoutConfig): IDict {
       children: [],
     });
   }
+  const globaleDict = {
+    tabEnableRename: editable,
+    tabEnableClose: editable,
+    tabSetEnableClose: editable,
+    tabEnableDrag: editable,
+    tabSetEnableDrag: editable,
+  };
   const defaultModel = {
-    global: {
-      tabEnableRename: true,
-      tabSetEnableClose: true,
-    },
+    global: globaleDict,
     layout: {
       type: 'row',
       id: '#1',
@@ -45,10 +52,8 @@ export function defaultModelFactoty(config: ILayoutConfig): IDict {
   };
 
   const defaultOuterModel = {
-    global: {
-      tabEnableRename: true,
-      tabSetTabLocation: 'bottom',
-    },
+    global: { ...globaleDict, tabSetTabLocation: 'bottom' },
+
     layout: {
       type: 'row',
       id: '#1',
@@ -64,7 +69,7 @@ export function defaultModelFactoty(config: ILayoutConfig): IDict {
               component: 'sub',
               config: {
                 model: {
-                  global: { tabSetEnableClose: true },
+                  global: globaleDict,
                   layout: {
                     type: 'row',
                     id: '#1',
@@ -89,4 +94,26 @@ export function defaultModelFactoty(config: ILayoutConfig): IDict {
     borders: [],
   };
   return { defaultOuterModel, defaultModel };
+}
+
+export function updateModelEditable(model: IDict, editable: boolean): IDict {
+  console.log('start');
+
+  const globaleDict = {
+    tabEnableRename: editable,
+    tabEnableClose: editable,
+    tabSetEnableClose: editable,
+    tabEnableDrag: editable,
+    tabSetEnableDrag: editable,
+  };
+  if ('global' in model) {
+    model.global = { ...globaleDict, tabSetTabLocation: 'bottom' };
+  }
+  const children = model['layout']['children'][0]['children'];
+  for (const child of children) {
+    child['config']['model']['global'] = globaleDict;
+  }
+  console.log('end');
+
+  return model;
 }

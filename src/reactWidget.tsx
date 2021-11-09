@@ -6,14 +6,19 @@ import React, { Component } from 'react';
 import { JUPYTER_BUTTON_CLASS, IDict } from './utils';
 import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
-import { defaultModelFactoty, ILayoutConfig } from './defaultModelFactory';
+import {
+  defaultModelFactoty,
+  ILayoutConfig,
+  updateModelEditable,
+} from './defaultModelFactory';
 import dialogBody from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
 // import Button from '@mui/material/Button';
 interface IProps {
   send_msg: ({ action: string, payload: any }) => void;
   model: any;
-  style: any;
+  style: IDict;
+  editable: boolean;
 }
 
 interface IState {
@@ -29,13 +34,18 @@ export class FlexWidget extends Component<IProps, IState> {
     props.model.listenTo(props.model, 'msg:custom', this.on_msg);
     this.innerlayoutRef = {};
     this.layoutConfig = props.model.get('layout_config') as ILayoutConfig;
+
     const { defaultOuterModel, defaultModel } = defaultModelFactoty(
-      this.layoutConfig
+      this.layoutConfig,
+      props.editable
     );
+
     let template_json = props.model.get('template_json') as IDict;
 
     if (!template_json || Object.keys(template_json).length === 0) {
       template_json = defaultOuterModel;
+    } else {
+      template_json = updateModelEditable(template_json, props.editable);
     }
     let flexModel: FlexLayout.Model;
     try {
@@ -185,22 +195,24 @@ export class FlexWidget extends Component<IProps, IState> {
     },
     nodeId: string
   ): void => {
-    const tabsetId = tabSetNode.getId();
-    renderValues.buttons.push(
-      <WidgetMenu
-        widgetList={this.state.widgetList}
-        nodeId={nodeId}
-        tabsetId={tabsetId}
-        addTabToTabset={(name: string) => {
-          this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
-            component: 'Widget',
-            name: name,
-            config: { layoutID: nodeId },
-          });
-        }}
-        model={this.props.model}
-      />
-    );
+    if (this.props.editable) {
+      const tabsetId = tabSetNode.getId();
+      renderValues.buttons.push(
+        <WidgetMenu
+          widgetList={this.state.widgetList}
+          nodeId={nodeId}
+          tabsetId={tabsetId}
+          addTabToTabset={(name: string) => {
+            this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
+              component: 'Widget',
+              name: name,
+              config: { layoutID: nodeId },
+            });
+          }}
+          model={this.props.model}
+        />
+      );
+    }
   };
 
   onAddRow = (): void => {
@@ -219,22 +231,23 @@ export class FlexWidget extends Component<IProps, IState> {
       headerButtons: React.ReactNode[];
     }
   ): void => {
-    renderValues.headerContent = <div>test </div>;
-    renderValues.stickyButtons.push(
-      <button
-        className={JUPYTER_BUTTON_CLASS}
-        onClick={this.onAddRow}
-        style={{
-          width: '25px',
-          height: '25px',
-          paddingLeft: 'unset',
-          paddingRight: 'unset',
-          margin: 0,
-        }}
-      >
-        <i className="fas fa-plus"></i>
-      </button>
-    );
+    if (this.props.editable) {
+      renderValues.stickyButtons.push(
+        <button
+          className={JUPYTER_BUTTON_CLASS}
+          onClick={this.onAddRow}
+          style={{
+            width: '25px',
+            height: '25px',
+            paddingLeft: 'unset',
+            paddingRight: 'unset',
+            margin: 0,
+          }}
+        >
+          <i className="fas fa-plus"></i>
+        </button>
+      );
+    }
   };
 
   saveTemplate = async (): Promise<void> => {
@@ -265,7 +278,7 @@ export class FlexWidget extends Component<IProps, IState> {
         <div
           style={{
             width: '100%',
-            height: 'calc(100% - 31px)',
+            height: this.props.editable ? 'calc(100% - 31px)' : '100%',
           }}
         >
           <FlexLayout.Layout
@@ -296,17 +309,24 @@ export class FlexWidget extends Component<IProps, IState> {
             }}
           />
         </div>
-        <Toolbar
-          variant="dense"
-          style={{
-            height: '30px',
-            minHeight: '30px',
-          }}
-        >
-          <button className={JUPYTER_BUTTON_CLASS} onClick={this.saveTemplate}>
-            Save template
-          </button>
-        </Toolbar>
+        {this.props.editable ? (
+          <Toolbar
+            variant="dense"
+            style={{
+              height: '30px',
+              minHeight: '30px',
+            }}
+          >
+            <button
+              className={JUPYTER_BUTTON_CLASS}
+              onClick={this.saveTemplate}
+            >
+              Save template
+            </button>
+          </Toolbar>
+        ) : (
+          <div></div>
+        )}
       </div>
     );
   }

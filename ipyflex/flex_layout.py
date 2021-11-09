@@ -16,7 +16,7 @@ from typing import List as TypeList
 from typing import Union
 
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from traitlets.traitlets import Dict, Instance, Int, Unicode
+from traitlets.traitlets import Bool, Dict, Instance, Int, Unicode
 
 from ._frontend import module_name, module_version
 from .utils import get_nonexistant_path
@@ -49,23 +49,25 @@ class FlexLayout(DOMWidget):
 
     layout_config = Dict(
         {"borderLeft": False, "borderRight": False},
-        help="Dict of layout configuration",
+        help="Layout configuration",
     ).tag(sync=True)
 
     style = Dict(
         {},
-        help="Dict of style configuration",
+        help="Style configuration",
     ).tag(sync=True)
 
     template = Unicode(
-        None, help="Path to template configuration json file.", allow_none=True
+        None, help="Path to template json file.", allow_none=True
     ).tag(sync=True)
 
     template_json = Dict(
         None, help="Template configuration", allow_none=True
     ).tag(sync=True)
 
-    update_signal = Int(0).tag(sync=True)
+    editable = Bool(True, help="Flag to activate/deactivate edit mode").tag(
+        sync=True
+    )
 
     def __init__(
         self,
@@ -97,6 +99,9 @@ class FlexLayout(DOMWidget):
         self.on_msg(self._handle_frontend_msg)
 
     def add(self, name: str, widget: Widget) -> None:
+        if not self.editable:
+            self.log.warning("Widget is in readonly mode!")
+            return
         old = copy.copy(self.children)
         old[name] = widget
         self.children = old
