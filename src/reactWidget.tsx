@@ -195,22 +195,24 @@ export class FlexWidget extends Component<IProps, IState> {
     },
     nodeId: string
   ): void => {
-    const tabsetId = tabSetNode.getId();
-    renderValues.buttons.push(
-      <WidgetMenu
-        widgetList={this.state.widgetList}
-        nodeId={nodeId}
-        tabsetId={tabsetId}
-        addTabToTabset={(name: string) => {
-          this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
-            component: 'Widget',
-            name: name,
-            config: { layoutID: nodeId },
-          });
-        }}
-        model={this.props.model}
-      />
-    );
+    if (this.props.editable) {
+      const tabsetId = tabSetNode.getId();
+      renderValues.buttons.push(
+        <WidgetMenu
+          widgetList={this.state.widgetList}
+          nodeId={nodeId}
+          tabsetId={tabsetId}
+          addTabToTabset={(name: string) => {
+            this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
+              component: 'Widget',
+              name: name,
+              config: { layoutID: nodeId },
+            });
+          }}
+          model={this.props.model}
+        />
+      );
+    }
   };
 
   onAddRow = (): void => {
@@ -229,22 +231,23 @@ export class FlexWidget extends Component<IProps, IState> {
       headerButtons: React.ReactNode[];
     }
   ): void => {
-    renderValues.headerContent = <div>test </div>;
-    renderValues.stickyButtons.push(
-      <button
-        className={JUPYTER_BUTTON_CLASS}
-        onClick={this.onAddRow}
-        style={{
-          width: '25px',
-          height: '25px',
-          paddingLeft: 'unset',
-          paddingRight: 'unset',
-          margin: 0,
-        }}
-      >
-        <i className="fas fa-plus"></i>
-      </button>
-    );
+    if (this.props.editable) {
+      renderValues.stickyButtons.push(
+        <button
+          className={JUPYTER_BUTTON_CLASS}
+          onClick={this.onAddRow}
+          style={{
+            width: '25px',
+            height: '25px',
+            paddingLeft: 'unset',
+            paddingRight: 'unset',
+            margin: 0,
+          }}
+        >
+          <i className="fas fa-plus"></i>
+        </button>
+      );
+    }
   };
 
   saveTemplate = async (): Promise<void> => {
@@ -275,7 +278,7 @@ export class FlexWidget extends Component<IProps, IState> {
         <div
           style={{
             width: '100%',
-            height: 'calc(100% - 31px)',
+            height: this.props.editable ? 'calc(100% - 31px)' : '100%',
           }}
         >
           <FlexLayout.Layout
@@ -306,17 +309,24 @@ export class FlexWidget extends Component<IProps, IState> {
             }}
           />
         </div>
-        <Toolbar
-          variant="dense"
-          style={{
-            height: '30px',
-            minHeight: '30px',
-          }}
-        >
-          <button className={JUPYTER_BUTTON_CLASS} onClick={this.saveTemplate}>
-            Save template
-          </button>
-        </Toolbar>
+        {this.props.editable ? (
+          <Toolbar
+            variant="dense"
+            style={{
+              height: '30px',
+              minHeight: '30px',
+            }}
+          >
+            <button
+              className={JUPYTER_BUTTON_CLASS}
+              onClick={this.saveTemplate}
+            >
+              Save template
+            </button>
+          </Toolbar>
+        ) : (
+          <div></div>
+        )}
       </div>
     );
   }
