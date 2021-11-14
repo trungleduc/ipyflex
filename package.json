@@ -55,7 +55,7 @@
     "@jupyter-widgets/controls": "^3.0.0",
     "@jupyterlab/apputils": "^3.2.0",
     "@mui/material": "^5.0.4",
-    "flexlayout-react": "^0.5.17"
+    "flexlayout-react": "^0.5.20"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",

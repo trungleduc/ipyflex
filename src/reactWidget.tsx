@@ -13,6 +13,8 @@ import {
 } from './defaultModelFactory';
 import dialogBody from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
+import { ContextMenu } from '@lumino/widgets';
+import { CommandRegistry } from '@lumino/commands';
 // import Button from '@mui/material/Button';
 interface IProps {
   send_msg: ({ action: string, payload: any }) => void;
@@ -26,6 +28,7 @@ interface IState {
   defaultOuterModel: IDict;
   defaultModel: IDict;
   widgetList: Array<string>;
+  editable: boolean;
 }
 
 export class FlexWidget extends Component<IProps, IState> {
@@ -47,6 +50,7 @@ export class FlexWidget extends Component<IProps, IState> {
     } else {
       template_json = updateModelEditable(template_json, props.editable);
     }
+
     let flexModel: FlexLayout.Model;
     try {
       flexModel = FlexLayout.Model.fromJson(template_json as any);
@@ -63,8 +67,10 @@ export class FlexWidget extends Component<IProps, IState> {
       defaultOuterModel,
       defaultModel,
       widgetList: Object.keys(this.props.model.get('children')),
+      editable: props.editable,
     };
     this.model = props.model;
+    this.contextMenuCache = new Map<string, ContextMenu>();
   }
 
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
@@ -195,7 +201,7 @@ export class FlexWidget extends Component<IProps, IState> {
     },
     nodeId: string
   ): void => {
-    if (this.props.editable) {
+    if (this.state.editable) {
       const tabsetId = tabSetNode.getId();
       renderValues.buttons.push(
         <WidgetMenu
@@ -231,7 +237,7 @@ export class FlexWidget extends Component<IProps, IState> {
       headerButtons: React.ReactNode[];
     }
   ): void => {
-    if (this.props.editable) {
+    if (this.state.editable) {
       renderValues.stickyButtons.push(
         <button
           className={JUPYTER_BUTTON_CLASS}
@@ -272,13 +278,58 @@ export class FlexWidget extends Component<IProps, IState> {
     }
   };
 
+  toggleLock = (): void => {
+    this.setState((old) => ({ ...old, editable: !old.editable }));
+  };
+
+  contextMenuFactory = (node: FlexLayout.Node): ContextMenu => {
+    const commands = new CommandRegistry();
+    const nodeId = node.getId();
+    commands.addCommand('hide-tab-bar', {
+      execute: () => {
+        const subLayout = this.innerlayoutRef[nodeId].current;
+        subLayout.props.model.doAction(
+          FlexLayout.Actions.updateModelAttributes({
+            tabSetEnableTabStrip: false,
+          })
+        );
+      },
+      label: 'Hide Tab Bar',
+      isEnabled: () => true,
+    });
+    commands.addCommand('show-tab-bar', {
+      execute: () => {
+        const subLayout = this.innerlayoutRef[nodeId].current;
+        subLayout.props.model.doAction(
+          FlexLayout.Actions.updateModelAttributes({
+            tabSetEnableTabStrip: true,
+          })
+        );
+      },
+      label: 'Show Tab Bar',
+      isEnabled: () => true,
+    });
+    const contextMenu = new ContextMenu({ commands });
+    contextMenu.addItem({
+      command: 'show-tab-bar',
+      selector: '.flexlayout__tab_button_bottom',
+      rank: 0,
+    });
+    contextMenu.addItem({
+      command: 'hide-tab-bar',
+      selector: '.flexlayout__tab_button_bottom',
+      rank: 1,
+    });
+    return contextMenu;
+  };
+
   render(): JSX.Element {
     return (
       <div style={{ height: '500px', ...this.props.style }}>
         <div
           style={{
             width: '100%',
-            height: this.props.editable ? 'calc(100% - 31px)' : '100%',
+            height: this.state.editable ? 'calc(100% - 31px)' : '100%',
           }}
         >
           <FlexLayout.Layout
@@ -307,9 +358,28 @@ export class FlexWidget extends Component<IProps, IState> {
             ) => {
               this.onRenderOuterTabSet(tabSetNode, renderValues);
             }}
+            onRenderTab={(node, _) => {
+              const nodeId = node.getId();
+              if (!this.contextMenuCache.has(nodeId)) {
+                const contextMenu = this.contextMenuFactory(node);
+                this.contextMenuCache.set(nodeId, contextMenu);
+              }
+            }}
+            onContextMenu={(
+              node:
+                | FlexLayout.TabNode
+                | FlexLayout.TabSetNode
+                | FlexLayout.BorderNode,
+              event: React.MouseEvent<HTMLElement, MouseEvent>
+            ) => {
+              event.preventDefault();
+              event.stopPropagation();
+              const contextMenu = this.contextMenuCache.get(node.getId());
+              contextMenu.open(event.nativeEvent);
+            }}
           />
         </div>
-        {this.props.editable ? (
+        {this.state.editable ? (
           <Toolbar
             variant="dense"
             style={{
@@ -335,6 +405,8 @@ export class FlexWidget extends Component<IProps, IState> {
   private innerlayoutRef: { [key: string]: React.RefObject<FlexLayout.Layout> };
   private model: any;
   private layoutConfig: ILayoutConfig;
+  // private contextMenu: ContextMenu;
+  private contextMenuCache: Map<string, ContextMenu>;
 }
 
 export default FlexWidget;
