@@ -4407,10 +4407,10 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
-flexlayout-react@^0.5.17:
-  version "0.5.17"
-  resolved "https://registry.yarnpkg.com/flexlayout-react/-/flexlayout-react-0.5.17.tgz#6de89ea5ab334e2b122f14233b6aed1a0d242f7a"
-  integrity sha512-mLYcoYPQWR8CTSuXxdkIF8xVldX8qTrkPg16CX3lnsbJMtpY/AS94OaXPoX3fi0NbcKm8qIKVqZQ6Ctvg3kkrg==
+flexlayout-react@^0.5.20:
+  version "0.5.20"
+  resolved "https://registry.yarnpkg.com/flexlayout-react/-/flexlayout-react-0.5.20.tgz#7cae01f149fdbb62980d290c2c76e628beed1099"
+  integrity sha512-yTniOIxq0czIcOcVw61PKR9g9SXuq3HYNq9DpTeomLBNEMiFgXntuxZV97pHff4UpCbI/ttP3ksE7XIBv4cjMw==
   dependencies:
     uuid "^8.3.2"
 

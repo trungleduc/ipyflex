@@ -66,7 +66,6 @@ export class FlexLayoutModel extends DOMWidgetModel {
 }
 
 class ReactWidgetWrapper extends ReactWidget {
-
   constructor(send_msg: any, model: any, style: any = {}, editable = true) {
     super();
     this._send_msg = send_msg;

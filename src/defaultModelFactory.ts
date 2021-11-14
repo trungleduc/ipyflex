@@ -97,8 +97,6 @@ export function defaultModelFactoty(
 }
 
 export function updateModelEditable(model: IDict, editable: boolean): IDict {
-  console.log('start');
-
   const globaleDict = {
     tabEnableRename: editable,
     tabEnableClose: editable,
@@ -109,11 +107,16 @@ export function updateModelEditable(model: IDict, editable: boolean): IDict {
   if ('global' in model) {
     model.global = { ...globaleDict, tabSetTabLocation: 'bottom' };
   }
-  const children = model['layout']['children'][0]['children'];
-  for (const child of children) {
-    child['config']['model']['global'] = globaleDict;
+  const tabsetList = model['layout']['children'];
+  for (const tabset of tabsetList) {
+    const children = tabset['children'];
+    for (const child of children) {
+      child['config']['model']['global'] = {
+        ...globaleDict,
+        ...child['config']['model']['global'],
+      };
+    }
   }
-  console.log('end');
 
   return model;
 }
