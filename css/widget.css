@@ -55,6 +55,7 @@
 }
 .inner__flexlayout__tabset.flexlayout__tabset{
   background: var(--jp-layout-color0);
+  height: 32px!important;
 }
 .inner__flexlayout__tab {
   background: var(--jp-layout-color0);

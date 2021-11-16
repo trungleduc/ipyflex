@@ -325,7 +325,7 @@ export class FlexWidget extends Component<IProps, IState> {
 
   render(): JSX.Element {
     return (
-      <div style={{ height: '500px', ...this.props.style }}>
+      <div style={{ height: '510px', ...this.props.style }}>
         <div
           style={{
             width: '100%',
