@@ -24,17 +24,17 @@ import copy
 
 
 class MESSAGE_ACTION(str, Enum):
-    SAVE_TEMPLATE = "save_template"
-    UPDATE_CHILDREN = "update_children"
+    SAVE_TEMPLATE = 'save_template'
+    UPDATE_CHILDREN = 'update_children'
 
 
 class FlexLayout(DOMWidget):
     """TODO: Add docstring here"""
 
-    _model_name = Unicode("FlexLayoutModel").tag(sync=True)
+    _model_name = Unicode('FlexLayoutModel').tag(sync=True)
     _model_module = Unicode(module_name).tag(sync=True)
     _model_module_version = Unicode(module_version).tag(sync=True)
-    _view_name = Unicode("FlexLayoutView").tag(sync=True)
+    _view_name = Unicode('FlexLayoutView').tag(sync=True)
     _view_module = Unicode(module_name).tag(sync=True)
     _view_module_version = Unicode(module_version).tag(sync=True)
 
@@ -44,28 +44,28 @@ class FlexLayout(DOMWidget):
     children = Dict(
         key_trait=Unicode,
         value_trait=Instance(Widget),
-        help="Dict of widget children",
+        help='Dict of widget children',
     ).tag(sync=True, **widget_serialization)
 
     layout_config = Dict(
-        {"borderLeft": False, "borderRight": False},
-        help="Layout configuration",
+        {'borderLeft': False, 'borderRight': False},
+        help='Layout configuration',
     ).tag(sync=True)
 
     style = Dict(
         {},
-        help="Style configuration",
+        help='Style configuration',
     ).tag(sync=True)
 
     template = Unicode(
-        None, help="Path to template json file.", allow_none=True
+        None, help='Path to template json file.', allow_none=True
     ).tag(sync=True)
 
     template_json = Dict(
-        None, help="Template configuration", allow_none=True
+        None, help='Template configuration', allow_none=True
     ).tag(sync=True)
 
-    editable = Bool(True, help="Flag to activate/deactivate edit mode").tag(
+    editable = Bool(True, help='Flag to activate/deactivate edit mode').tag(
         sync=True
     )
 
@@ -81,53 +81,53 @@ class FlexLayout(DOMWidget):
             self.children = widgets
         elif isinstance(widgets, list):
             self.children = {
-                f"Widget {i}": widgets[i] for i in range(0, len(widgets))
+                f'Widget {i}': widgets[i] for i in range(0, len(widgets))
             }
         else:
-            raise TypeError("Invalid input!")
+            raise TypeError('Invalid input!')
 
         self.template_json = None
         if self.template is not None:
             try:
-                with open(self.template, "r") as f:
+                with open(self.template, 'r') as f:
                     self.template_json = json.load(f)
             except FileNotFoundError:
                 self.log.warning(
-                    f"Failed to read {self.template}! Using default template."
+                    f'Failed to read {self.template}! Using default template.'
                 )
                 self.template_json = None
         self.on_msg(self._handle_frontend_msg)
 
     def add(self, name: str, widget: Widget) -> None:
         if not self.editable:
-            self.log.warning("Widget is in readonly mode!")
+            self.log.warning('Widget is in readonly mode!')
             return
         old = copy.copy(self.children)
         old[name] = widget
         self.children = old
         self.send(
             {
-                "action": MESSAGE_ACTION.UPDATE_CHILDREN,
-                "payload": {"name": name},
+                'action': MESSAGE_ACTION.UPDATE_CHILDREN,
+                'payload': {'name': name},
             }
         )
 
     def _handle_frontend_msg(
-        self, model: "FlexLayout", msg: Dict, buffers: TypeList
+        self, model: 'FlexLayout', msg: Dict, buffers: TypeList
     ) -> None:
-        action = msg.get("action")
-        payload = msg.get("payload", None)
+        action = msg.get('action')
+        payload = msg.get('payload', None)
         if action == MESSAGE_ACTION.SAVE_TEMPLATE:
-            file_name = str(payload.get("file_name"))
-            json_data = payload.get("json_data")
-            if not file_name.endswith(".json"):
-                file_name += ".json"
+            file_name = str(payload.get('file_name'))
+            json_data = payload.get('json_data')
+            if not file_name.endswith('.json'):
+                file_name += '.json'
             if file_name != self.template:
                 file_path = get_nonexistant_path(
                     os.path.join(os.getcwd(), file_name)
                 )
             else:
                 file_path = self.template
-            with open(file_path, "w") as f:
+            with open(file_path, 'w') as f:
                 json.dump(json_data, f)
             self.template = file_path

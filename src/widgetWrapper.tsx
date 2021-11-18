@@ -37,6 +37,7 @@ export class WidgetWrapper extends Component<IProps, IState> {
       MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
       this.myRef.current.insertBefore(view.pWidget.node, null);
       MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
+      window.dispatchEvent(new Event('resize'));
     });
   };
 
