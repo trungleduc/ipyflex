@@ -186,7 +186,8 @@ export class FlexWidget extends Component<IProps, IState> {
       action.type === 'FlexLayout_MoveNode' ||
       action.type === 'FlexLayout_AdjustSplit' ||
       action.type === 'FlexLayout_DeleteTab' ||
-      action.type === 'FlexLayout_MaximizeToggle'
+      action.type === 'FlexLayout_MaximizeToggle' ||
+      action.type === 'FlexLayout_SelectTab'
     ) {
       window.dispatchEvent(new Event('resize'));
     }

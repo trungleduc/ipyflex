@@ -36,8 +36,11 @@ export class WidgetWrapper extends Component<IProps, IState> {
     manager.create_view(model, {}).then((view) => {
       MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
       this.myRef.current.insertBefore(view.pWidget.node, null);
+      view.displayed.then(async () => {
+        await new Promise((r) => setTimeout(r, 100));
+        window.dispatchEvent(new Event('resize'));
+      });
       MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
-      window.dispatchEvent(new Event('resize'));
     });
   };
 
