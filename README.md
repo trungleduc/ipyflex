@@ -28,16 +28,16 @@ You can install using `pip`:
 pip install ipyflex
 ```
 
-Or using `conda`:
+Or using `mamba`:
 
 ```bash
-conda install -c conda-forge  ipyflex
+mamba install -c conda-forge  ipyflex
 ```
 
 And if you use jupyterlab <= 2:
 
 ```bash
-conda install -c conda-forge yarn
+mamba install -c conda-forge yarn
 jupyter labextension install @jupyter-widgets/jupyterlab-manager ipyflex
 ```
 
