@@ -172,7 +172,9 @@ export class FlexWidget extends Component<IProps, IState> {
       action.type === 'FlexLayout_MaximizeToggle' ||
       action.type === 'FlexLayout_SelectTab'
     ) {
-      window.dispatchEvent(new Event('resize'));
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 100);
     }
 
     return action;
@@ -189,7 +191,9 @@ export class FlexWidget extends Component<IProps, IState> {
       action.type === 'FlexLayout_MaximizeToggle' ||
       action.type === 'FlexLayout_SelectTab'
     ) {
-      window.dispatchEvent(new Event('resize'));
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 100);
     }
     return action;
   };
