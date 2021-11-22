@@ -1,7 +1,7 @@
 <h1 align="center">ipyflex</h1>
 <h2 align="center"> A WYSIWYG layout editor for Jupyter widgets </h1>
 
-Based on the React library [FlexLayout](https://github.com/caplin/FlexLayout), ipyflex allows you to compose the complicated dashboard layouts from existing Jupyter widgets without coding. It supports multiple tabs, resizable cards, drag-and-drop layout, save template to disk and many more.  
+Based on the React library [FlexLayout](https://github.com/caplin/FlexLayout), ipyflex allows you to compose the sophisticated dashboard layouts from existing Jupyter widgets without coding. It supports multiple tabs, resizable cards, drag-and-drop layout, save template to disk and many more.  
  
 
 ## Try it online!
@@ -28,10 +28,10 @@ You can install using `pip`:
 pip install ipyflex
 ```
 
-Or using `mamba`:
+Or using `conda`:
 
 ```bash
-mamba install -c conda-forge  ipyflex
+conda install -c conda-forge  ipyflex
 ```
 
 And if you use jupyterlab <= 2:

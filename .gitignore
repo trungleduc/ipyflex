@@ -157,3 +157,6 @@ ipyflex/labextension
 
 .vscode/
 docs/source/_static/*.txt
+docs/source/examples/*.ipynb
+docs/source/examples/*.json
+MANIFEST

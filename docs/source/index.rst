@@ -1,11 +1,12 @@
 
-ipyflex
-=====================================
+ipyflex: A WYSIWYG layout editor for Jupyter widgets
+=====================================================
 
 Version: |release|
 
-Jupyter Widget Flex Layout
+**ipyflex** aims to help users transform existing `Jupyter widgets`_ into interactive dashboard with sophisticated layout without coding.  
 
+By being a Jupyter widget itself, **ipyflex** can be easily integrated with other interactive tools for notebooks like `Voila`_ 
 
 Quickstart
 ----------
@@ -16,7 +17,7 @@ To get started with ipyflex, install with pip::
 
 or with conda::
 
-    conda install ipyflex
+    conda install -c conda-forge  ipyflex
 
 
 Contents
@@ -27,7 +28,7 @@ Contents
    :caption: Installation and usage
 
    installing
-   introduction
+   usage
 
 .. toctree::
    :maxdepth: 1
@@ -47,3 +48,5 @@ Contents
 .. _`Jupyter widgets`: https://jupyter.org/widgets.html
 
 .. _`notebook`: https://jupyter-notebook.readthedocs.io/en/latest/
+
+.. _`Voila`: https://github.com/voila-dashboards/voila
