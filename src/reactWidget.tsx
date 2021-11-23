@@ -15,7 +15,7 @@ import dialogBody from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
 import { ContextMenu } from '@lumino/widgets';
 import { CommandRegistry } from '@lumino/commands';
-// import Button from '@mui/material/Button';
+
 interface IProps {
   send_msg: ({ action: string, payload: any }) => void;
   model: any;

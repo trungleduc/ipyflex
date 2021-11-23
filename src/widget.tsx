@@ -95,7 +95,7 @@ class ReactWidgetWrapper extends ReactWidget {
 }
 
 export class FlexLayoutView extends DOMWidgetView {
-  setStyle() {
+  setStyle(): void {
     const style: { [key: string]: string } = this.model.get('style');
     if (!style) {
       return;

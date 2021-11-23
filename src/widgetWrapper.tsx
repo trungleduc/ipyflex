@@ -66,9 +66,8 @@ export class WidgetWrapper extends Component<IProps, IState> {
     return <div className="ipyflex-widget-box" ref={this.myRef}></div>;
   }
 
-  widgetName: string;
-  model: any;
-  divId: string;
-  myRef: React.RefObject<HTMLDivElement>;
+  private widgetName: string;
+  private model: any;
+  private myRef: React.RefObject<HTMLDivElement>;
   private placeholder: boolean;
 }
