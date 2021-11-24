@@ -1,0 +1,11 @@
+name: ipyflex
+channels:
+  - conda-forge
+dependencies:
+  - jupyterlab=3
+  - bqplot
+  - numpy
+  - ipywidgets
+  - plotly
+  - ipygany
+  - bqplot
