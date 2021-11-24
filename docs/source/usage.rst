@@ -22,12 +22,25 @@ The simplest way to create an **ipyflex** dashboard is to create a dictionary of
     dashboard
 
 .. image:: images/ipyflex.gif
+  
+Users can pass some configurations to the constructor of *FlexLayout* to set the template of the style of the dashboard:
+
+.. code:: Python
+
+    dashboard = FlexLayout(widgets,
+        template = 'saved.json', 
+        style = {'height': '50vh', 'borderTop': '5px'},
+        editable = False)
+
+- *template*: the path to save template file, this file can be generated from the dashboard interface.
+- *style*: CSS styles to be passed to the root element of the dashboard, it accepts any CSS rules but the keys need to be in *camelCase* format. 
+- *editable*: flag to enable or disable the editable mode. In non-editable mode, the toolbar with the *Save template* button is removed, tabs can not be removed, dragged, or renamed.
 
 ----------------------------
 FlexLayout interface
 ----------------------------
 
-*FlexLayout* interface is composed aof three components:
+*FlexLayout* interface is composed of three components:
 
 - Toolbar: located at bottom of the interface, it contains the button to save the current layout template to disk.
 - Section tab bar: a bar to hold the section tabs, it is located on top of the toolbar. A *FlexLayout* dashboard can contain multiple sections.
@@ -61,7 +74,11 @@ Section display window
 .. image:: images/ipyflex-widget-window.png
 
 - The widget menu can be opened by the *add widget* button, it contains the keys of the widget dictionary defined in the constructor of *FlexLayout*. The *Create new* item in the widget menu is always available, it will be detailed in the next section. 
-- User can customize the layout of a section by using drag and drop on each widget. The widgets can also be resized by dragging its borders.
+- Right-click on the section name will give users options to show or hide the widget tab bar of this section.
+- Users can customize the layout of a section by using drag and drop on each widget. The widgets can also be resized by dragging their borders.
+- Users can change the name of the widget tab by double-clicking on the tab name.
+
+.. image:: images/ipyflex-widget-main.gif
 
 .. links
 

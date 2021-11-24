@@ -66,9 +66,9 @@ class FlexLayout(DOMWidget):
         None, help='Template configuration', allow_none=True
     ).tag(sync=True)
 
-    editable = Bool(True, help='Flag to activate/deactivate edit mode').tag(
-        sync=True
-    )
+    editable = Bool(
+        True, help='Flag to activate/deactivate edit mode', config=True
+    ).tag(sync=True)
 
     def __init__(
         self,
