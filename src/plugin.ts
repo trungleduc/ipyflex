@@ -13,7 +13,6 @@ import { MODULE_NAME, MODULE_VERSION } from './version';
 
 const EXTENSION_ID = 'ipyflex:plugin';
 
-
 const examplePlugin: IPlugin<Application<Widget>, void> = {
   id: EXTENSION_ID,
   requires: [IJupyterWidgetRegistry],
