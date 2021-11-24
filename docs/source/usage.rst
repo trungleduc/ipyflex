@@ -80,6 +80,21 @@ Section display window
 
 .. image:: images/ipyflex-widget-main.gif
 
+Create a dashboard layout without widgets
+==========================================
+
+Even without widgets, users can still define a dashboard layout with *FlexLayout* and then fill the dashboard progressively. To do so, just use the *Create new* button in the widget menu to add widgets to the dashboard, the placeholder tabs will be created for the new widgets. Once the real widgets are ready, users can update the dashboard with :code:`add` method:
+
+.. code:: Python
+
+    dashboard = FlexLayout() # Create an empty dashboard
+    #Add a widget named `foo` to the dashboard by using `Create new` button
+    #Now add the real widget `foo_widget` to dashboard
+    dashboard.add('foo', foo_widget)
+    #The dashboard will be updated with the real widget.
+
+.. image:: images/ipyflex-create-new.gif
+
 .. links
 
 .. _`ipywidgets`: https://github.com/jupyter-widgets/ipywidgets/

@@ -4,9 +4,13 @@ ipyflex: A WYSIWYG layout editor for Jupyter widgets
 
 Version: |release|
 
-**ipyflex** aims to help users transform existing `Jupyter widgets`_ into interactive dashboard with sophisticated layout without coding.  
+**ipyflex** aims to help users transform existing `Jupyter widgets`_ into an interactive dashboard with a sophisticated layout without coding.  
 
-By being a Jupyter widget itself, **ipyflex** can be easily integrated with other interactive tools for notebooks like `Voila`_ 
+By being a Jupyter widget itself, **ipyflex** can be easily integrated with  `Voila`_  to deploy the dashboard.
+
+.. figure:: images/ipyflex-intro.png
+
+   A **ipyflex** dashboard deployed with *Voila*.  
 
 Quickstart
 ----------
