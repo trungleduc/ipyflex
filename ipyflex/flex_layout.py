@@ -16,7 +16,7 @@ from typing import List as TypeList
 from typing import Union
 
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from traitlets.traitlets import Bool, Dict, Instance, Int, Unicode
+from traitlets.traitlets import Bool, Dict, Instance, Unicode
 
 from ._frontend import module_name, module_version
 from .utils import get_nonexistant_path
@@ -29,7 +29,8 @@ class MESSAGE_ACTION(str, Enum):
 
 
 class FlexLayout(DOMWidget):
-    """TODO: Add docstring here"""
+
+    RESERVED_NAME = {'Create new'}
 
     _model_name = Unicode('FlexLayoutModel').tag(sync=True)
     _model_module = Unicode(module_name).tag(sync=True)
@@ -85,6 +86,8 @@ class FlexLayout(DOMWidget):
             }
         else:
             raise TypeError('Invalid input!')
+        if len(list(self.RESERVED_NAME & set(self.children))) > 0:
+            raise KeyError('Please do not use widget name in reserved list!')
 
         self.template_json = None
         if self.template is not None:
@@ -102,6 +105,9 @@ class FlexLayout(DOMWidget):
         if not self.editable:
             self.log.warning('Widget is in readonly mode!')
             return
+        if name in self.RESERVED_NAME:
+            raise KeyError('Please do not use widget name in reserved list!')
+
         old = copy.copy(self.children)
         old[name] = widget
         self.children = old

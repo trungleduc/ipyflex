@@ -120,6 +120,14 @@ export class WidgetMenu extends Component<IProps, IState> {
           keepMounted
           open={Boolean(this.state.anchorEl)}
           onClose={this.handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
         >
           {menuItem}
         </Menu>
