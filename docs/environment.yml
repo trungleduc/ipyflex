@@ -11,3 +11,10 @@ dependencies:
   - nbsphinx
   - nbsphinx-link
   - yarn
+  - numpy
+  - ipygany
+  - ipywidgets 
+  - plotly
+  - ipydatagrid 
+  - yfinance 
+
