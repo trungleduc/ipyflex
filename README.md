@@ -1,15 +1,11 @@
 <h1 align="center">ipyflex</h1>
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/trungleduc/ipyflex/master?urlpath=lab%2Ftree%2Fexamples) [![Documentation Status](https://readthedocs.org/projects/ipyflex/badge/?version=latest)](http://ipyflex.readthedocs.io/?badge=latest) [![GitHub license](https://badgen.net/github/license/trungleduc/ipyflex)](https://github.com/trungleduc/ipyflex/blob/master/LICENSE) [![PyPI version](https://badge.fury.io/py/ipyflex.svg)](https://badge.fury.io/py/ipyflex)
+
 <h2 align="center"> A WYSIWYG layout editor for Jupyter widgets </h1>
 
 Based on the React library [FlexLayout](https://github.com/caplin/FlexLayout), ipyflex allows you to compose the sophisticated dashboard layouts from existing Jupyter widgets without coding. It supports multiple tabs, resizable cards, drag-and-drop layout, save dashboard template to disk, and many more.    
  
-
-## Try it online!
-
-You can try it online by clicking on this badge:
-
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/trungleduc/ipyflex/master?urlpath=lab%2Ftree%2Fexamples)
-
 ## Example
 ### Dynamic layout
 ![Dynamic layout](./docs/source/images/ipyflex.gif)
