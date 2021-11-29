@@ -11,11 +11,7 @@ include webpack.config.js
 include ipyflex/labextension/*.tgz
 
 # Documentation
-graft docs
-exclude docs/\#*
-prune docs/build
-prune docs/gh-pages
-prune docs/dist
+prune docs
 
 # Examples
 graft examples
