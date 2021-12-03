@@ -90,3 +90,9 @@ After a change wait for the build to finish and then refresh your browser and th
 
 #### Python:
 If you make a change to the python code then you will need to restart the notebook kernel to have it take effect.
+
+
+## Thanks
+The following libraries / open-source projects were used or inspired in the development of ipyflex:
+ * [FlexLayout](https://github.com/caplin/FlexLayout)
+ * [CoSApp Lab](https://gitlab.com/cosapp/cosapp_lab)
