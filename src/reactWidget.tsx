@@ -79,10 +79,12 @@ export class FlexWidget extends Component<IProps, IState> {
       case 'update_children':
         {
           const wName: string = payload.name;
-          this.setState((old) => ({
-            ...old,
-            widgetList: [...old.widgetList, wName],
-          }));
+          if (!this.state.widgetList.includes(wName)) {
+            this.setState((old) => ({
+              ...old,
+              widgetList: [...old.widgetList, wName],
+            }));
+          }
         }
 
         return null;

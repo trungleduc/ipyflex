@@ -39,9 +39,6 @@ class FlexLayout(DOMWidget):
     _view_module = Unicode(module_name).tag(sync=True)
     _view_module_version = Unicode(module_version).tag(sync=True)
 
-    # children = TypedTuple(
-    #     trait=Instance(Widget), help="List of widget children"
-    # ).tag(sync=True, **widget_serialization)
     children = Dict(
         key_trait=Unicode,
         value_trait=Instance(Widget),
