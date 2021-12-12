@@ -96,3 +96,28 @@ hr.ipyflex-divider {
   border-bottom-width: thin;
   list-style: none;
 }
+
+.ipyflex-input-label-group {
+  position: relative;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.ipyflex-float-input{
+  width: 100%;
+}
+
+.ipyflex-float-label {
+  position: absolute;
+  top: 0;
+  left:0;
+  padding: 7px 0 0 13px;
+  transition: all 200ms;
+  opacity: 0.75;
+}
+
+.ipyflex-float-input:focus + .ipyflex-float-label {
+  font-size: 75%;
+  transform: translate3d(0, -100%, 0);
+  opacity: 1;
+}

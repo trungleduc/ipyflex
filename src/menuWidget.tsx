@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import dialogBody from './dialogWidget';
+import { dialogBody, factoryDialog } from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
 
-import { JUPYTER_BUTTON_CLASS, MESSAGE_ACTION } from './utils';
+import { IDict, JUPYTER_BUTTON_CLASS, MESSAGE_ACTION } from './utils';
 interface IProps {
   nodeId: string;
   tabsetId: string;
   widgetList: Array<string>;
   placeholderList: Array<string>;
   factoryList: Array<string>;
-  addTabToTabset: (name: string, nodeId: string, tabsetId: string) => void;
+  addTabToTabset: (name: string, extraData?: IDict) => void;
   model: any;
   send_msg: ({ action: string, payload: any }) => void;
 }
@@ -55,7 +55,10 @@ export class WidgetMenu extends Component<IProps, IState> {
       case MESSAGE_ACTION.UPDATE_CHILDREN:
         {
           const wName: string = payload.name;
-          if (!this.state.widgetList.includes(wName)) {
+          if (
+            !this.state.widgetList.includes(wName) &&
+            !this.state.placeholderList.includes(wName)
+          ) {
             this.setState((old) => ({
               ...old,
               widgetList: [...old.widgetList, wName],
@@ -88,11 +91,7 @@ export class WidgetMenu extends Component<IProps, IState> {
           <MenuItem
             key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
             onClick={() => {
-              this.props.addTabToTabset(
-                name,
-                this.props.nodeId,
-                this.props.tabsetId
-              );
+              this.props.addTabToTabset(name);
               this.handleClose();
             }}
           >
@@ -107,13 +106,17 @@ export class WidgetMenu extends Component<IProps, IState> {
       factoryItems.push(
         <MenuItem
           key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
-          onClick={() => {
-            this.props.addTabToTabset(
-              name,
-              this.props.nodeId,
-              this.props.tabsetId
-            );
+          onClick={async () => {
             this.handleClose();
+            const result = await showDialog<IDict<string>>(
+              factoryDialog('Factory parameters', ['label', 'min', 'max'])
+            );
+            console.log('result', result.value);
+            if (result.button.label === 'Create' && result.value) {
+              this.props.addTabToTabset(name, result.value);
+            } else {
+              return;
+            }
           }}
         >
           {name}
@@ -148,11 +151,7 @@ export class WidgetMenu extends Component<IProps, IState> {
             return;
           }
 
-          this.props.addTabToTabset(
-            widgetName,
-            this.props.nodeId,
-            this.props.tabsetId
-          );
+          this.props.addTabToTabset(widgetName);
         }}
       >
         {CREATE_NEW}

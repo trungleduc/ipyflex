@@ -37,6 +37,7 @@ export class WidgetWrapper extends Component<IProps, IState> {
           if (uuid === this.state.uuid) {
             unpack_models(model_id, this.model.widget_manager).then(
               (wModel) => {
+                this.myRef.current.firstChild.remove();
                 this._render_widget(wModel);
               }
             );
@@ -79,18 +80,22 @@ export class WidgetWrapper extends Component<IProps, IState> {
     if (widgetModel) {
       this._render_widget(widgetModel);
       this.placeholder = false;
-    } else if (this.props.factoryList.includes(this.widgetName)) {
-      this.props.send_msg({
-        action: MESSAGE_ACTION.REQUEST_FACTORY,
-        payload: { factory_name: this.widgetName, uuid: this.state.uuid },
-      });
     } else {
       const placeHolder = document.createElement('p');
       placeHolder.style.textAlign = 'center';
       placeHolder.style.padding = '20px';
-      placeHolder.innerText = `Placeholder for ${this.widgetName} widget`;
-      this.myRef.current.insertBefore(placeHolder, null);
-      this.placeholder = true;
+      if (this.props.factoryList.includes(this.widgetName)) {
+        placeHolder.innerText = `Creating widget from ${this.widgetName} factory, please wait.`;
+        this.myRef.current.insertBefore(placeHolder, null);
+        this.props.send_msg({
+          action: MESSAGE_ACTION.REQUEST_FACTORY,
+          payload: { factory_name: this.widgetName, uuid: this.state.uuid },
+        });
+      } else {
+        placeHolder.innerText = `Placeholder for ${this.widgetName} widget.`;
+        this.myRef.current.insertBefore(placeHolder, null);
+        this.placeholder = true;
+      }
     }
   }
 

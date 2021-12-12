@@ -11,7 +11,7 @@ import {
   ILayoutConfig,
   updateModelEditable,
 } from './defaultModelFactory';
-import dialogBody from './dialogWidget';
+import { dialogBody } from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
 import { ContextMenu } from '@lumino/widgets';
 import { CommandRegistry } from '@lumino/commands';
@@ -98,7 +98,10 @@ export class FlexWidget extends Component<IProps, IState> {
       case MESSAGE_ACTION.UPDATE_CHILDREN:
         {
           const wName: string = payload.name;
-          if (!this.state.widgetList.includes(wName)) {
+          if (
+            !this.state.widgetList.includes(wName) &&
+            !this.state.placeholderList.includes(wName)
+          ) {
             this.setState((old) => ({
               ...old,
               widgetList: [...old.widgetList, wName],
@@ -114,9 +117,10 @@ export class FlexWidget extends Component<IProps, IState> {
     // const config = node.getConfig();
     const nodeId = node.getId();
     const name = node.getName();
-
     switch (component) {
       case 'Widget': {
+        console.log('config', node.getConfig());
+
         return (
           <WidgetWrapper
             model={this.model}
@@ -243,11 +247,11 @@ export class FlexWidget extends Component<IProps, IState> {
           factoryList={this.state.factoryList}
           nodeId={nodeId}
           tabsetId={tabsetId}
-          addTabToTabset={(name: string) => {
+          addTabToTabset={(name: string, extraData?: IDict) => {
             this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
               component: 'Widget',
               name: name,
-              config: { layoutID: nodeId },
+              config: { layoutID: nodeId, extraData: extraData },
             });
           }}
           model={this.props.model}
