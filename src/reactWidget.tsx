@@ -3,7 +3,7 @@ import Toolbar from '@mui/material/Toolbar';
 import * as FlexLayout from 'flexlayout-react';
 import React, { Component } from 'react';
 
-import { JUPYTER_BUTTON_CLASS, IDict } from './utils';
+import { JUPYTER_BUTTON_CLASS, IDict, MESSAGE_ACTION } from './utils';
 import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
 import {
@@ -28,6 +28,7 @@ interface IState {
   defaultOuterModel: IDict;
   defaultModel: IDict;
   widgetList: Array<string>;
+  factoryList: Array<string>;
   editable: boolean;
 }
 
@@ -61,12 +62,12 @@ export class FlexWidget extends Component<IProps, IState> {
       );
       flexModel = FlexLayout.Model.fromJson(defaultOuterModel as any);
     }
-
     this.state = {
       model: flexModel,
       defaultOuterModel,
       defaultModel,
       widgetList: Object.keys(this.props.model.get('children')),
+      factoryList: this.props.model.get('widget_factories'),
       editable: props.editable,
     };
     this.model = props.model;
@@ -76,7 +77,7 @@ export class FlexWidget extends Component<IProps, IState> {
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
     const { action, payload } = data;
     switch (action) {
-      case 'update_children':
+      case MESSAGE_ACTION.UPDATE_CHILDREN:
         {
           const wName: string = payload.name;
           if (!this.state.widgetList.includes(wName)) {
@@ -98,7 +99,14 @@ export class FlexWidget extends Component<IProps, IState> {
 
     switch (component) {
       case 'Widget': {
-        return <WidgetWrapper model={this.model} widgetName={name} />;
+        return (
+          <WidgetWrapper
+            model={this.model}
+            widgetName={name}
+            factoryList={this.state.factoryList}
+            send_msg={this.props.send_msg}
+          />
+        );
       }
       case 'sub': {
         return this.generateSection(node, nodeId);
@@ -213,6 +221,7 @@ export class FlexWidget extends Component<IProps, IState> {
       renderValues.buttons.push(
         <WidgetMenu
           widgetList={this.state.widgetList}
+          factoryList={this.state.factoryList}
           nodeId={nodeId}
           tabsetId={tabsetId}
           addTabToTabset={(name: string) => {
@@ -273,7 +282,7 @@ export class FlexWidget extends Component<IProps, IState> {
       const fileName = result.value;
       if (fileName) {
         this.props.send_msg({
-          action: 'save_template',
+          action: MESSAGE_ACTION.SAVE_TEMPLATE,
           payload: {
             file_name: result.value,
             json_data: this.state.model.toJson(),

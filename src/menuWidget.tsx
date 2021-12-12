@@ -4,11 +4,12 @@ import MenuItem from '@mui/material/MenuItem';
 import dialogBody from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
 
-import { JUPYTER_BUTTON_CLASS } from './utils';
+import { JUPYTER_BUTTON_CLASS, MESSAGE_ACTION } from './utils';
 interface IProps {
   nodeId: string;
   tabsetId: string;
   widgetList: Array<string>;
+  factoryList: Array<string>;
   addTabToTabset: (name: string, nodeId: string, tabsetId: string) => void;
   model: any;
 }
@@ -31,7 +32,7 @@ export class WidgetMenu extends Component<IProps, IState> {
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
     const { action, payload } = data;
     switch (action) {
-      case 'update_children':
+      case MESSAGE_ACTION.UPDATE_CHILDREN:
         {
           const wName: string = payload.name;
           if (!this.state.widgetList.includes(wName)) {
@@ -57,10 +58,10 @@ export class WidgetMenu extends Component<IProps, IState> {
 
   render(): JSX.Element {
     const menuId = `add_widget_menu_${this.props.tabsetId}@${this.props.nodeId}`;
-    const menuItem = [];
+    const widgetItems = [];
     for (const name of this.state.widgetList) {
       if (name !== CREATE_NEW) {
-        menuItem.push(
+        widgetItems.push(
           <MenuItem
             key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
             onClick={() => {
@@ -77,6 +78,25 @@ export class WidgetMenu extends Component<IProps, IState> {
         );
       }
     }
+    const factoryItems = [];
+    for (const name of this.props.factoryList) {
+      factoryItems.push(
+        <MenuItem
+          key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
+          onClick={() => {
+            this.props.addTabToTabset(
+              name,
+              this.props.nodeId,
+              this.props.tabsetId
+            );
+            this.handleClose();
+          }}
+        >
+          {name}
+        </MenuItem>
+      );
+    }
+
     const createNew: JSX.Element = (
       <MenuItem
         key={`$#{this.props.tabsetId}@${this.props.nodeId}`}
@@ -88,6 +108,14 @@ export class WidgetMenu extends Component<IProps, IState> {
           );
           if (result.button.label === 'Save' && result.value) {
             widgetName = result.value;
+            if (this.props.widgetList.includes(widgetName)) {
+              alert('A widget with the same name is already registered!');
+              return;
+            }
+            if (this.props.factoryList.includes(widgetName)) {
+              alert('A factory with the same name is already registered!');
+              return;
+            }
             this.setState((old) => ({
               ...old,
               widgetList: [...old.widgetList, widgetName],
@@ -106,7 +134,7 @@ export class WidgetMenu extends Component<IProps, IState> {
         {CREATE_NEW}
       </MenuItem>
     );
-    menuItem.push(createNew);
+    // menuItem.push(createNew);
     return (
       <div key={menuId}>
         <button
@@ -131,7 +159,16 @@ export class WidgetMenu extends Component<IProps, IState> {
             horizontal: 'center',
           }}
         >
-          {menuItem}
+          {widgetItems}
+          <hr className="ipyflex-divider" />
+          {factoryItems}
+          {this.props.factoryList.length > 0 ? (
+            <hr className="ipyflex-divider" />
+          ) : (
+            <div />
+          )}
+
+          {createNew}
         </Menu>
       </div>
     );

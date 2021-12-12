@@ -11,12 +11,12 @@ TODO: Add module docstring
 import json
 import os
 from enum import Enum
-from typing import Dict as TypeDict
+from typing import Callable, Dict as TypeDict
 from typing import List as TypeList
 from typing import Union
 
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from traitlets.traitlets import Bool, Dict, Instance, Unicode
+from traitlets.traitlets import Bool, Dict, Instance, Unicode, List
 
 from ._frontend import module_name, module_version
 from .utils import get_nonexistant_path
@@ -26,6 +26,8 @@ import copy
 class MESSAGE_ACTION(str, Enum):
     SAVE_TEMPLATE = 'save_template'
     UPDATE_CHILDREN = 'update_children'
+    REQUEST_FACTORY = 'request_factory'
+    RENDER_FACTORY = 'render_factory'
 
 
 class FlexLayout(DOMWidget):
@@ -44,6 +46,8 @@ class FlexLayout(DOMWidget):
         value_trait=Instance(Widget),
         help='Dict of widget children',
     ).tag(sync=True, **widget_serialization)
+
+    widget_factories = List(trait=Unicode, default_value=[]).tag(sync=True)
 
     layout_config = Dict(
         {'borderLeft': False, 'borderRight': False},
@@ -70,7 +74,7 @@ class FlexLayout(DOMWidget):
     def __init__(
         self,
         widgets: Union[TypeDict, TypeList] = [],
-        # layout_config: TypeDict,
+        factories: TypeDict[str, Callable] = {},
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -83,9 +87,23 @@ class FlexLayout(DOMWidget):
             }
         else:
             raise TypeError('Invalid input!')
-        if len(list(self.RESERVED_NAME & set(self.children))) > 0:
-            raise KeyError('Please do not use widget name in reserved list!')
+        children_set = set(self.children)
+        factories_set = set(factories)
+        if (
+            len(self.RESERVED_NAME & children_set) > 0
+            or len(self.RESERVED_NAME & factories_set) > 0
+        ):
+            raise KeyError(
+                f'Please do not use widget name in reserved list: {self.RESERVED_NAME}'
+            )
 
+        if len(children_set & factories_set) > 0:
+            raise ValueError(
+                'Please do not use a same name for both widget and factory'
+            )
+
+        self.widget_factories = list(factories_set)
+        self._factories = factories
         self.template_json = None
         if self.template is not None:
             try:
@@ -104,6 +122,11 @@ class FlexLayout(DOMWidget):
             return
         if name in self.RESERVED_NAME:
             raise KeyError('Please do not use widget name in reserved list!')
+
+        if name in self.widget_factories:
+            raise KeyError(
+                'A factory with the same name is already registered!'
+            )
 
         old = copy.copy(self.children)
         old[name] = widget
@@ -134,3 +157,15 @@ class FlexLayout(DOMWidget):
             with open(file_path, 'w') as f:
                 json.dump(json_data, f)
             self.template = file_path
+        elif action == MESSAGE_ACTION.REQUEST_FACTORY:
+            factory_name = payload['factory_name']
+            uuid = payload['uuid']
+            if factory_name in self.widget_factories:
+                w_model = self._factories[factory_name]()
+                model_msg = widget_serialization['to_json'](w_model, None)
+                self.send(
+                    {
+                        'action': MESSAGE_ACTION.RENDER_FACTORY,
+                        'payload': {'model_id': model_msg, 'uuid': uuid},
+                    }
+                )

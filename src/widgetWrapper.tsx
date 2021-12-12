@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import { MessageLoop } from '@lumino/messaging';
 import { Widget } from '@lumino/widgets';
-import { IDict } from './utils';
+import { IDict, MESSAGE_ACTION } from './utils';
+import { unpack_models, uuid } from '@jupyter-widgets/base';
+
 interface IProps {
   widgetName: string;
+  factoryList: Array<string>;
   model: any;
+  send_msg: ({ action: string, payload: any }) => void;
 }
 
 interface IState {
-  state: number;
+  uuid: string;
 }
 
 export class WidgetWrapper extends Component<IProps, IState> {
@@ -16,12 +20,32 @@ export class WidgetWrapper extends Component<IProps, IState> {
     super(props);
     this.model = props.model;
     this.model.listenTo(this.model, 'change:children', this.on_children_change);
+    this.model.listenTo(this.model, 'msg:custom', this.on_msg);
     this.widgetName = props.widgetName;
     this.state = {
-      state: 0,
+      uuid: uuid(),
     };
     this.myRef = React.createRef<HTMLDivElement>();
   }
+
+  on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
+    const { action, payload } = data;
+    switch (action) {
+      case MESSAGE_ACTION.RENDER_FACTORY:
+        {
+          const { model_id, uuid } = payload;          
+          if (uuid === this.state.uuid) {
+            unpack_models(model_id, this.model.widget_manager).then(
+              (wModel) => {
+                this._render_widget(wModel);
+              }
+            );
+          }
+        }
+
+        return null;
+    }
+  };
 
   on_children_change = (model, newValue: IDict, change: IDict): void => {
     if (this.placeholder && this.widgetName in newValue) {
@@ -48,10 +72,14 @@ export class WidgetWrapper extends Component<IProps, IState> {
     const children = this.model.get('children');
 
     const widgetModel = children[this.widgetName];
-
     if (widgetModel) {
       this._render_widget(widgetModel);
       this.placeholder = false;
+    } else if (this.props.factoryList.includes(this.widgetName)) {
+      this.props.send_msg({
+        action: MESSAGE_ACTION.REQUEST_FACTORY,
+        payload: { factory_name: this.widgetName, uuid: this.state.uuid },
+      });
     } else {
       const placeHolder = document.createElement('p');
       placeHolder.style.textAlign = 'center';
