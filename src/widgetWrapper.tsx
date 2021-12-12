@@ -33,7 +33,7 @@ export class WidgetWrapper extends Component<IProps, IState> {
     switch (action) {
       case MESSAGE_ACTION.RENDER_FACTORY:
         {
-          const { model_id, uuid } = payload;          
+          const { model_id, uuid } = payload;
           if (uuid === this.state.uuid) {
             unpack_models(model_id, this.model.widget_manager).then(
               (wModel) => {
@@ -48,7 +48,11 @@ export class WidgetWrapper extends Component<IProps, IState> {
   };
 
   on_children_change = (model, newValue: IDict, change: IDict): void => {
-    if (this.placeholder && this.widgetName in newValue) {
+    if (
+      this.placeholder &&
+      this.widgetName in newValue &&
+      newValue[this.widgetName]
+    ) {
       this.myRef.current.firstChild.remove();
       this._render_widget(newValue[this.widgetName]);
       this.placeholder = false;

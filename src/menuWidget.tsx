@@ -9,13 +9,16 @@ interface IProps {
   nodeId: string;
   tabsetId: string;
   widgetList: Array<string>;
+  placeholderList: Array<string>;
   factoryList: Array<string>;
   addTabToTabset: (name: string, nodeId: string, tabsetId: string) => void;
   model: any;
+  send_msg: ({ action: string, payload: any }) => void;
 }
 interface IState {
   anchorEl: HTMLElement;
   widgetList: Array<string>;
+  placeholderList: Array<string>;
 }
 
 const CREATE_NEW = 'Create new';
@@ -23,11 +26,28 @@ export class WidgetMenu extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     props.model.listenTo(props.model, 'msg:custom', this.on_msg);
+    props.model.listenTo(
+      props.model,
+      'change:placeholder_widget',
+      this.on_placeholder_change
+    );
     this.state = {
       anchorEl: null,
       widgetList: [...props.widgetList, CREATE_NEW],
+      placeholderList: [...props.placeholderList],
     };
   }
+
+  on_placeholder_change = (
+    model: any,
+    newValue: Array<string>,
+    change: any
+  ): void => {
+    this.setState((old) => ({
+      ...old,
+      placeholderList: newValue,
+    }));
+  };
 
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
     const { action, payload } = data;
@@ -52,14 +72,17 @@ export class WidgetMenu extends Component<IProps, IState> {
     this.setState((oldState) => ({ ...oldState, anchorEl: target }));
   };
 
-  handleClose = () => {
+  handleClose = (): void => {
     this.setState((oldState) => ({ ...oldState, anchorEl: null }));
   };
 
   render(): JSX.Element {
     const menuId = `add_widget_menu_${this.props.tabsetId}@${this.props.nodeId}`;
     const widgetItems = [];
-    for (const name of this.state.widgetList) {
+    for (const name of [
+      ...this.state.widgetList,
+      ...this.state.placeholderList,
+    ]) {
       if (name !== CREATE_NEW) {
         widgetItems.push(
           <MenuItem
@@ -78,6 +101,7 @@ export class WidgetMenu extends Component<IProps, IState> {
         );
       }
     }
+
     const factoryItems = [];
     for (const name of this.props.factoryList) {
       factoryItems.push(
@@ -108,7 +132,7 @@ export class WidgetMenu extends Component<IProps, IState> {
           );
           if (result.button.label === 'Save' && result.value) {
             widgetName = result.value;
-            if (this.props.widgetList.includes(widgetName)) {
+            if (this.state.widgetList.includes(widgetName)) {
               alert('A widget with the same name is already registered!');
               return;
             }
@@ -116,10 +140,10 @@ export class WidgetMenu extends Component<IProps, IState> {
               alert('A factory with the same name is already registered!');
               return;
             }
-            this.setState((old) => ({
-              ...old,
-              widgetList: [...old.widgetList, widgetName],
-            }));
+            this.props.send_msg({
+              action: MESSAGE_ACTION.ADD_WIDGET,
+              payload: { name: widgetName },
+            });
           } else {
             return;
           }

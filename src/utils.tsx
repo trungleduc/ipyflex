@@ -10,4 +10,5 @@ export const MESSAGE_ACTION = {
   UPDATE_CHILDREN: 'update_children',
   REQUEST_FACTORY: 'request_factory',
   RENDER_FACTORY: 'render_factory',
+  ADD_WIDGET: 'add_widget',
 };

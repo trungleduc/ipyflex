@@ -28,6 +28,7 @@ interface IState {
   defaultOuterModel: IDict;
   defaultModel: IDict;
   widgetList: Array<string>;
+  placeholderList: Array<string>;
   factoryList: Array<string>;
   editable: boolean;
 }
@@ -36,6 +37,11 @@ export class FlexWidget extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     props.model.listenTo(props.model, 'msg:custom', this.on_msg);
+    props.model.listenTo(
+      props.model,
+      'change:placeholder_widget',
+      this.on_placeholder_change
+    );
     this.innerlayoutRef = {};
     this.layoutConfig = props.model.get('layout_config') as ILayoutConfig;
 
@@ -67,12 +73,24 @@ export class FlexWidget extends Component<IProps, IState> {
       defaultOuterModel,
       defaultModel,
       widgetList: Object.keys(this.props.model.get('children')),
+      placeholderList: [],
       factoryList: this.props.model.get('widget_factories'),
       editable: props.editable,
     };
     this.model = props.model;
     this.contextMenuCache = new Map<string, ContextMenu>();
   }
+
+  on_placeholder_change = (
+    model,
+    newValue: Array<string>,
+    change: IDict
+  ): void => {
+    this.setState((old) => ({
+      ...old,
+      placeholderList: newValue,
+    }));
+  };
 
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
     const { action, payload } = data;
@@ -221,6 +239,7 @@ export class FlexWidget extends Component<IProps, IState> {
       renderValues.buttons.push(
         <WidgetMenu
           widgetList={this.state.widgetList}
+          placeholderList={this.state.placeholderList}
           factoryList={this.state.factoryList}
           nodeId={nodeId}
           tabsetId={tabsetId}
@@ -232,6 +251,7 @@ export class FlexWidget extends Component<IProps, IState> {
             });
           }}
           model={this.props.model}
+          send_msg={this.props.send_msg}
         />
       );
     }

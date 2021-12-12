@@ -28,6 +28,7 @@ class MESSAGE_ACTION(str, Enum):
     UPDATE_CHILDREN = 'update_children'
     REQUEST_FACTORY = 'request_factory'
     RENDER_FACTORY = 'render_factory'
+    ADD_WIDGET = 'add_widget'
 
 
 class FlexLayout(DOMWidget):
@@ -48,6 +49,8 @@ class FlexLayout(DOMWidget):
     ).tag(sync=True, **widget_serialization)
 
     widget_factories = List(trait=Unicode, default_value=[]).tag(sync=True)
+
+    placeholder_widget = List(trait=Unicode, default_value=[]).tag(sync=True)
 
     layout_config = Dict(
         {'borderLeft': False, 'borderRight': False},
@@ -103,6 +106,7 @@ class FlexLayout(DOMWidget):
             )
 
         self.widget_factories = list(factories_set)
+        self.placeholder_widget = []
         self._factories = factories
         self.template_json = None
         if self.template is not None:
@@ -122,11 +126,13 @@ class FlexLayout(DOMWidget):
             return
         if name in self.RESERVED_NAME:
             raise KeyError('Please do not use widget name in reserved list!')
-
+        error = (
+            lambda type: f'A {type} with the same name is already registered!'
+        )
         if name in self.widget_factories:
-            raise KeyError(
-                'A factory with the same name is already registered!'
-            )
+            raise KeyError(error('factory'))
+        if name in self.children:
+            raise KeyError(error('widget'))
 
         old = copy.copy(self.children)
         old[name] = widget
@@ -168,4 +174,14 @@ class FlexLayout(DOMWidget):
                         'action': MESSAGE_ACTION.RENDER_FACTORY,
                         'payload': {'model_id': model_msg, 'uuid': uuid},
                     }
+                )
+        elif action == MESSAGE_ACTION.ADD_WIDGET:
+            widget_name = payload['name']
+            old = copy.copy(self.placeholder_widget)
+            if widget_name not in old:
+                old.append(widget_name)
+                self.placeholder_widget = old
+            else:
+                raise KeyError(
+                    'A widget with the same name is already registered!'
                 )
