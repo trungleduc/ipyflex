@@ -4,10 +4,6 @@
 # Copyright (c) Trung Le.
 # Distributed under the terms of the Modified BSD License.
 
-"""
-TODO: Add module docstring
-"""
-
 import json
 import os
 from enum import Enum
@@ -19,7 +15,7 @@ from ipywidgets import DOMWidget, Widget, widget_serialization
 from traitlets.traitlets import Bool, Dict, Instance, Unicode, List
 
 from ._frontend import module_name, module_version
-from .utils import get_nonexistant_path
+from .utils import get_nonexistant_path, get_function_signature
 import copy
 
 
@@ -48,7 +44,9 @@ class FlexLayout(DOMWidget):
         help='Dict of widget children',
     ).tag(sync=True, **widget_serialization)
 
-    widget_factories = List(trait=Unicode, default_value=[]).tag(sync=True)
+    widget_factories = Dict(
+        key_trait=Unicode, value_trait=Dict, default_value={}
+    ).tag(sync=True)
 
     placeholder_widget = List(trait=Unicode, default_value=[]).tag(sync=True)
 
@@ -104,8 +102,11 @@ class FlexLayout(DOMWidget):
             raise ValueError(
                 'Please do not use a same name for both widget and factory'
             )
+        factories_sig = {}
+        for key, factory in factories.items():
+            factories_sig[key] = get_function_signature(factory)
 
-        self.widget_factories = list(factories_set)
+        self.widget_factories = factories_sig
         self.placeholder_widget = []
         self._factories = factories
         self.template_json = None

@@ -29,7 +29,7 @@ export class FlexLayoutModel extends DOMWidgetModel {
       _view_module: FlexLayoutModel.view_module,
       _view_module_version: FlexLayoutModel.view_module_version,
       children: [],
-      widget_factories: [],
+      widget_factories: {},
       placeholder_widget: [],
       layout_config: { borderLeft: false, borderRight: false },
       style: {},

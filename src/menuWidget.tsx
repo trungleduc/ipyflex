@@ -10,7 +10,7 @@ interface IProps {
   tabsetId: string;
   widgetList: Array<string>;
   placeholderList: Array<string>;
-  factoryList: Array<string>;
+  factoryDict: IDict<IDict>;
   addTabToTabset: (name: string, extraData?: IDict) => void;
   model: any;
   send_msg: ({ action: string, payload: any }) => void;
@@ -102,20 +102,24 @@ export class WidgetMenu extends Component<IProps, IState> {
     }
 
     const factoryItems = [];
-    for (const name of this.props.factoryList) {
+    for (const [name, signature] of Object.entries(this.props.factoryDict)) {
       factoryItems.push(
         <MenuItem
           key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
           onClick={async () => {
             this.handleClose();
-            const result = await showDialog<IDict<string>>(
-              factoryDialog('Factory parameters', ['label', 'min', 'max'])
-            );
-            console.log('result', result.value);
-            if (result.button.label === 'Create' && result.value) {
-              this.props.addTabToTabset(name, result.value);
+            const paramList = Object.keys(signature);
+            if (paramList.length > 0) {
+              const result = await showDialog<IDict<string>>(
+                factoryDialog('Factory parameters', paramList)
+              );
+              if (result.button.label === 'Create' && result.value) {
+                this.props.addTabToTabset(name, result.value);
+              } else {
+                return;
+              }
             } else {
-              return;
+              this.props.addTabToTabset(name);
             }
           }}
         >
@@ -139,7 +143,7 @@ export class WidgetMenu extends Component<IProps, IState> {
               alert('A widget with the same name is already registered!');
               return;
             }
-            if (this.props.factoryList.includes(widgetName)) {
+            if (widgetName in this.props.factoryDict) {
               alert('A factory with the same name is already registered!');
               return;
             }
@@ -185,7 +189,7 @@ export class WidgetMenu extends Component<IProps, IState> {
           {widgetItems}
           <hr className="ipyflex-divider" />
           {factoryItems}
-          {this.props.factoryList.length > 0 ? (
+          {Object.keys(this.props.factoryDict).length > 0 ? (
             <hr className="ipyflex-divider" />
           ) : (
             <div />

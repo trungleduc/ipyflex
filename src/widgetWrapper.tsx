@@ -6,7 +6,7 @@ import { unpack_models, uuid } from '@jupyter-widgets/base';
 
 interface IProps {
   widgetName: string;
-  factoryList: Array<string>;
+  factoryDict: IDict<IDict>;
   model: any;
   send_msg: ({ action: string, payload: any }) => void;
 }
@@ -84,7 +84,7 @@ export class WidgetWrapper extends Component<IProps, IState> {
       const placeHolder = document.createElement('p');
       placeHolder.style.textAlign = 'center';
       placeHolder.style.padding = '20px';
-      if (this.props.factoryList.includes(this.widgetName)) {
+      if (this.widgetName in this.props.factoryDict) {
         placeHolder.innerText = `Creating widget from ${this.widgetName} factory, please wait.`;
         this.myRef.current.insertBefore(placeHolder, null);
         this.props.send_msg({

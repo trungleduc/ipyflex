@@ -29,7 +29,7 @@ interface IState {
   defaultModel: IDict;
   widgetList: Array<string>;
   placeholderList: Array<string>;
-  factoryList: Array<string>;
+  factoryDict: IDict<IDict>;
   editable: boolean;
 }
 
@@ -74,7 +74,7 @@ export class FlexWidget extends Component<IProps, IState> {
       defaultModel,
       widgetList: Object.keys(this.props.model.get('children')),
       placeholderList: [],
-      factoryList: this.props.model.get('widget_factories'),
+      factoryDict: this.props.model.get('widget_factories'),
       editable: props.editable,
     };
     this.model = props.model;
@@ -125,7 +125,7 @@ export class FlexWidget extends Component<IProps, IState> {
           <WidgetWrapper
             model={this.model}
             widgetName={name}
-            factoryList={this.state.factoryList}
+            factoryDict={this.state.factoryDict}
             send_msg={this.props.send_msg}
           />
         );
@@ -244,7 +244,7 @@ export class FlexWidget extends Component<IProps, IState> {
         <WidgetMenu
           widgetList={this.state.widgetList}
           placeholderList={this.state.placeholderList}
-          factoryList={this.state.factoryList}
+          factoryDict={this.state.factoryDict}
           nodeId={nodeId}
           tabsetId={tabsetId}
           addTabToTabset={(name: string, extraData?: IDict) => {
