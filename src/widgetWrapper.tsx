@@ -32,19 +32,24 @@ export class WidgetWrapper extends Component<IProps, IState> {
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
     const { action, payload } = data;
     switch (action) {
-      case MESSAGE_ACTION.RENDER_FACTORY:
-        {
-          const { model_id, uuid } = payload;
-          if (uuid === this.state.uuid) {
-            unpack_models(model_id, this.model.widget_manager).then(
-              (wModel) => {
-                this.myRef.current.firstChild.remove();
-                this._render_widget(wModel);
-              }
-            );
-          }
+      case MESSAGE_ACTION.RENDER_FACTORY: {
+        const { model_id, uuid } = payload;
+        if (uuid === this.state.uuid) {
+          unpack_models(model_id, this.model.widget_manager).then((wModel) => {
+            this.myRef.current.firstChild.remove();
+            this._render_widget(wModel);
+          });
         }
-
+        break;
+      }
+      case MESSAGE_ACTION.RENDER_ERROR:
+        {
+          const { error_msg, uuid } = payload;
+          if (uuid === this.state.uuid) {
+            this.myRef.current.firstChild.textContent = error_msg;
+          }
+          break;
+        }
         return null;
     }
   };
@@ -88,13 +93,16 @@ export class WidgetWrapper extends Component<IProps, IState> {
       if (this.widgetName in this.props.factoryDict) {
         placeHolder.innerText = `Creating widget from ${this.widgetName} factory, please wait.`;
         this.myRef.current.insertBefore(placeHolder, null);
-        const payload = { factory_name: this.widgetName, uuid: this.state.uuid };
+        const payload = {
+          factory_name: this.widgetName,
+          uuid: this.state.uuid,
+        };
         if (this.props.extraData) {
-          payload['extraData'] = this.props.extraData
+          payload['extraData'] = this.props.extraData;
         }
         this.props.send_msg({
           action: MESSAGE_ACTION.REQUEST_FACTORY,
-          payload
+          payload,
         });
       } else {
         placeHolder.innerText = `Placeholder for ${this.widgetName} widget.`;

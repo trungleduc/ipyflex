@@ -24,10 +24,7 @@ def get_function_signature(f: Callable) -> Dict:
     for key in sig.parameters:
         param = params.get(key)
         ret[key] = {
-            'type': param.annotation if param.annotation != inspect._empty
-            else None,
-            'default': param.default
-            if param.default != inspect._empty
-            else None,
+            'annotation': str(param.annotation) if param.annotation != inspect._empty
+            else None
         }
     return ret

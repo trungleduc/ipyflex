@@ -24,6 +24,7 @@ class MESSAGE_ACTION(str, Enum):
     UPDATE_CHILDREN = 'update_children'
     REQUEST_FACTORY = 'request_factory'
     RENDER_FACTORY = 'render_factory'
+    RENDER_ERROR = 'render_error'
     ADD_WIDGET = 'add_widget'
 
 
@@ -172,14 +173,23 @@ class FlexLayout(DOMWidget):
                     params = payload['extraData']
                 else:
                     params = {}
-                w_model = self._factories[factory_name](**params)
-                model_msg = widget_serialization['to_json'](w_model, None)
-                self.send(
-                    {
-                        'action': MESSAGE_ACTION.RENDER_FACTORY,
-                        'payload': {'model_id': model_msg, 'uuid': uuid},
-                    }
-                )
+                try:
+                    w_model = self._factories[factory_name](**params)
+                    model_msg = widget_serialization['to_json'](w_model, None)
+                    self.send(
+                        {
+                            'action': MESSAGE_ACTION.RENDER_FACTORY,
+                            'payload': {'model_id': model_msg, 'uuid': uuid},
+                        }
+                    )
+                except Exception as e:
+                    self.send(
+                        {
+                            'action': MESSAGE_ACTION.RENDER_ERROR,
+                            'payload': {'error_msg': str(e), 'uuid': uuid},
+                        }
+                    ) 
+                    
         elif action == MESSAGE_ACTION.ADD_WIDGET:
             widget_name = payload['name']
             old = copy.copy(self.placeholder_widget)

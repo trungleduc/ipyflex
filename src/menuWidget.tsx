@@ -111,7 +111,7 @@ export class WidgetMenu extends Component<IProps, IState> {
             const paramList = Object.keys(signature);
             if (paramList.length > 0) {
               const result = await showDialog<IDict<string>>(
-                factoryDialog('Factory parameters', paramList)
+                factoryDialog('Factory parameters', signature)
               );
               if (result.button.label === 'Create' && result.value) {
                 this.props.addTabToTabset(name, result.value);

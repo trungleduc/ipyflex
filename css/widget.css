@@ -116,7 +116,8 @@ hr.ipyflex-divider {
   opacity: 0.75;
 }
 
-.ipyflex-float-input:focus + .ipyflex-float-label {
+.ipyflex-float-input:focus + .ipyflex-float-label,
+.ipyflex-float-input:valid + .ipyflex-float-label {
   font-size: 75%;
   transform: translate3d(0, -100%, 0);
   opacity: 1;

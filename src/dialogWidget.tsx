@@ -14,18 +14,24 @@ class TemplateNameWidget extends Widget {
 }
 
 class FactoryParameterWidget extends Widget {
-  constructor(params: Array<string>) {
+  constructor(signature: IDict<any>) {
     super();
     this._paramInputs = {};
-    params.forEach((p) => {
+    const params = Object.keys(signature);
+    params.forEach((p) => {     
       const id = uuid();
       const inp = document.createElement('input');
+      inp.required = true;
       this._paramInputs[p] = inp;
       inp.id = id;
       inp.classList.add('ipyflex-float-input');
       const label = document.createElement('label');
       label.htmlFor = id;
-      label.innerText = `${p} `;
+      if (signature[p]['annotation']) {
+        label.innerText = `${p} : ${signature[p]['annotation']}`;
+      } else {
+        label.innerText = `${p}`;
+      }
       label.classList.add('ipyflex-float-label');
 
       const group = document.createElement('div');
@@ -48,18 +54,18 @@ class FactoryParameterWidget extends Widget {
 }
 
 export function factoryDialog(
-  title,
-  params: Array<string>
-): {
-  title: string;
-  body: FactoryParameterWidget;
-  buttons: Array<any>;
-} {
+  title: string,
+  signature: IDict<any>
+  ): {
+    title: string;
+    body: FactoryParameterWidget;
+    buttons: Array<any>;
+  } {
   const saveBtn = Dialog.okButton({ label: 'Create' });
   const cancelBtn = Dialog.cancelButton({ label: 'Cancel' });
   return {
     title,
-    body: new FactoryParameterWidget(params),
+    body: new FactoryParameterWidget(signature),
     buttons: [cancelBtn, saveBtn],
   };
 }
