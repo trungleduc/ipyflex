@@ -10,4 +10,6 @@ dependencies:
   - ipygany
   - bqplot
   - ipydatagrid 
-  - yfinance 
+  - yfinance
+  - nodejs
+  - yarn
