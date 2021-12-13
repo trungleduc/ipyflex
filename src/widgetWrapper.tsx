@@ -9,6 +9,7 @@ interface IProps {
   factoryDict: IDict<IDict>;
   model: any;
   send_msg: ({ action: string, payload: any }) => void;
+  extraData: IDict | undefined;
 }
 
 interface IState {
@@ -87,9 +88,13 @@ export class WidgetWrapper extends Component<IProps, IState> {
       if (this.widgetName in this.props.factoryDict) {
         placeHolder.innerText = `Creating widget from ${this.widgetName} factory, please wait.`;
         this.myRef.current.insertBefore(placeHolder, null);
+        const payload = { factory_name: this.widgetName, uuid: this.state.uuid };
+        if (this.props.extraData) {
+          payload['extraData'] = this.props.extraData
+        }
         this.props.send_msg({
           action: MESSAGE_ACTION.REQUEST_FACTORY,
-          payload: { factory_name: this.widgetName, uuid: this.state.uuid },
+          payload
         });
       } else {
         placeHolder.innerText = `Placeholder for ${this.widgetName} widget.`;

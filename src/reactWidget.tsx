@@ -114,19 +114,18 @@ export class FlexWidget extends Component<IProps, IState> {
   };
   factory = (node: FlexLayout.TabNode): JSX.Element => {
     const component = node.getComponent() as 'Widget' | 'sub';
-    // const config = node.getConfig();
+    const config = node.getConfig();
     const nodeId = node.getId();
     const name = node.getName();
     switch (component) {
       case 'Widget': {
-        console.log('config', node.getConfig());
-
         return (
           <WidgetWrapper
             model={this.model}
             widgetName={name}
             factoryDict={this.state.factoryDict}
             send_msg={this.props.send_msg}
+            extraData= {config.extraData}
           />
         );
       }

@@ -168,7 +168,11 @@ class FlexLayout(DOMWidget):
             factory_name = payload['factory_name']
             uuid = payload['uuid']
             if factory_name in self.widget_factories:
-                w_model = self._factories[factory_name]()
+                if 'extraData' in payload:
+                    params = payload['extraData']
+                else:
+                    params = {}
+                w_model = self._factories[factory_name](**params)
                 model_msg = widget_serialization['to_json'](w_model, None)
                 self.send(
                     {
