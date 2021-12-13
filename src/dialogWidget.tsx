@@ -18,7 +18,7 @@ class FactoryParameterWidget extends Widget {
     super();
     this._paramInputs = {};
     const params = Object.keys(signature);
-    params.forEach((p) => {     
+    params.forEach((p) => {
       const id = uuid();
       const inp = document.createElement('input');
       inp.required = true;
@@ -56,11 +56,11 @@ class FactoryParameterWidget extends Widget {
 export function factoryDialog(
   title: string,
   signature: IDict<any>
-  ): {
-    title: string;
-    body: FactoryParameterWidget;
-    buttons: Array<any>;
-  } {
+): {
+  title: string;
+  body: FactoryParameterWidget;
+  buttons: Array<any>;
+} {
   const saveBtn = Dialog.okButton({ label: 'Create' });
   const cancelBtn = Dialog.cancelButton({ label: 'Cancel' });
   return {

@@ -125,7 +125,7 @@ export class FlexWidget extends Component<IProps, IState> {
             widgetName={name}
             factoryDict={this.state.factoryDict}
             send_msg={this.props.send_msg}
-            extraData= {config.extraData}
+            extraData={config.extraData}
           />
         );
       }
