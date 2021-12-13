@@ -2,12 +2,12 @@
 Usage
 =============
 
-**ipyflex** is meant to be used with widgets based on `ipywidgets`_. The entry point of **ipyflex** is the `FlexLayout` class, it allows users to dynamically customize the layout and fill their dashboard from the existing widgets.
+**ipyflex** is meant to be used with widgets based on `ipywidgets`_. The entry point of **ipyflex** is the *FlexLayout* class, it allows users to dynamically customize the layout and fill their dashboard from the existing widgets.
 
 Create a dashboard from existing widgets
 ==========================================
 
-The simplest way to create an **ipyflex** dashboard is to create a dictionary of existing widgets with the `keys` are the names of the widget and `values` are the instances of widgets and then use `FlexLayout` to compose the layout.
+The simplest way to create an **ipyflex** dashboard is to create a dictionary of existing widgets with the `keys` are the names of the widget and `values` are the instances of widgets and then use *FlexLayout* to compose the layout.
 
 .. code:: Python
 
@@ -35,6 +35,28 @@ Users can pass some configurations to the constructor of *FlexLayout* to set the
 - *template*: the path to save template file, this file can be generated from the dashboard interface.
 - *style*: CSS styles to be passed to the root element of the dashboard, it accepts any CSS rules but the keys need to be in *camelCase* format. 
 - *editable*: flag to enable or disable the editable mode. In non-editable mode, the toolbar with the *Save template* button is removed, tabs can not be removed, dragged, or renamed.
+
+--------------------------------------
+Create widgets from factory functions
+--------------------------------------
+
+In the case of using existing widgets in *FlexLayout* dashboard, users can create multiple views of a widget, so all tabs are linked. If users want to have the independent widget in each tab, *FlexLayout* allows users to define the factories to create widgets from the interface. 
+
+.. code:: Python
+
+    def slider_factory(label: 'Label of slider', value: 'Initial value'):
+        return ipywidgets.FloatSlider(value=float(value), description=label )
+
+    factories = {"Slider factory": slider_factory}
+
+    dashboard = FlexLayout(widgets, factories=factories)
+
+.. image:: images/factory_widget.gif
+
+If the factory function needs parameters, *FlexLayout* will build an input form to get parameters  from the interface. Users can define annotations to have the label of the input form. 
+
+.. note::
+    *FlexLayout* will pass all parameters as string, users need to convert the inputs to their appropriate type in the factory function.
 
 ----------------------------
 FlexLayout interface
