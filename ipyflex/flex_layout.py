@@ -4,28 +4,28 @@
 # Copyright (c) Trung Le.
 # Distributed under the terms of the Modified BSD License.
 
-"""
-TODO: Add module docstring
-"""
-
 import json
 import os
 from enum import Enum
-from typing import Dict as TypeDict
+from typing import Callable, Dict as TypeDict
 from typing import List as TypeList
 from typing import Union
 
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from traitlets.traitlets import Bool, Dict, Instance, Unicode
+from traitlets.traitlets import Bool, Dict, Instance, Unicode, List
 
 from ._frontend import module_name, module_version
-from .utils import get_nonexistant_path
+from .utils import get_nonexistant_path, get_function_signature
 import copy
 
 
 class MESSAGE_ACTION(str, Enum):
     SAVE_TEMPLATE = 'save_template'
     UPDATE_CHILDREN = 'update_children'
+    REQUEST_FACTORY = 'request_factory'
+    RENDER_FACTORY = 'render_factory'
+    RENDER_ERROR = 'render_error'
+    ADD_WIDGET = 'add_widget'
 
 
 class FlexLayout(DOMWidget):
@@ -39,14 +39,17 @@ class FlexLayout(DOMWidget):
     _view_module = Unicode(module_name).tag(sync=True)
     _view_module_version = Unicode(module_version).tag(sync=True)
 
-    # children = TypedTuple(
-    #     trait=Instance(Widget), help="List of widget children"
-    # ).tag(sync=True, **widget_serialization)
     children = Dict(
         key_trait=Unicode,
         value_trait=Instance(Widget),
         help='Dict of widget children',
     ).tag(sync=True, **widget_serialization)
+
+    widget_factories = Dict(
+        key_trait=Unicode, value_trait=Dict, default_value={}
+    ).tag(sync=True)
+
+    placeholder_widget = List(trait=Unicode, default_value=[]).tag(sync=True)
 
     layout_config = Dict(
         {'borderLeft': False, 'borderRight': False},
@@ -73,7 +76,7 @@ class FlexLayout(DOMWidget):
     def __init__(
         self,
         widgets: Union[TypeDict, TypeList] = [],
-        # layout_config: TypeDict,
+        factories: TypeDict[str, Callable] = {},
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -86,9 +89,27 @@ class FlexLayout(DOMWidget):
             }
         else:
             raise TypeError('Invalid input!')
-        if len(list(self.RESERVED_NAME & set(self.children))) > 0:
-            raise KeyError('Please do not use widget name in reserved list!')
+        children_set = set(self.children)
+        factories_set = set(factories)
+        if (
+            len(self.RESERVED_NAME & children_set) > 0
+            or len(self.RESERVED_NAME & factories_set) > 0
+        ):
+            raise KeyError(
+                f'Please do not use widget name in reserved list: {self.RESERVED_NAME}'
+            )
 
+        if len(children_set & factories_set) > 0:
+            raise ValueError(
+                'Please do not use a same name for both widget and factory'
+            )
+        factories_sig = {}
+        for key, factory in factories.items():
+            factories_sig[key] = get_function_signature(factory)
+
+        self.widget_factories = factories_sig
+        self.placeholder_widget = []
+        self._factories = factories
         self.template_json = None
         if self.template is not None:
             try:
@@ -107,6 +128,13 @@ class FlexLayout(DOMWidget):
             return
         if name in self.RESERVED_NAME:
             raise KeyError('Please do not use widget name in reserved list!')
+        error = (
+            lambda type: f'A {type} with the same name is already registered!'
+        )
+        if name in self.widget_factories:
+            raise KeyError(error('factory'))
+        if name in self.children:
+            raise KeyError(error('widget'))
 
         old = copy.copy(self.children)
         old[name] = widget
@@ -137,3 +165,38 @@ class FlexLayout(DOMWidget):
             with open(file_path, 'w') as f:
                 json.dump(json_data, f)
             self.template = file_path
+        elif action == MESSAGE_ACTION.REQUEST_FACTORY:
+            factory_name = payload['factory_name']
+            uuid = payload['uuid']
+            if factory_name in self.widget_factories:
+                if 'extraData' in payload:
+                    params = payload['extraData']
+                else:
+                    params = {}
+                try:
+                    w_model = self._factories[factory_name](**params)
+                    model_msg = widget_serialization['to_json'](w_model, None)
+                    self.send(
+                        {
+                            'action': MESSAGE_ACTION.RENDER_FACTORY,
+                            'payload': {'model_id': model_msg, 'uuid': uuid},
+                        }
+                    )
+                except Exception as e:
+                    self.send(
+                        {
+                            'action': MESSAGE_ACTION.RENDER_ERROR,
+                            'payload': {'error_msg': str(e), 'uuid': uuid},
+                        }
+                    ) 
+                    
+        elif action == MESSAGE_ACTION.ADD_WIDGET:
+            widget_name = payload['name']
+            old = copy.copy(self.placeholder_widget)
+            if widget_name not in old:
+                old.append(widget_name)
+                self.placeholder_widget = old
+            else:
+                raise KeyError(
+                    'A widget with the same name is already registered!'
+                )

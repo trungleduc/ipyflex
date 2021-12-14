@@ -1,20 +1,24 @@
 import React, { Component } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import dialogBody from './dialogWidget';
+import { dialogBody, factoryDialog } from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
 
-import { JUPYTER_BUTTON_CLASS } from './utils';
+import { IDict, JUPYTER_BUTTON_CLASS, MESSAGE_ACTION } from './utils';
 interface IProps {
   nodeId: string;
   tabsetId: string;
   widgetList: Array<string>;
-  addTabToTabset: (name: string, nodeId: string, tabsetId: string) => void;
+  placeholderList: Array<string>;
+  factoryDict: IDict<IDict>;
+  addTabToTabset: (name: string, extraData?: IDict) => void;
   model: any;
+  send_msg: ({ action: string, payload: any }) => void;
 }
 interface IState {
   anchorEl: HTMLElement;
   widgetList: Array<string>;
+  placeholderList: Array<string>;
 }
 
 const CREATE_NEW = 'Create new';
@@ -22,22 +26,44 @@ export class WidgetMenu extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     props.model.listenTo(props.model, 'msg:custom', this.on_msg);
+    props.model.listenTo(
+      props.model,
+      'change:placeholder_widget',
+      this.on_placeholder_change
+    );
     this.state = {
       anchorEl: null,
       widgetList: [...props.widgetList, CREATE_NEW],
+      placeholderList: [...props.placeholderList],
     };
   }
+
+  on_placeholder_change = (
+    model: any,
+    newValue: Array<string>,
+    change: any
+  ): void => {
+    this.setState((old) => ({
+      ...old,
+      placeholderList: newValue,
+    }));
+  };
 
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
     const { action, payload } = data;
     switch (action) {
-      case 'update_children':
+      case MESSAGE_ACTION.UPDATE_CHILDREN:
         {
           const wName: string = payload.name;
-          this.setState((old) => ({
-            ...old,
-            widgetList: [...old.widgetList, wName],
-          }));
+          if (
+            !this.state.widgetList.includes(wName) &&
+            !this.state.placeholderList.includes(wName)
+          ) {
+            this.setState((old) => ({
+              ...old,
+              widgetList: [...old.widgetList, wName],
+            }));
+          }
         }
 
         return null;
@@ -49,24 +75,23 @@ export class WidgetMenu extends Component<IProps, IState> {
     this.setState((oldState) => ({ ...oldState, anchorEl: target }));
   };
 
-  handleClose = () => {
+  handleClose = (): void => {
     this.setState((oldState) => ({ ...oldState, anchorEl: null }));
   };
 
   render(): JSX.Element {
     const menuId = `add_widget_menu_${this.props.tabsetId}@${this.props.nodeId}`;
-    const menuItem = [];
-    for (const name of this.state.widgetList) {
+    const widgetItems = [];
+    for (const name of [
+      ...this.state.widgetList,
+      ...this.state.placeholderList,
+    ]) {
       if (name !== CREATE_NEW) {
-        menuItem.push(
+        widgetItems.push(
           <MenuItem
             key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
             onClick={() => {
-              this.props.addTabToTabset(
-                name,
-                this.props.nodeId,
-                this.props.tabsetId
-              );
+              this.props.addTabToTabset(name);
               this.handleClose();
             }}
           >
@@ -75,6 +100,34 @@ export class WidgetMenu extends Component<IProps, IState> {
         );
       }
     }
+
+    const factoryItems = [];
+    for (const [name, signature] of Object.entries(this.props.factoryDict)) {
+      factoryItems.push(
+        <MenuItem
+          key={`${name}}@${this.props.tabsetId}@${this.props.nodeId}`}
+          onClick={async () => {
+            this.handleClose();
+            const paramList = Object.keys(signature);
+            if (paramList.length > 0) {
+              const result = await showDialog<IDict<string>>(
+                factoryDialog('Factory parameters', signature)
+              );
+              if (result.button.label === 'Create' && result.value) {
+                this.props.addTabToTabset(name, result.value);
+              } else {
+                return;
+              }
+            } else {
+              this.props.addTabToTabset(name);
+            }
+          }}
+        >
+          {name}
+        </MenuItem>
+      );
+    }
+
     const createNew: JSX.Element = (
       <MenuItem
         key={`$#{this.props.tabsetId}@${this.props.nodeId}`}
@@ -86,25 +139,29 @@ export class WidgetMenu extends Component<IProps, IState> {
           );
           if (result.button.label === 'Save' && result.value) {
             widgetName = result.value;
-            this.setState((old) => ({
-              ...old,
-              widgetList: [...old.widgetList, widgetName],
-            }));
+            if (this.state.widgetList.includes(widgetName)) {
+              alert('A widget with the same name is already registered!');
+              return;
+            }
+            if (widgetName in this.props.factoryDict) {
+              alert('A factory with the same name is already registered!');
+              return;
+            }
+            this.props.send_msg({
+              action: MESSAGE_ACTION.ADD_WIDGET,
+              payload: { name: widgetName },
+            });
           } else {
             return;
           }
 
-          this.props.addTabToTabset(
-            widgetName,
-            this.props.nodeId,
-            this.props.tabsetId
-          );
+          this.props.addTabToTabset(widgetName);
         }}
       >
         {CREATE_NEW}
       </MenuItem>
     );
-    menuItem.push(createNew);
+    // menuItem.push(createNew);
     return (
       <div key={menuId}>
         <button
@@ -129,7 +186,16 @@ export class WidgetMenu extends Component<IProps, IState> {
             horizontal: 'center',
           }}
         >
-          {menuItem}
+          {widgetItems}
+          <hr className="ipyflex-divider" />
+          {factoryItems}
+          {Object.keys(this.props.factoryDict).length > 0 ? (
+            <hr className="ipyflex-divider" />
+          ) : (
+            <div />
+          )}
+
+          {createNew}
         </Menu>
       </div>
     );

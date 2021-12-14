@@ -3,7 +3,7 @@ import Toolbar from '@mui/material/Toolbar';
 import * as FlexLayout from 'flexlayout-react';
 import React, { Component } from 'react';
 
-import { JUPYTER_BUTTON_CLASS, IDict } from './utils';
+import { JUPYTER_BUTTON_CLASS, IDict, MESSAGE_ACTION } from './utils';
 import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
 import {
@@ -11,7 +11,7 @@ import {
   ILayoutConfig,
   updateModelEditable,
 } from './defaultModelFactory';
-import dialogBody from './dialogWidget';
+import { dialogBody } from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
 import { ContextMenu } from '@lumino/widgets';
 import { CommandRegistry } from '@lumino/commands';
@@ -28,6 +28,8 @@ interface IState {
   defaultOuterModel: IDict;
   defaultModel: IDict;
   widgetList: Array<string>;
+  placeholderList: Array<string>;
+  factoryDict: IDict<IDict>;
   editable: boolean;
 }
 
@@ -35,6 +37,11 @@ export class FlexWidget extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     props.model.listenTo(props.model, 'msg:custom', this.on_msg);
+    props.model.listenTo(
+      props.model,
+      'change:placeholder_widget',
+      this.on_placeholder_change
+    );
     this.innerlayoutRef = {};
     this.layoutConfig = props.model.get('layout_config') as ILayoutConfig;
 
@@ -61,28 +68,45 @@ export class FlexWidget extends Component<IProps, IState> {
       );
       flexModel = FlexLayout.Model.fromJson(defaultOuterModel as any);
     }
-
     this.state = {
       model: flexModel,
       defaultOuterModel,
       defaultModel,
       widgetList: Object.keys(this.props.model.get('children')),
+      placeholderList: [],
+      factoryDict: this.props.model.get('widget_factories'),
       editable: props.editable,
     };
     this.model = props.model;
     this.contextMenuCache = new Map<string, ContextMenu>();
   }
 
+  on_placeholder_change = (
+    model,
+    newValue: Array<string>,
+    change: IDict
+  ): void => {
+    this.setState((old) => ({
+      ...old,
+      placeholderList: newValue,
+    }));
+  };
+
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
     const { action, payload } = data;
     switch (action) {
-      case 'update_children':
+      case MESSAGE_ACTION.UPDATE_CHILDREN:
         {
           const wName: string = payload.name;
-          this.setState((old) => ({
-            ...old,
-            widgetList: [...old.widgetList, wName],
-          }));
+          if (
+            !this.state.widgetList.includes(wName) &&
+            !this.state.placeholderList.includes(wName)
+          ) {
+            this.setState((old) => ({
+              ...old,
+              widgetList: [...old.widgetList, wName],
+            }));
+          }
         }
 
         return null;
@@ -90,13 +114,20 @@ export class FlexWidget extends Component<IProps, IState> {
   };
   factory = (node: FlexLayout.TabNode): JSX.Element => {
     const component = node.getComponent() as 'Widget' | 'sub';
-    // const config = node.getConfig();
+    const config = node.getConfig();
     const nodeId = node.getId();
     const name = node.getName();
-
     switch (component) {
       case 'Widget': {
-        return <WidgetWrapper model={this.model} widgetName={name} />;
+        return (
+          <WidgetWrapper
+            model={this.model}
+            widgetName={name}
+            factoryDict={this.state.factoryDict}
+            send_msg={this.props.send_msg}
+            extraData={config.extraData}
+          />
+        );
       }
       case 'sub': {
         return this.generateSection(node, nodeId);
@@ -211,16 +242,19 @@ export class FlexWidget extends Component<IProps, IState> {
       renderValues.buttons.push(
         <WidgetMenu
           widgetList={this.state.widgetList}
+          placeholderList={this.state.placeholderList}
+          factoryDict={this.state.factoryDict}
           nodeId={nodeId}
           tabsetId={tabsetId}
-          addTabToTabset={(name: string) => {
+          addTabToTabset={(name: string, extraData?: IDict) => {
             this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
               component: 'Widget',
               name: name,
-              config: { layoutID: nodeId },
+              config: { layoutID: nodeId, extraData: extraData },
             });
           }}
           model={this.props.model}
+          send_msg={this.props.send_msg}
         />
       );
     }
@@ -271,7 +305,7 @@ export class FlexWidget extends Component<IProps, IState> {
       const fileName = result.value;
       if (fileName) {
         this.props.send_msg({
-          action: 'save_template',
+          action: MESSAGE_ACTION.SAVE_TEMPLATE,
           payload: {
             file_name: result.value,
             json_data: this.state.model.toJson(),
