@@ -13,6 +13,7 @@ import { Widget } from '@lumino/widgets';
 import React from 'react';
 import { ReactWidget } from '@jupyterlab/apputils';
 import FlexWidget from './reactWidget';
+import { IDict } from './utils';
 import { MODULE_NAME, MODULE_VERSION } from './version';
 import { MessageLoop } from '@lumino/messaging';
 // Import the CSS
@@ -35,6 +36,7 @@ export class FlexLayoutModel extends DOMWidgetModel {
       style: {},
       template_json: null,
       editable: true,
+      header: false,
     };
   }
 
@@ -68,12 +70,19 @@ export class FlexLayoutModel extends DOMWidgetModel {
 }
 
 class ReactWidgetWrapper extends ReactWidget {
-  constructor(send_msg: any, model: any, style: any = {}, editable = true) {
+  constructor(
+    send_msg: any,
+    model: any,
+    style: any = {},
+    editable = true,
+    header = false
+  ) {
     super();
     this._send_msg = send_msg;
     this._model = model;
     this._style = style;
     this._editable = editable;
+    this._header = header;
   }
 
   onResize = (msg: any) => {
@@ -87,6 +96,7 @@ class ReactWidgetWrapper extends ReactWidget {
         send_msg={this._send_msg}
         model={this._model}
         editable={this._editable}
+        header={this._header}
       />
     );
   }
@@ -94,6 +104,7 @@ class ReactWidgetWrapper extends ReactWidget {
   private _model: any;
   private _style: any;
   private _editable: boolean;
+  private _header: boolean | IDict;
 }
 
 export class FlexLayoutView extends DOMWidgetView {
@@ -118,11 +129,13 @@ export class FlexLayoutView extends DOMWidgetView {
     this.el.classList.add('custom-widget');
     const style: { [key: string]: string } = this.model.get('style');
     const editable = this.model.get('editable');
+    const header = this.model.get('header');
     const widget = new ReactWidgetWrapper(
       this.send.bind(this),
       this.model,
       style,
-      editable
+      editable,
+      header
     );
     MessageLoop.sendMessage(widget, Widget.Msg.BeforeAttach);
     this.el.insertBefore(widget.node, null);

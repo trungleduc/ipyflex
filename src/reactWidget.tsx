@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { JUPYTER_BUTTON_CLASS, IDict, MESSAGE_ACTION } from './utils';
 import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
+import Header from './headerComponent';
 import {
   defaultModelFactoty,
   ILayoutConfig,
@@ -21,6 +22,7 @@ interface IProps {
   model: any;
   style: IDict;
   editable: boolean;
+  header: boolean | IDict;
 }
 
 interface IState {
@@ -31,6 +33,7 @@ interface IState {
   placeholderList: Array<string>;
   factoryDict: IDict<IDict>;
   editable: boolean;
+  header: boolean | IDict;
 }
 
 export class FlexWidget extends Component<IProps, IState> {
@@ -76,6 +79,7 @@ export class FlexWidget extends Component<IProps, IState> {
       placeholderList: [],
       factoryDict: this.props.model.get('widget_factories'),
       editable: props.editable,
+      header: props.header,
     };
     this.model = props.model;
     this.contextMenuCache = new Map<string, ContextMenu>();
@@ -363,12 +367,25 @@ export class FlexWidget extends Component<IProps, IState> {
   };
 
   render(): JSX.Element {
+    let headerHeight = 0;
+    let footerHeight = 0;
+    if (this.state.header) {
+      headerHeight = 35;
+    }
+    if (this.state.editable) {
+      footerHeight = 30;
+    }
+
     return (
       <div style={{ height: '510px', ...this.props.style }}>
+        {this.state.header ? <Header text="IPYFLEX" /> : <div />}
         <div
           style={{
             width: '100%',
-            height: this.state.editable ? 'calc(100% - 31px)' : '100%',
+            height: this.state.editable
+              ? `calc(100% - 5px - ${headerHeight}px - ${footerHeight}px)`
+              : '100%',
+            position: 'relative',
           }}
         >
           <FlexLayout.Layout
