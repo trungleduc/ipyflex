@@ -1,5 +1,4 @@
 import 'flexlayout-react/style/light.css';
-import Toolbar from '@mui/material/Toolbar';
 import * as FlexLayout from 'flexlayout-react';
 import React, { Component } from 'react';
 
@@ -368,14 +367,10 @@ export class FlexWidget extends Component<IProps, IState> {
 
   render(): JSX.Element {
     let headerHeight = 0;
-    let footerHeight = 0;
     if (this.state.header) {
       headerHeight = 35;
     }
-    if (this.state.editable) {
-      footerHeight = 30;
-    }
-    const mainHeight = `calc(100% - 5px - ${headerHeight}px - ${footerHeight}px)`;
+    const mainHeight = `calc(100% - 5px - ${headerHeight}px)`;
     let titleProps = {};
     if (this.state.header && !(typeof this.state.header === 'boolean')) {
       titleProps = { ...this.state.header };
@@ -388,7 +383,11 @@ export class FlexWidget extends Component<IProps, IState> {
     }
     return (
       <div style={{ height: '510px', ...this.props.style }}>
-        {this.state.header ? <Header {...titleProps} /> : <div />}
+        {this.state.header ? (
+          <Header {...titleProps} saveTemplate={this.saveTemplate.bind(this)} />
+        ) : (
+          <div />
+        )}
         <div
           style={{
             width: '100%',
@@ -443,24 +442,6 @@ export class FlexWidget extends Component<IProps, IState> {
             }}
           />
         </div>
-        {this.state.editable ? (
-          <Toolbar
-            variant="dense"
-            style={{
-              height: '30px',
-              minHeight: '30px',
-            }}
-          >
-            <button
-              className={JUPYTER_BUTTON_CLASS}
-              onClick={this.saveTemplate}
-            >
-              Save template
-            </button>
-          </Toolbar>
-        ) : (
-          <div></div>
-        )}
       </div>
     );
   }
