@@ -133,4 +133,8 @@ hr.ipyflex-divider {
   font-size: 1.25rem;
   line-height: 1.6;
   letter-spacing: 0.0075em;
+  background-color: #1976d2;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

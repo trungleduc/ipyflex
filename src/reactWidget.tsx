@@ -375,16 +375,24 @@ export class FlexWidget extends Component<IProps, IState> {
     if (this.state.editable) {
       footerHeight = 30;
     }
-
+    const mainHeight = `calc(100% - 5px - ${headerHeight}px - ${footerHeight}px)`;
+    let titleProps = {};
+    if (this.state.header && !(typeof this.state.header === 'boolean')) {
+      titleProps = { ...this.state.header };
+      if (!titleProps['buttons']) {
+        titleProps['buttons'] = [];
+      }
+      if (titleProps['buttons'] === true) {
+        titleProps['buttons'] = ['save', 'export', 'import'];
+      }
+    }
     return (
       <div style={{ height: '510px', ...this.props.style }}>
-        {this.state.header ? <Header text="IPYFLEX" /> : <div />}
+        {this.state.header ? <Header {...titleProps} /> : <div />}
         <div
           style={{
             width: '100%',
-            height: this.state.editable
-              ? `calc(100% - 5px - ${headerHeight}px - ${footerHeight}px)`
-              : '100%',
+            height: this.state.editable ? mainHeight : '100%',
             position: 'relative',
           }}
         >

@@ -12,7 +12,15 @@ from typing import List as TypeList
 from typing import Union as TypeUnion
 
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from traitlets.traitlets import Bool, Dict, Instance, Unicode, List, Union
+from traitlets.traitlets import (
+    Bool,
+    Dict,
+    Instance,
+    Unicode,
+    List,
+    Union,
+    validate,
+)
 
 from ._frontend import module_name, module_version
 from .utils import get_nonexistant_path, get_function_signature
@@ -79,6 +87,21 @@ class FlexLayout(DOMWidget):
         default_value=False,
         config=True,
     ).tag(sync=True)
+
+    @validate('header')
+    def _valid_header(self, proposal):
+        default_buttons = ['save', 'export', 'import']
+        ret = proposal['value']
+        if isinstance(ret, bool):
+            if ret:
+                ret = {'title': '', 'buttons': default_buttons}
+            else:
+                ret = {}
+        elif isinstance(ret, dict):
+            if 'buttons' not in ret:
+                ret['buttons'] = default_buttons
+
+        return ret
 
     def __init__(
         self,
