@@ -18,6 +18,8 @@ import { MODULE_NAME, MODULE_VERSION } from './version';
 import { MessageLoop } from '@lumino/messaging';
 // Import the CSS
 import '../css/widget.css';
+import '../css/application.css';
+import '../css/buttons.css';
 
 export class FlexLayoutModel extends DOMWidgetModel {
   defaults() {
