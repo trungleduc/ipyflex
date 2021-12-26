@@ -65,30 +65,9 @@ cmdclass['jsdeps'] = skip_if_exists(jstargets, npm_install)
 
 
 setup_args = dict(
-    name            = name,
-    description     = 'Jupyter Widget Flex Layout',
-    version         = version,
     scripts         = glob(pjoin('scripts', '*')),
     cmdclass        = cmdclass,
     packages        = find_packages(),
-    author          = 'Trung Le',
-    author_email    = 'leductrungxf@gmail.com',
-    url             = 'https://github.com//ipyflex',
-    license         = 'BSD',
-    platforms       = "Linux, Mac OS X, Windows",
-    keywords        = ['Jupyter', 'Widgets', 'IPython'],
-    classifiers     = [
-        'Intended Audience :: Developers',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Framework :: Jupyter',
-    ],
     include_package_data = True,
     python_requires=">=3.6",
     install_requires = [
