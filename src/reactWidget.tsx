@@ -1,11 +1,16 @@
 import 'flexlayout-react/style/light.css';
-import Toolbar from '@mui/material/Toolbar';
 import * as FlexLayout from 'flexlayout-react';
 import React, { Component } from 'react';
 
-import { JUPYTER_BUTTON_CLASS, IDict, MESSAGE_ACTION } from './utils';
+import {
+  JUPYTER_BUTTON_CLASS,
+  IDict,
+  MESSAGE_ACTION,
+  downloadString,
+} from './utils';
 import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
+import Header from './headerComponent';
 import {
   defaultModelFactoty,
   ILayoutConfig,
@@ -21,6 +26,7 @@ interface IProps {
   model: any;
   style: IDict;
   editable: boolean;
+  header: boolean | IDict;
 }
 
 interface IState {
@@ -31,6 +37,7 @@ interface IState {
   placeholderList: Array<string>;
   factoryDict: IDict<IDict>;
   editable: boolean;
+  header: boolean | IDict;
 }
 
 export class FlexWidget extends Component<IProps, IState> {
@@ -76,6 +83,7 @@ export class FlexWidget extends Component<IProps, IState> {
       placeholderList: [],
       factoryDict: this.props.model.get('widget_factories'),
       editable: props.editable,
+      header: props.header,
     };
     this.model = props.model;
     this.contextMenuCache = new Map<string, ContextMenu>();
@@ -317,6 +325,31 @@ export class FlexWidget extends Component<IProps, IState> {
     }
   };
 
+  exportTemplate = async (): Promise<void> => {
+    const result = await showDialog<string>(
+      dialogBody('Export template', null, 'Export')
+    );
+    if (result.button.label === 'Export') {
+      let fileName = result.value;
+      if (fileName) {
+        fileName = fileName.replace('.json', '') + '.json';
+        const jsonString = this.state.model.toString();
+        downloadString(jsonString, 'application/json', fileName);
+      } else {
+        alert('Invalid file name!');
+      }
+    }
+  };
+
+  importTemplate = (content: string): void => {
+    const model = JSON.parse(content);
+    console.log('model', model);
+    this.setState((old) => ({
+      ...old,
+      model: FlexLayout.Model.fromJson(model),
+    }));
+  };
+
   toggleLock = (): void => {
     this.setState((old) => ({ ...old, editable: !old.editable }));
   };
@@ -363,12 +396,38 @@ export class FlexWidget extends Component<IProps, IState> {
   };
 
   render(): JSX.Element {
+    let headerHeight = 0;
+    if (this.state.header) {
+      headerHeight = 35;
+    }
+    const mainHeight = `calc(100% - 5px - ${headerHeight}px)`;
+    let titleProps = {};
+    if (this.state.header && !(typeof this.state.header === 'boolean')) {
+      titleProps = { ...this.state.header };
+      if (!titleProps['buttons']) {
+        titleProps['buttons'] = [];
+      }
+      if (titleProps['buttons'] === true) {
+        titleProps['buttons'] = ['save', 'export', 'import'];
+      }
+    }
     return (
       <div style={{ height: '510px', ...this.props.style }}>
+        {this.state.header ? (
+          <Header
+            {...titleProps}
+            saveTemplate={this.saveTemplate.bind(this)}
+            exportTemplate={this.exportTemplate.bind(this)}
+            importTemplate={this.importTemplate.bind(this)}
+          />
+        ) : (
+          <div />
+        )}
         <div
           style={{
             width: '100%',
-            height: this.state.editable ? 'calc(100% - 31px)' : '100%',
+            height: this.state.editable ? mainHeight : '100%',
+            position: 'relative',
           }}
         >
           <FlexLayout.Layout
@@ -418,24 +477,6 @@ export class FlexWidget extends Component<IProps, IState> {
             }}
           />
         </div>
-        {this.state.editable ? (
-          <Toolbar
-            variant="dense"
-            style={{
-              height: '30px',
-              minHeight: '30px',
-            }}
-          >
-            <button
-              className={JUPYTER_BUTTON_CLASS}
-              onClick={this.saveTemplate}
-            >
-              Save template
-            </button>
-          </Toolbar>
-        ) : (
-          <div></div>
-        )}
       </div>
     );
   }

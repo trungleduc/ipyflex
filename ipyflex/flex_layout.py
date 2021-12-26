@@ -9,10 +9,18 @@ import os
 from enum import Enum
 from typing import Callable, Dict as TypeDict
 from typing import List as TypeList
-from typing import Union
+from typing import Union as TypeUnion
 
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from traitlets.traitlets import Bool, Dict, Instance, Unicode, List
+from traitlets.traitlets import (
+    Bool,
+    Dict,
+    Instance,
+    Unicode,
+    List,
+    Union,
+    validate,
+)
 
 from ._frontend import module_name, module_version
 from .utils import get_nonexistant_path, get_function_signature
@@ -73,9 +81,31 @@ class FlexLayout(DOMWidget):
         True, help='Flag to activate/deactivate edit mode', config=True
     ).tag(sync=True)
 
+    header = Union(
+        [Dict(), Bool()],
+        help='Header configuration',
+        default_value=False,
+        config=True,
+    ).tag(sync=True)
+
+    @validate('header')
+    def _valid_header(self, proposal):
+        default_buttons = ['save', 'export', 'import']
+        ret = proposal['value']
+        if isinstance(ret, bool):
+            if ret:
+                ret = {'title': '', 'buttons': default_buttons}
+            else:
+                ret = {}
+        elif isinstance(ret, dict):
+            if 'buttons' not in ret:
+                ret['buttons'] = default_buttons
+
+        return ret
+
     def __init__(
         self,
-        widgets: Union[TypeDict, TypeList] = [],
+        widgets: TypeUnion[TypeDict, TypeList] = [],
         factories: TypeDict[str, Callable] = {},
         **kwargs,
     ):
@@ -188,8 +218,8 @@ class FlexLayout(DOMWidget):
                             'action': MESSAGE_ACTION.RENDER_ERROR,
                             'payload': {'error_msg': str(e), 'uuid': uuid},
                         }
-                    ) 
-                    
+                    )
+
         elif action == MESSAGE_ACTION.ADD_WIDGET:
             widget_name = payload['name']
             old = copy.copy(self.placeholder_widget)
