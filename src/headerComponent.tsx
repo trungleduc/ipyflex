@@ -14,6 +14,7 @@ export default function Header(props: {
   style?: IDict;
   buttons?: Array<string>;
   saveTemplate: () => Promise<void>;
+  exportTemplate: () => Promise<void>;
 }): JSX.Element {
   const buttonList: IconType[] = [];
   const availableButtons: IconType[] = ['save', 'export', 'import'];
@@ -27,6 +28,7 @@ export default function Header(props: {
   });
   const callbacks = new Map<IconType, () => Promise<void>>();
   callbacks.set('save', props.saveTemplate);
+  callbacks.set('export', props.exportTemplate);
   return (
     <div
       className={'ipyflex-header'}

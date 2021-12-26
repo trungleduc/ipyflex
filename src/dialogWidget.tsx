@@ -72,13 +72,14 @@ export function factoryDialog(
 
 export function dialogBody(
   title: string,
-  defaultValue: string = null
+  defaultValue: string = null,
+  saveLabel = 'Save'
 ): {
   title: string;
   body: TemplateNameWidget;
   buttons: Array<any>;
 } {
-  const saveBtn = Dialog.okButton({ label: 'Save' });
+  const saveBtn = Dialog.okButton({ label: saveLabel });
   const cancelBtn = Dialog.cancelButton({ label: 'Cancel' });
   const input = document.createElement('input');
 

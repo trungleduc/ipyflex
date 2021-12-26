@@ -2,7 +2,12 @@ import 'flexlayout-react/style/light.css';
 import * as FlexLayout from 'flexlayout-react';
 import React, { Component } from 'react';
 
-import { JUPYTER_BUTTON_CLASS, IDict, MESSAGE_ACTION } from './utils';
+import {
+  JUPYTER_BUTTON_CLASS,
+  IDict,
+  MESSAGE_ACTION,
+  downloadString,
+} from './utils';
 import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
 import Header from './headerComponent';
@@ -320,6 +325,22 @@ export class FlexWidget extends Component<IProps, IState> {
     }
   };
 
+  exportTemplate = async (): Promise<void> => {
+    const result = await showDialog<string>(
+      dialogBody('Export template', null, 'Export')
+    );
+    if (result.button.label === 'Export') {
+      let fileName = result.value;
+      if (fileName) {
+        fileName = fileName.replace('.json', '') + '.json';
+        const jsonString = this.state.model.toString();
+        downloadString(jsonString, 'application/json', fileName);
+      } else {
+        alert('Invalid file name!');
+      }
+    }
+  };
+
   toggleLock = (): void => {
     this.setState((old) => ({ ...old, editable: !old.editable }));
   };
@@ -384,7 +405,11 @@ export class FlexWidget extends Component<IProps, IState> {
     return (
       <div style={{ height: '510px', ...this.props.style }}>
         {this.state.header ? (
-          <Header {...titleProps} saveTemplate={this.saveTemplate.bind(this)} />
+          <Header
+            {...titleProps}
+            saveTemplate={this.saveTemplate.bind(this)}
+            exportTemplate={this.exportTemplate.bind(this)}
+          />
         ) : (
           <div />
         )}
