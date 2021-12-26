@@ -17,12 +17,10 @@ from jupyter_packaging import (
     ensure_targets,
     combine_commands,
     get_version,
-    skip_if_exists
+    skip_if_exists,
 )
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-
-
 
 
 # The name of the project
@@ -39,12 +37,7 @@ jstargets = [
 ]
 
 
-package_data_spec = {
-    name: [
-        'nbextension/**js*',
-        'labextension/**'
-    ]
-}
+package_data_spec = {name: ['nbextension/**js*', 'labextension/**']}
 
 
 data_files_spec = [
@@ -55,8 +48,11 @@ data_files_spec = [
 ]
 
 
-cmdclass = create_cmdclass('jsdeps', package_data_spec=package_data_spec,
-    data_files_spec=data_files_spec)
+cmdclass = create_cmdclass(
+    'jsdeps',
+    package_data_spec=package_data_spec,
+    data_files_spec=data_files_spec,
+)
 npm_install = combine_commands(
     install_npm(HERE, build_cmd='build:prod'),
     ensure_targets(jstargets),
@@ -65,15 +61,16 @@ cmdclass['jsdeps'] = skip_if_exists(jstargets, npm_install)
 
 
 setup_args = dict(
-    scripts         = glob(pjoin('scripts', '*')),
-    cmdclass        = cmdclass,
-    packages        = find_packages(),
-    include_package_data = True,
-    python_requires=">=3.6",
-    install_requires = [
+    version=version,
+    scripts=glob(pjoin('scripts', '*')),
+    cmdclass=cmdclass,
+    packages=find_packages(),
+    include_package_data=True,
+    python_requires='>=3.6',
+    install_requires=[
         'ipywidgets>=7.0.0',
     ],
-    extras_require = {
+    extras_require={
         'test': [
             'pytest>=4.6',
             'pytest-cov',
@@ -93,8 +90,7 @@ setup_args = dict(
             'sphinx_rtd_theme',
         ],
     },
-    entry_points = {
-    },
+    entry_points={},
 )
 
 if __name__ == '__main__':
