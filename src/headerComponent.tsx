@@ -15,9 +15,11 @@ export default function Header(props: {
   buttons?: Array<string>;
   saveTemplate: () => Promise<void>;
   exportTemplate: () => Promise<void>;
+  importTemplate: (content: string) => void;
 }): JSX.Element {
   const buttonList: IconType[] = [];
   const availableButtons: IconType[] = ['save', 'export', 'import'];
+  const fileRef = React.createRef<HTMLInputElement>();
   (props.buttons || []).forEach((button) => {
     if (
       availableButtons.includes(button as IconType) &&
@@ -29,6 +31,23 @@ export default function Header(props: {
   const callbacks = new Map<IconType, () => Promise<void>>();
   callbacks.set('save', props.saveTemplate);
   callbacks.set('export', props.exportTemplate);
+  callbacks.set('import', async () => {
+    fileRef.current.click();
+  });
+
+  React.useEffect(() => {
+    fileRef.current.onchange = (e) => {
+      const files = fileRef.current.files;
+      if (files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          props.importTemplate(reader.result as string);
+          (e.target as HTMLInputElement).value = null;
+        };
+        reader.readAsText(files[0]);
+      }
+    };
+  });
   return (
     <div
       className={'ipyflex-header'}
@@ -50,6 +69,12 @@ export default function Header(props: {
           </IconButton>
         ))}
       </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".json"
+        style={{ display: 'none' }}
+      />
     </div>
   );
 }

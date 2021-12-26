@@ -341,6 +341,15 @@ export class FlexWidget extends Component<IProps, IState> {
     }
   };
 
+  importTemplate = (content: string): void => {
+    const model = JSON.parse(content);
+    console.log('model', model);
+    this.setState((old) => ({
+      ...old,
+      model: FlexLayout.Model.fromJson(model),
+    }));
+  };
+
   toggleLock = (): void => {
     this.setState((old) => ({ ...old, editable: !old.editable }));
   };
@@ -409,6 +418,7 @@ export class FlexWidget extends Component<IProps, IState> {
             {...titleProps}
             saveTemplate={this.saveTemplate.bind(this)}
             exportTemplate={this.exportTemplate.bind(this)}
+            importTemplate={this.importTemplate.bind(this)}
           />
         ) : (
           <div />
