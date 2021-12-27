@@ -21,6 +21,9 @@ version_template = '({major}, {minor}, {patch}, "{channel}", "{release}")'
 message_template = "Bump to {new_version}"
 tag_template = "v{new_version}"
 
+[tool.jupyter-releaser]
+skip = ["check-links"]
+
 [tool.jupyter-releaser.hooks]
 before-bump-version = ["python -m pip install jupyterlab~=3.0 jupyter_packaging~=0.10"]
 before-build-npm = ["python -m pip install jupyterlab~=3.0", "jlpm clean", "jlpm build:prod"]
