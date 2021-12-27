@@ -15,14 +15,14 @@ async function renderNotebook(fileName: string, page: IJupyterLabPageFixture) {
 }
 
 const notebookList = [
-  // "CustomHeader",
-  // "CustomStyle",
-  // "DashboardWithHeader",
-  // "EmptyDashboard",
-  // "MultipleSections",
-  // "PlaceholderWidgets",
+  "CustomHeader",
+  "CustomStyle",
+  "DashboardWithHeader",
+  "EmptyDashboard",
+  "MultipleSections",
+  "PlaceholderWidgets",
   "WithWidgets",
-  // "WithWidgetsFactory"
+  "WithWidgetsFactory"
 ];
 
 test.describe("ipyflex Visual Regression", () => {
