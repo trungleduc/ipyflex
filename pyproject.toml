@@ -22,5 +22,8 @@ message_template = "Bump to {new_version}"
 tag_template = "v{new_version}"
 
 [tool.jupyter-releaser.hooks]
-before-bump-version = ["python -m pip install jupyterlab~=3.0"]
+before-bump-version = ["python -m pip install jupyterlab~=3.0 jupyter_packaging~=0.10"]
 before-build-npm = ["python -m pip install jupyterlab~=3.0", "jlpm clean", "jlpm build:prod"]
+
+[tool.check-manifest]
+ignore = [".binder/**", "docs/**", "examples/**", "*.json", "*.gif", "yarn.lock", "environment.yml", "readthedocs.yml", ".*", "ipyflex/labextension/**", "ipyflex/nbextension/index*", "tests/**", "ui-tests/**", "CHANGELOG.md", "babel.config.js", "codecov.yml", "jest.config.js", "tsconfig.eslint.json"]
