@@ -9,4 +9,4 @@ Information about the frontend package of the widgets.
 """
 
 module_name = 'ipyflex'
-module_version = '^0.2.0-dev.0'
+module_version = '0.2.0.dev2'

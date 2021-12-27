@@ -1,6 +1,6 @@
 {
   "name": "ipyflex",
-  "version": "0.2.0-dev.1",
+  "version": "0.2.0.dev2",
   "description": "Jupyter Widget Flex Layout",
   "keywords": [
     "jupyter",
