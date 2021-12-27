@@ -1,3 +1,32 @@
 [build-system]
-requires = ["jupyter_packaging==0.7.9", "jupyterlab==3.*", "setuptools>=40.8.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["jupyter_packaging~=0.10", "jupyterlab==3.*", "setuptools>=40.8.0", "wheel"]
+build-backend = "jupyter_packaging.build_api"
+
+[tool.jupyter-packaging.options]
+skip-if-exists = ["ipyflex/labextension/static/style.js"]
+ensured-targets = ["ipyflex/labextension/static/style.js"]
+
+[tool.tbump.version]
+current = "0.2.0.dev1"
+regex = '''
+  (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)
+  ((?P<channel>a|b|rc|.dev)(?P<release>\d+))?
+'''
+
+[[tool.tbump.file]]
+src = "ipyflex/_version.py"
+version_template = '({major}, {minor}, {patch}, "{channel}", "{release}")'
+
+[tool.tbump.git]
+message_template = "Bump to {new_version}"
+tag_template = "v{new_version}"
+
+[tool.jupyter-releaser]
+skip = ["check-links"]
+
+[tool.jupyter-releaser.hooks]
+before-bump-version = ["python -m pip install jupyterlab~=3.0 jupyter_packaging~=0.10"]
+before-build-npm = ["python -m pip install jupyterlab~=3.0", "jlpm clean", "jlpm build:prod"]
+
+[tool.check-manifest]
+ignore = [".binder/**", "docs/**", "examples/**", "*.json", "*.gif", "yarn.lock", "environment.yml", "readthedocs.yml", ".*", "ipyflex/labextension/**", "ipyflex/nbextension/index*", "tests/**", "ui-tests/**", "CHANGELOG.md", "babel.config.js", "codecov.yml", "jest.config.js", "tsconfig.eslint.json"]
