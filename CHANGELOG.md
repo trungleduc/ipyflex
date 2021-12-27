@@ -2,6 +2,26 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.2.0.dev2
+
+([Full Changelog](https://github.com/trungleduc/ipyflex/compare/v0.2.0.dev1...305366be731cc51823682822f4ce9351ff7a8e8e))
+
+### Enhancements made
+
+- Add header component [#21](https://github.com/trungleduc/ipyflex/pull/21) ([@trungleduc](https://github.com/trungleduc))
+
+### Maintenance and upkeep improvements
+
+- Add Jupyter releaser [#19](https://github.com/trungleduc/ipyflex/pull/19) ([@trungleduc](https://github.com/trungleduc))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/trungleduc/ipyflex/graphs/contributors?from=2021-12-15&to=2021-12-27&type=c))
+
+[@github-actions](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Agithub-actions+updated%3A2021-12-15..2021-12-27&type=Issues) | [@trungleduc](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Atrungleduc+updated%3A2021-12-15..2021-12-27&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## v0.2.0.dev0
 
 ([full changelog](https://github.com/trungleduc/ipyflex/compare/v0.1.2...4ef8f0fd954508e5239387fa95208a3d9eb9d22c))
@@ -16,8 +36,6 @@
 ([GitHub contributors page for this release](https://github.com/trungleduc/ipyflex/graphs/contributors?from=2021-11-29&to=2021-12-15&type=c))
 
 [@github-actions](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Agithub-actions+updated%3A2021-11-29..2021-12-15&type=Issues) | [@trungleduc](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Atrungleduc+updated%3A2021-11-29..2021-12-15&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## v0.1.2
 
