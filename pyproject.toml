@@ -19,11 +19,19 @@ version_template = '({major}, {minor}, {patch}, "{channel}", "{release}")'
 
 [[tool.tbump.file]]
 src = "ipyflex/_frontend.py"
-search = '"module_version": "{current_version}"'
+search = "module_version = '{current_version}'"
 
 [[tool.tbump.file]]
 src = "package.json"
 search = '"version": "{current_version}"'
+
+[[tool.tbump.field]]
+name = "channel"
+default = ""
+
+[[tool.tbump.field]]
+name = "release"
+default = ""
 
 [tool.tbump.git]
 message_template = "Bump to {new_version}"
