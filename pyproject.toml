@@ -1,7 +1,10 @@
 [build-system]
-requires = ["jupyter_packaging==0.7.9", "jupyterlab==3.*", "setuptools>=40.8.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["jupyter_packaging~=0.10", "jupyterlab==3.*", "setuptools>=40.8.0", "wheel"]
+build-backend = "jupyter_packaging.build_api"
 
+[tool.jupyter-packaging.options]
+skip-if-exists = ["ipyflex/labextension/static/style.js"]
+ensured-targets = ["ipyflex/labextension/static/style.js"]
 
 [tool.tbump.version]
 current = "0.2.0.dev1"
