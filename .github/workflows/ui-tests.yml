@@ -77,6 +77,14 @@ jobs:
           # generate new snapshots
           jlpm run test:update
 
+      - name: Upload snapshots
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: ipyflex-snapshot
+          path: |
+            ui-tests/tests
+
       - name: Print JupyterLab logs
         if: always()
         run: |
