@@ -160,3 +160,10 @@ docs/source/_static/*.txt
 docs/source/examples/*.ipynb
 docs/source/examples/*.json
 MANIFEST
+
+# Untitled Notebooks
+*Untitled*.ipynb
+
+#Galata 
+ui-tests/playwright-report
+ui-tests/test-results
