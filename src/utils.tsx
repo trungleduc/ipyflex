@@ -12,6 +12,8 @@ export const MESSAGE_ACTION = {
   RENDER_FACTORY: 'render_factory',
   RENDER_ERROR: 'render_error',
   ADD_WIDGET: 'add_widget',
+  SAVE_TEMPLATE_FROM_PYTHON: 'save_template_from_python',
+  REGISTER_FRONTEND: 'register_frontend',
 };
 
 export function downloadString(

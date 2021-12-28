@@ -20,6 +20,7 @@ import { dialogBody } from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
 import { ContextMenu } from '@lumino/widgets';
 import { CommandRegistry } from '@lumino/commands';
+import { uuid } from '@jupyter-widgets/base';
 
 interface IProps {
   send_msg: ({ action: string, payload: any }) => void;
@@ -43,12 +44,7 @@ interface IState {
 export class FlexWidget extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    props.model.listenTo(props.model, 'msg:custom', this.on_msg);
-    props.model.listenTo(
-      props.model,
-      'change:placeholder_widget',
-      this.on_placeholder_change
-    );
+
     this.innerlayoutRef = {};
     this.layoutConfig = props.model.get('layout_config') as ILayoutConfig;
 
@@ -89,6 +85,20 @@ export class FlexWidget extends Component<IProps, IState> {
     this.contextMenuCache = new Map<string, ContextMenu>();
   }
 
+  componentDidMount(): void {
+    this.props.model.listenTo(this.props.model, 'msg:custom', this.on_msg);
+    this.props.model.listenTo(
+      this.props.model,
+      'change:placeholder_widget',
+      this.on_placeholder_change
+    );
+    this.uuid = uuid();
+    this.props.send_msg({
+      action: MESSAGE_ACTION.REGISTER_FRONTEND,
+      payload: { uuid: this.uuid },
+    });
+  }
+
   on_placeholder_change = (
     model,
     newValue: Array<string>,
@@ -103,21 +113,37 @@ export class FlexWidget extends Component<IProps, IState> {
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
     const { action, payload } = data;
     switch (action) {
-      case MESSAGE_ACTION.UPDATE_CHILDREN:
-        {
-          const wName: string = payload.name;
-          if (
-            !this.state.widgetList.includes(wName) &&
-            !this.state.placeholderList.includes(wName)
-          ) {
-            this.setState((old) => ({
-              ...old,
-              widgetList: [...old.widgetList, wName],
-            }));
-          }
+      case MESSAGE_ACTION.UPDATE_CHILDREN: {
+        const wName: string = payload.name;
+        if (
+          !this.state.widgetList.includes(wName) &&
+          !this.state.placeholderList.includes(wName)
+        ) {
+          this.setState((old) => ({
+            ...old,
+            widgetList: [...old.widgetList, wName],
+          }));
         }
-
-        return null;
+        break;
+      }
+      case MESSAGE_ACTION.SAVE_TEMPLATE_FROM_PYTHON: {
+        const fileName: string = payload.name;
+        const uuid: string = payload.uuid;
+        if (uuid === this.uuid && fileName) {
+          if (!fileName) {
+            alert('Invalid file name!');
+            return;
+          }
+          this.props.send_msg({
+            action: MESSAGE_ACTION.SAVE_TEMPLATE,
+            payload: {
+              file_name: fileName,
+              json_data: this.state.model.toJson(),
+            },
+          });
+        }
+        break;
+      }
     }
   };
   factory = (node: FlexLayout.TabNode): JSX.Element => {
@@ -343,7 +369,6 @@ export class FlexWidget extends Component<IProps, IState> {
 
   importTemplate = (content: string): void => {
     const model = JSON.parse(content);
-    console.log('model', model);
     this.setState((old) => ({
       ...old,
       model: FlexLayout.Model.fromJson(model),
@@ -487,6 +512,7 @@ export class FlexWidget extends Component<IProps, IState> {
   private layoutConfig: ILayoutConfig;
   // private contextMenu: ContextMenu;
   private contextMenuCache: Map<string, ContextMenu>;
+  private uuid: string;
 }
 
 export default FlexWidget;
