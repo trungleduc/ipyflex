@@ -261,7 +261,10 @@ class FlexLayout(DOMWidget):
                 self.send(
                     {
                         'action': MESSAGE_ACTION.LOAD_TEMPLATE_FROM_PYTHON,
-                        'payload': {'template': self.template_json, 'uuid': self.uuid},
+                        'payload': {
+                            'template': self.template_json,
+                            'uuid': self.uuid,
+                        },
                     }
                 )
         else:
