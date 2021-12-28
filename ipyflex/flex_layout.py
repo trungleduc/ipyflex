@@ -35,6 +35,7 @@ class MESSAGE_ACTION(str, Enum):
     RENDER_ERROR = 'render_error'
     ADD_WIDGET = 'add_widget'
     SAVE_TEMPLATE_FROM_PYTHON = 'save_template_from_python'
+    LOAD_TEMPLATE_FROM_PYTHON = 'load_template_from_python'
     REGISTER_FRONTEND = 'register_frontend'
 
 
@@ -252,3 +253,16 @@ class FlexLayout(DOMWidget):
                     'payload': {'name': fileName, 'uuid': self.uuid},
                 }
             )
+
+    def load_template(self, path: str) -> None:
+        if os.path.isfile(path):
+            with open(path, 'r') as f:
+                self.template_json = json.load(f)
+                self.send(
+                    {
+                        'action': MESSAGE_ACTION.LOAD_TEMPLATE_FROM_PYTHON,
+                        'payload': {'template': self.template_json, 'uuid': self.uuid},
+                    }
+                )
+        else:
+            raise FileExistsError(f'{path} can not be found!')

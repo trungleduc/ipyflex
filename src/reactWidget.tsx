@@ -126,6 +126,7 @@ export class FlexWidget extends Component<IProps, IState> {
         }
         break;
       }
+
       case MESSAGE_ACTION.SAVE_TEMPLATE_FROM_PYTHON: {
         const fileName: string = payload.name;
         const uuid: string = payload.uuid;
@@ -142,6 +143,15 @@ export class FlexWidget extends Component<IProps, IState> {
             },
           });
         }
+        break;
+      }
+
+      case MESSAGE_ACTION.LOAD_TEMPLATE_FROM_PYTHON: {
+        const template = payload.template;
+        this.setState((old) => ({
+          ...old,
+          model: FlexLayout.Model.fromJson(template),
+        }));
         break;
       }
     }
