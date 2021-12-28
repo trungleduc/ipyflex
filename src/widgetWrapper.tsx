@@ -3,6 +3,7 @@ import { MessageLoop } from '@lumino/messaging';
 import { Widget } from '@lumino/widgets';
 import { IDict, MESSAGE_ACTION } from './utils';
 import { unpack_models, uuid } from '@jupyter-widgets/base';
+import { ContextMenu } from '@lumino/widgets';
 
 interface IProps {
   widgetName: string;
@@ -10,6 +11,7 @@ interface IProps {
   model: any;
   send_msg: ({ action: string, payload: any }) => void;
   extraData: IDict | undefined;
+  contextMenu: ContextMenu;
 }
 
 interface IState {
@@ -113,7 +115,20 @@ export class WidgetWrapper extends Component<IProps, IState> {
   }
 
   render(): JSX.Element {
-    return <div className="ipyflex-widget-box" ref={this.myRef}></div>;
+    return (
+      <div
+        className="ipyflex-widget-box"
+        ref={this.myRef}
+        onContextMenu={(event) => {
+          if (event.shiftKey) {
+            return;
+          }
+          event.preventDefault();
+          event.stopPropagation();
+          this.props.contextMenu.open(event.nativeEvent);
+        }}
+      ></div>
+    );
   }
 
   private widgetName: string;

@@ -83,6 +83,7 @@ export class FlexWidget extends Component<IProps, IState> {
     };
     this.model = props.model;
     this.contextMenuCache = new Map<string, ContextMenu>();
+    this.innerContextMenuCache = new Map<string, ContextMenu>();
   }
 
   componentDidMount(): void {
@@ -163,6 +164,12 @@ export class FlexWidget extends Component<IProps, IState> {
     const name = node.getName();
     switch (component) {
       case 'Widget': {
+        const selector = '.ipyflex-widget-box';
+        const contextMenu = this.individualContextMenuFactory(
+          node.getParent().getId(),
+          node.getParent().getModel(),
+          selector
+        );
         return (
           <WidgetWrapper
             model={this.model}
@@ -170,6 +177,7 @@ export class FlexWidget extends Component<IProps, IState> {
             factoryDict={this.state.factoryDict}
             send_msg={this.props.send_msg}
             extraData={config.extraData}
+            contextMenu={contextMenu}
           />
         );
       }
@@ -235,6 +243,21 @@ export class FlexWidget extends Component<IProps, IState> {
         onAction={(action: FlexLayout.Action) =>
           this.innerOnAction(nodeId, action)
         }
+        onContextMenu={(
+          node:
+            | FlexLayout.TabNode
+            | FlexLayout.TabSetNode
+            | FlexLayout.BorderNode,
+          event: React.MouseEvent<HTMLElement, MouseEvent>
+        ) => {
+          if (event.shiftKey) {
+            return;
+          }
+          event.preventDefault();
+          event.stopPropagation();
+          const contextMenu = this.innerContextMenuCache.get(node.getId());
+          contextMenu.open(event.nativeEvent);
+        }}
       />
     );
   };
@@ -259,10 +282,17 @@ export class FlexWidget extends Component<IProps, IState> {
     outerNodeID: string,
     action: FlexLayout.Action
   ): FlexLayout.Action => {
+    if (action.type === 'FlexLayout_DeleteTabset') {
+      const id: string = action.data.node;
+      if (this.innerContextMenuCache.has(id)) {
+        this.innerContextMenuCache.delete(id);
+      }
+    }
     if (
       action.type === 'FlexLayout_MoveNode' ||
       action.type === 'FlexLayout_AdjustSplit' ||
       action.type === 'FlexLayout_DeleteTab' ||
+      action.type === 'FlexLayout_DeleteTabset' ||
       action.type === 'FlexLayout_MaximizeToggle' ||
       action.type === 'FlexLayout_SelectTab'
     ) {
@@ -281,8 +311,18 @@ export class FlexWidget extends Component<IProps, IState> {
     },
     nodeId: string
   ): void => {
+    const tabsetId = tabSetNode.getId();
+    const selector = '.flexlayout__tabset_tabbar_inner_top';
+    if (!this.innerContextMenuCache.has(tabsetId)) {
+      const contextMenu = this.individualContextMenuFactory(
+        tabsetId,
+        tabSetNode.getModel(),
+        selector
+      );
+
+      this.innerContextMenuCache.set(tabsetId, contextMenu);
+    }
     if (this.state.editable) {
-      const tabsetId = tabSetNode.getId();
       renderValues.buttons.push(
         <WidgetMenu
           widgetList={this.state.widgetList}
@@ -430,6 +470,48 @@ export class FlexWidget extends Component<IProps, IState> {
     return contextMenu;
   };
 
+  individualContextMenuFactory = (
+    tabsetId: string,
+    model: FlexLayout.Model,
+    selector: string
+  ): ContextMenu => {
+    const commands = new CommandRegistry();
+    commands.addCommand('hide-tab-bar', {
+      execute: () => {
+        model.doAction(
+          FlexLayout.Actions.updateNodeAttributes(tabsetId, {
+            enableTabStrip: false,
+          })
+        );
+      },
+      label: 'Hide Tab Bar',
+      isEnabled: () => true,
+    });
+    commands.addCommand('show-tab-bar', {
+      execute: () => {
+        model.doAction(
+          FlexLayout.Actions.updateNodeAttributes(tabsetId, {
+            enableTabStrip: true,
+          })
+        );
+      },
+      label: 'Show Tab Bar',
+      isEnabled: () => true,
+    });
+    const contextMenu = new ContextMenu({ commands });
+    contextMenu.addItem({
+      command: 'show-tab-bar',
+      selector: selector,
+      rank: 0,
+    });
+    contextMenu.addItem({
+      command: 'hide-tab-bar',
+      selector: selector,
+      rank: 1,
+    });
+    return contextMenu;
+  };
+
   render(): JSX.Element {
     let headerHeight = 0;
     if (this.state.header) {
@@ -505,10 +587,17 @@ export class FlexWidget extends Component<IProps, IState> {
                 | FlexLayout.BorderNode,
               event: React.MouseEvent<HTMLElement, MouseEvent>
             ) => {
-              event.preventDefault();
-              event.stopPropagation();
-              const contextMenu = this.contextMenuCache.get(node.getId());
-              contextMenu.open(event.nativeEvent);
+              if (event.shiftKey) {
+                return;
+              }
+              try {
+                event.preventDefault();
+                event.stopPropagation();
+                const contextMenu = this.contextMenuCache.get(node.getId());
+                contextMenu.open(event.nativeEvent);
+              } catch (error) {
+                /**/
+              }
             }}
           />
         </div>
@@ -522,6 +611,7 @@ export class FlexWidget extends Component<IProps, IState> {
   private layoutConfig: ILayoutConfig;
   // private contextMenu: ContextMenu;
   private contextMenuCache: Map<string, ContextMenu>;
+  private innerContextMenuCache: Map<string, ContextMenu>;
   private uuid: string;
 }
 
