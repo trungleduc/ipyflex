@@ -25,17 +25,20 @@ const CREATE_NEW = 'Create new';
 export class WidgetMenu extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    props.model.listenTo(props.model, 'msg:custom', this.on_msg);
-    props.model.listenTo(
-      props.model,
-      'change:placeholder_widget',
-      this.on_placeholder_change
-    );
     this.state = {
       anchorEl: null,
       widgetList: [...props.widgetList, CREATE_NEW],
       placeholderList: [...props.placeholderList],
     };
+  }
+
+  componentDidMount(): void {
+    this.props.model.listenTo(this.props.model, 'msg:custom', this.on_msg);
+    this.props.model.listenTo(
+      this.props.model,
+      'change:placeholder_widget',
+      this.on_placeholder_change
+    );
   }
 
   on_placeholder_change = (

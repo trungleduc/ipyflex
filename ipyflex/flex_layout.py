@@ -34,6 +34,9 @@ class MESSAGE_ACTION(str, Enum):
     RENDER_FACTORY = 'render_factory'
     RENDER_ERROR = 'render_error'
     ADD_WIDGET = 'add_widget'
+    SAVE_TEMPLATE_FROM_PYTHON = 'save_template_from_python'
+    LOAD_TEMPLATE_FROM_PYTHON = 'load_template_from_python'
+    REGISTER_FRONTEND = 'register_frontend'
 
 
 class FlexLayout(DOMWidget):
@@ -111,6 +114,7 @@ class FlexLayout(DOMWidget):
     ):
         super().__init__(**kwargs)
 
+        self.uuid: str = None
         if isinstance(widgets, dict):
             self.children = widgets
         elif isinstance(widgets, list):
@@ -126,7 +130,8 @@ class FlexLayout(DOMWidget):
             or len(self.RESERVED_NAME & factories_set) > 0
         ):
             raise KeyError(
-                f'Please do not use widget name in reserved list: {self.RESERVED_NAME}'
+                f'Please do not use widget name in reserved list: '
+                f'{self.RESERVED_NAME}'
             )
 
         if len(children_set & factories_set) > 0:
@@ -153,6 +158,7 @@ class FlexLayout(DOMWidget):
         self.on_msg(self._handle_frontend_msg)
 
     def add(self, name: str, widget: Widget) -> None:
+        """Add widget to dashboard"""
         if not self.editable:
             self.log.warning('Widget is in readonly mode!')
             return
@@ -165,6 +171,10 @@ class FlexLayout(DOMWidget):
             raise KeyError(error('factory'))
         if name in self.children:
             raise KeyError(error('widget'))
+        if not isinstance(widget, Widget):
+            raise TypeError(
+                f'A widget is expected, got {type(widget)} instead'
+            )
 
         old = copy.copy(self.children)
         old[name] = widget
@@ -230,3 +240,32 @@ class FlexLayout(DOMWidget):
                 raise KeyError(
                     'A widget with the same name is already registered!'
                 )
+
+        elif action == MESSAGE_ACTION.REGISTER_FRONTEND:
+            self.uuid = payload['uuid']
+
+    def save_template(self, name: str) -> None:
+        if self.uuid is not None:
+            fileName = name.replace('.json', '') + '.json'
+            self.send(
+                {
+                    'action': MESSAGE_ACTION.SAVE_TEMPLATE_FROM_PYTHON,
+                    'payload': {'name': fileName, 'uuid': self.uuid},
+                }
+            )
+
+    def load_template(self, path: str) -> None:
+        if os.path.isfile(path):
+            with open(path, 'r') as f:
+                self.template_json = json.load(f)
+                self.send(
+                    {
+                        'action': MESSAGE_ACTION.LOAD_TEMPLATE_FROM_PYTHON,
+                        'payload': {
+                            'template': self.template_json,
+                            'uuid': self.uuid,
+                        },
+                    }
+                )
+        else:
+            raise FileExistsError(f'{path} can not be found!')
