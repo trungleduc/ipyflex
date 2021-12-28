@@ -82,7 +82,6 @@ export class FlexWidget extends Component<IProps, IState> {
       header: props.header,
     };
     this.model = props.model;
-    this.contextMenuCache = new Map<string, ContextMenu>();
     this.innerContextMenuCache = new Map<string, ContextMenu>();
   }
 
@@ -101,7 +100,7 @@ export class FlexWidget extends Component<IProps, IState> {
   }
 
   on_placeholder_change = (
-    model,
+    model: any,
     newValue: Array<string>,
     change: IDict
   ): void => {
@@ -429,47 +428,6 @@ export class FlexWidget extends Component<IProps, IState> {
     this.setState((old) => ({ ...old, editable: !old.editable }));
   };
 
-  contextMenuFactory = (node: FlexLayout.Node): ContextMenu => {
-    const commands = new CommandRegistry();
-    const nodeId = node.getId();
-    commands.addCommand('hide-tab-bar', {
-      execute: () => {
-        const subLayout = this.innerlayoutRef[nodeId].current;
-        subLayout.props.model.doAction(
-          FlexLayout.Actions.updateModelAttributes({
-            tabSetEnableTabStrip: false,
-          })
-        );
-      },
-      label: 'Hide Tab Bar',
-      isEnabled: () => true,
-    });
-    commands.addCommand('show-tab-bar', {
-      execute: () => {
-        const subLayout = this.innerlayoutRef[nodeId].current;
-        subLayout.props.model.doAction(
-          FlexLayout.Actions.updateModelAttributes({
-            tabSetEnableTabStrip: true,
-          })
-        );
-      },
-      label: 'Show Tab Bar',
-      isEnabled: () => true,
-    });
-    const contextMenu = new ContextMenu({ commands });
-    contextMenu.addItem({
-      command: 'show-tab-bar',
-      selector: '.flexlayout__tab_button_bottom',
-      rank: 0,
-    });
-    contextMenu.addItem({
-      command: 'hide-tab-bar',
-      selector: '.flexlayout__tab_button_bottom',
-      rank: 1,
-    });
-    return contextMenu;
-  };
-
   individualContextMenuFactory = (
     tabsetId: string,
     model: FlexLayout.Model,
@@ -573,32 +531,6 @@ export class FlexWidget extends Component<IProps, IState> {
             ) => {
               this.onRenderOuterTabSet(tabSetNode, renderValues);
             }}
-            onRenderTab={(node, _) => {
-              const nodeId = node.getId();
-              if (!this.contextMenuCache.has(nodeId)) {
-                const contextMenu = this.contextMenuFactory(node);
-                this.contextMenuCache.set(nodeId, contextMenu);
-              }
-            }}
-            onContextMenu={(
-              node:
-                | FlexLayout.TabNode
-                | FlexLayout.TabSetNode
-                | FlexLayout.BorderNode,
-              event: React.MouseEvent<HTMLElement, MouseEvent>
-            ) => {
-              if (event.shiftKey) {
-                return;
-              }
-              try {
-                event.preventDefault();
-                event.stopPropagation();
-                const contextMenu = this.contextMenuCache.get(node.getId());
-                contextMenu.open(event.nativeEvent);
-              } catch (error) {
-                /**/
-              }
-            }}
           />
         </div>
       </div>
@@ -609,8 +541,6 @@ export class FlexWidget extends Component<IProps, IState> {
   private innerlayoutRef: { [key: string]: React.RefObject<FlexLayout.Layout> };
   private model: any;
   private layoutConfig: ILayoutConfig;
-  // private contextMenu: ContextMenu;
-  private contextMenuCache: Map<string, ContextMenu>;
   private innerContextMenuCache: Map<string, ContextMenu>;
   private uuid: string;
 }
