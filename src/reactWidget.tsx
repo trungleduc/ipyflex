@@ -501,7 +501,7 @@ export class FlexWidget extends Component<IProps, IState> {
         <div
           style={{
             width: '100%',
-            height: this.state.editable ? mainHeight : '100%',
+            height: mainHeight,
             position: 'relative',
           }}
         >
