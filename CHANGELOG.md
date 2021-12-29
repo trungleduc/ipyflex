@@ -9,6 +9,7 @@
 ### Enhancements made
 
 - Add api to save/load template from python side. [#29](https://github.com/trungleduc/ipyflex/pull/29) ([@trungleduc](https://github.com/trungleduc))
+- Show or hide tabs individually  [#30](https://github.com/trungleduc/ipyflex/pull/30) ([@trungleduc](https://github.com/trungleduc))
 
 ### Maintenance and upkeep improvements
 
@@ -17,10 +18,6 @@
 ### Documentation improvements
 
 - ipyvuetify examples [#10](https://github.com/trungleduc/ipyflex/pull/10) ([@joseberlines](https://github.com/joseberlines))
-
-### Other merged PRs
-
-- Show or hide tabs individually  [#30](https://github.com/trungleduc/ipyflex/pull/30) ([@trungleduc](https://github.com/trungleduc))
 
 ### Contributors to this release
 
