@@ -459,12 +459,12 @@ export class FlexWidget extends Component<IProps, IState> {
     const contextMenu = new ContextMenu({ commands });
     contextMenu.addItem({
       command: 'show-tab-bar',
-      selector: selector,
+      selector: this.props.editable ? selector : 'null',
       rank: 0,
     });
     contextMenu.addItem({
       command: 'hide-tab-bar',
-      selector: selector,
+      selector: this.props.editable ? selector : 'null',
       rank: 1,
     });
     return contextMenu;
@@ -485,6 +485,11 @@ export class FlexWidget extends Component<IProps, IState> {
       if (titleProps['buttons'] === true) {
         titleProps['buttons'] = ['save', 'export', 'import'];
       }
+      if (!this.props.editable) {
+        titleProps['buttons'] = (titleProps['buttons'] as Array<string>).filter(
+          (btn) => btn !== 'save'
+        );
+      }
     }
     return (
       <div style={{ height: '510px', ...this.props.style }}>
@@ -501,7 +506,7 @@ export class FlexWidget extends Component<IProps, IState> {
         <div
           style={{
             width: '100%',
-            height: this.state.editable ? mainHeight : '100%',
+            height: mainHeight,
             position: 'relative',
           }}
         >

@@ -101,9 +101,12 @@ export function updateModelEditable(model: IDict, editable: boolean): IDict {
     tabEnableRename: editable,
     tabEnableClose: editable,
     tabSetEnableClose: editable,
+    tabSetEnableMaximize: editable,
     tabEnableDrag: editable,
     tabSetEnableDrag: editable,
   };
+  let splitterSize: number;
+  editable ? (splitterSize = 8) : (splitterSize = 0);
   if ('global' in model) {
     model.global = { ...globaleDict, tabSetTabLocation: 'bottom' };
   }
@@ -114,6 +117,7 @@ export function updateModelEditable(model: IDict, editable: boolean): IDict {
       child['config']['model']['global'] = {
         ...globaleDict,
         ...child['config']['model']['global'],
+        splitterSize,
       };
     }
   }
