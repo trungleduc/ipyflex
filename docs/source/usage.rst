@@ -30,11 +30,13 @@ Users can pass some configurations to the constructor of *FlexLayout* to set the
     dashboard = FlexLayout(widgets,
         template = 'saved.json', 
         style = {'height': '50vh', 'borderTop': '5px'},
+        header= True,
         editable = False)
 
 - *template*: the path to save template file, this file can be generated from the dashboard interface.
 - *style*: CSS styles to be passed to the root element of the dashboard, it accepts any CSS rules but the keys need to be in *camelCase* format. 
-- *editable*: flag to enable or disable the editable mode. In non-editable mode, the toolbar with the *Save template* button is removed, tabs can not be removed, dragged, or renamed.
+- *header*: set to `True` to activate the default header, pass a dictionary to create a configurable header.
+- *editable*: flag to enable or disable the editable mode. In non-editable mode, the *Save template* button in the header is removed, tabs can not be removed, dragged, or renamed.
 
 --------------------------------------
 Create widgets from factory functions
@@ -53,7 +55,7 @@ In the case of using existing widgets in *FlexLayout* dashboard, users can creat
 
 .. image:: images/factory_widget.gif
 
-If the factory function needs parameters, *FlexLayout* will build an input form to get parameters  from the interface. Users can define annotations to have the label of the input form. 
+If the factory function needs parameters, *FlexLayout* will build an input form to get parameters from the interface. Users can define annotations to have the label of the input form. 
 
 .. note::
     *FlexLayout* will pass all parameters as string, users need to convert the inputs to their appropriate type in the factory function.
@@ -71,6 +73,34 @@ FlexLayout interface
 A typical interface is displayed in the figure below:
 
 .. image:: images/ipyflex-main.png
+
+----------------------------
+Header 
+----------------------------
+
+A header can be customized by setting the `header` parameter of the `FlexLayout` constructor with a dictionary of three keys.
+
+- *title*: Title of the header
+
+- *style*: CSS styles to be passed to the header HTML element, it accepts any CSS rules but the keys need to be in *camelCase* format.  
+
+- *buttons*: a list of buttons to be shown on the header, users can choose from `save`, `import`, `export`.
+
+    - Save button: Save the dashboard template to the same folder of the notebook, this feature requires a kernel to handler saving function.
+    - Export button: Export the dashboard template to disk, this feature does not require the kernel, so it can be used in a pure static page.
+    - Import button: Load the dashboard template from a *json* file, this feature does not require the kernel, so it can be used in a pure static page.
+
+.. code:: Python
+
+    header = dict(title='Demo header',
+                style={'background':'green',
+                        'color':'yellow',
+                        'fontStyle': 'italic'},
+                buttons=['import','export']
+                )
+    FlexLayout(header=header)
+
+.. image:: images/ipyflex-header.png
 
 ----------------------------
 Toolbar 
@@ -96,7 +126,7 @@ Section display window
 .. image:: images/ipyflex-widget-window.png
 
 - The widget menu can be opened by the *add widget* button, it contains the keys of the widget dictionary defined in the constructor of *FlexLayout*. The *Create new* item in the widget menu is always available, it will be detailed in the next section. 
-- Right-click on the section name will give users options to show or hide the widget tab bar of this section.
+- Right-click on any widget will give users options to show or hide the tab bar of this widget.
 - Users can customize the layout of a section by using drag and drop on each widget. The widgets can also be resized by dragging their borders.
 - Users can change the name of the widget tab by double-clicking on the tab name.
 
@@ -117,6 +147,14 @@ Even without widgets, users can still define a dashboard layout with *FlexLayout
 
 .. image:: images/ipyflex-create-new.gif
 
+Load and save template programmatically
+==========================================
+
+The template of a `FlexLayout` dashboard can be save or load from notebook by using `save_template` and `load_template` method.
+
+This feature is useful if you want to prepare the widgets and only create the dashboard when a user connected with some specific data about the template. 
+
 .. links
 
 .. _`ipywidgets`: https://github.com/jupyter-widgets/ipywidgets/
+
