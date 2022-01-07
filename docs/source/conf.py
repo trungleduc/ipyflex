@@ -31,6 +31,7 @@ extensions = [
     'nbsphinx',
     'jupyter_sphinx',
     'nbsphinx_link',
+    'myst_parser'
 ]
 
 # Set the nbsphinx JS path to empty to avoid showing twice of the widgets

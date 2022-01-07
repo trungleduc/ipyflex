@@ -39,6 +39,12 @@ Contents
 
    examples/index
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Changelog
+   
+   changelog
+
 
 .. toctree::
    :maxdepth: 2
