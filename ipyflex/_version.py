@@ -4,7 +4,7 @@
 # Copyright (c) Trung Le.
 # Distributed under the terms of the Modified BSD License.
 
-version_info = (0, 2, 0, "rc", "0")
+version_info = (0, 2, 0, "", "")
 post = ''
 if len(version_info) > 3:
     post = ''.join(version_info[3:])
