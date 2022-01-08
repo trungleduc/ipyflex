@@ -10,6 +10,9 @@ Based on the React library [FlexLayout](https://github.com/caplin/FlexLayout), i
 ### Dynamic layout
 ![Dynamic layout](./docs/source/images/ipyflex.gif)
 
+### Widget factory
+![Widget factory](./docs/source/images/ipyflex-factory.gif)
+
 ### Stock indexes dashboard
 
 ![Stock indexes](./docs/source/images/ipyflex-stock2.gif)
