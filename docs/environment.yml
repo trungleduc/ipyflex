@@ -17,4 +17,4 @@ dependencies:
   - plotly
   - ipydatagrid 
   - yfinance 
-
+  - myst-parser
