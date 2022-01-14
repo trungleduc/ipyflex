@@ -13,6 +13,9 @@ Based on the React library [FlexLayout](https://github.com/caplin/FlexLayout), i
 ### Widget factory
 ![Widget factory](./docs/source/images/ipyflex-factory.gif)
 
+### Configurable header
+https://user-images.githubusercontent.com/4451292/149482302-30579785-4d8e-4d50-9bcc-249bea4a9d95.mp4
+
 ### Stock indexes dashboard
 
 ![Stock indexes](./docs/source/images/ipyflex-stock2.gif)
