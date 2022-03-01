@@ -23,7 +23,11 @@ The simplest way to create an **ipyflex** dashboard is to create a dictionary of
 
 .. image:: images/ipyflex.gif
   
-Users can pass some configurations to the constructor of *FlexLayout* to set the template of the style of the dashboard:
+-----------------------
+Advanced configuration 
+-----------------------
+
+Users can pass some configurations to the constructor of *FlexLayout* to set the template or the style of the dashboard:
 
 .. code:: Python
 
@@ -31,12 +35,14 @@ Users can pass some configurations to the constructor of *FlexLayout* to set the
         template = 'saved.json', 
         style = {'height': '50vh', 'borderTop': '5px'},
         header= True,
+        layout_config = {'borderLeft': False, 'borderRight': False, 'enableSection': False},
         editable = False)
 
-- *template*: the path to save template file, this file can be generated from the dashboard interface.
-- *style*: CSS styles to be passed to the root element of the dashboard, it accepts any CSS rules but the keys need to be in *camelCase* format. 
-- *header*: set to `True` to activate the default header, pass a dictionary to create a configurable header.
-- *editable*: flag to enable or disable the editable mode. In non-editable mode, the *Save template* button in the header is removed, tabs can not be removed, dragged, or renamed.
+- **template**: the path to save template file, this file can be generated from the dashboard interface.
+- **style**: CSS styles to be passed to the root element of the dashboard, it accepts any CSS rules but the keys need to be in *camelCase* format. 
+- **header**: set to `True` to activate the default header, pass a dictionary to create a configurable header.
+- **layout_config**: dashboard layout configuration, users can show or hide left/right border, enable or disable the section tab.
+- **editable**: flag to enable or disable the editable mode. In non-editable mode, the *Save template* button in the header is removed, tabs can not be removed, dragged, or renamed.
 
 --------------------------------------
 Create widgets from factory functions
