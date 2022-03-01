@@ -63,7 +63,7 @@ class FlexLayout(DOMWidget):
     placeholder_widget = List(trait=Unicode, default_value=[]).tag(sync=True)
 
     layout_config = Dict(
-        {'borderLeft': False, 'borderRight': False},
+        {'borderLeft': False, 'borderRight': False, 'enableSection': False},
         help='Layout configuration',
     ).tag(sync=True)
 
