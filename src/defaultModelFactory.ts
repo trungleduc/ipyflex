@@ -3,13 +3,14 @@ import { IDict } from './utils';
 export interface ILayoutConfig {
   borderLeft: boolean;
   borderRight: boolean;
+  enableSection: boolean;
 }
 
 export function defaultModelFactoty(
   config: ILayoutConfig,
   editable = true
 ): IDict {
-  const { borderLeft, borderRight } = config;
+  const { borderLeft, borderRight, enableSection = true } = config;
   const borders = [];
   if (borderLeft) {
     borders.push({
@@ -52,7 +53,11 @@ export function defaultModelFactoty(
   };
 
   const defaultOuterModel = {
-    global: { ...globaleDict, tabSetTabLocation: 'bottom' },
+    global: {
+      ...globaleDict,
+      tabSetTabLocation: 'bottom',
+      tabSetEnableTabStrip: enableSection,
+    },
 
     layout: {
       type: 'row',
