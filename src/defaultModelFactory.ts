@@ -109,11 +109,15 @@ export function updateModelEditable(model: IDict, editable: boolean): IDict {
     tabSetEnableMaximize: editable,
     tabEnableDrag: editable,
     tabSetEnableDrag: editable,
+    tabSetEnableTabStrip: !!model.tabSetEnableTabStrip,
   };
   let splitterSize: number;
   editable ? (splitterSize = 8) : (splitterSize = 0);
   if ('global' in model) {
-    model.global = { ...globaleDict, tabSetTabLocation: 'bottom' };
+    model.global = {
+      ...globaleDict,
+      tabSetTabLocation: 'bottom',
+    };
   }
   const tabsetList = model['layout']['children'];
   for (const tabset of tabsetList) {
