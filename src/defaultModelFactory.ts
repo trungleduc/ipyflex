@@ -56,7 +56,7 @@ export function defaultModelFactoty(
     global: {
       ...globaleDict,
       tabSetTabLocation: 'bottom',
-      tabSetEnableTabStrip: enableSection,
+      tabSetEnableTabStrip: true,
     },
 
     layout: {
@@ -66,6 +66,7 @@ export function defaultModelFactoty(
         {
           type: 'tabset',
           id: '#2',
+          enableTabStrip: enableSection,
           children: [
             {
               type: 'tab',
@@ -101,7 +102,11 @@ export function defaultModelFactoty(
   return { defaultOuterModel, defaultModel };
 }
 
-export function updateModelEditable(model: IDict, editable: boolean): IDict {
+export function updateModelEditable(
+  model: IDict,
+  editable: boolean,
+  enableSection: boolean
+): IDict {
   const globaleDict = {
     tabEnableRename: editable,
     tabEnableClose: editable,
@@ -109,8 +114,9 @@ export function updateModelEditable(model: IDict, editable: boolean): IDict {
     tabSetEnableMaximize: editable,
     tabEnableDrag: editable,
     tabSetEnableDrag: editable,
-    tabSetEnableTabStrip: !!model.tabSetEnableTabStrip,
+    // tabSetEnableTabStrip: !!model.tabSetEnableTabStrip,
   };
+
   let splitterSize: number;
   editable ? (splitterSize = 8) : (splitterSize = 0);
   if ('global' in model) {
@@ -122,6 +128,7 @@ export function updateModelEditable(model: IDict, editable: boolean): IDict {
   const tabsetList = model['layout']['children'];
   for (const tabset of tabsetList) {
     const children = tabset['children'];
+    tabset['enableTabStrip'] = enableSection;
     for (const child of children) {
       child['config']['model']['global'] = {
         ...globaleDict,
