@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.2.3
+
+([Full Changelog](https://github.com/trungleduc/ipyflex/compare/v0.2.2...a1d8d72b6d4ee66ded60729f36e65b72f20e9671))
+
+### Merged PRs
+
+- Fix layout config [#43](https://github.com/trungleduc/ipyflex/pull/43) ([@trungleduc](https://github.com/trungleduc))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/trungleduc/ipyflex/graphs/contributors?from=2022-03-02&to=2022-09-15&type=c))
+
+[@trungleduc](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Atrungleduc+updated%3A2022-03-02..2022-09-15&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.2
 
 ([Full Changelog](https://github.com/trungleduc/ipyflex/compare/v0.2.1...7e962accf9288ab9cd6b2dcfeaed49f0391c9c0c))
@@ -15,8 +31,6 @@
 ([GitHub contributors page for this release](https://github.com/trungleduc/ipyflex/graphs/contributors?from=2022-03-01&to=2022-03-02&type=c))
 
 [@trungleduc](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Atrungleduc+updated%3A2022-03-01..2022-03-02&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.1
 
