@@ -58,7 +58,11 @@ export class FlexWidget extends Component<IProps, IState> {
     if (!template_json || Object.keys(template_json).length === 0) {
       template_json = defaultOuterModel;
     } else {
-      template_json = updateModelEditable(template_json, props.editable);
+      template_json = updateModelEditable(
+        template_json,
+        props.editable,
+        this.layoutConfig.enableSection
+      );
     }
 
     let flexModel: FlexLayout.Model;
