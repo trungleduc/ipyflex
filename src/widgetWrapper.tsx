@@ -9,7 +9,7 @@ interface IProps {
   widgetName: string;
   factoryDict: IDict<IDict>;
   model: any;
-  send_msg: ({ action: string, payload: any }) => void;
+  send_msg: (args: { action: string; payload: any }) => void;
   extraData: IDict | undefined;
   contextMenu: ContextMenu;
 }
@@ -71,13 +71,13 @@ export class WidgetWrapper extends Component<IProps, IState> {
   private _render_widget = (model: any) => {
     const manager = this.model.widget_manager;
     manager.create_view(model, {}).then((view) => {
-      MessageLoop.sendMessage(view.pWidget, Widget.Msg.BeforeAttach);
-      this.myRef.current.insertBefore(view.pWidget.node, null);
+      MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.BeforeAttach);
+      this.myRef.current.insertBefore(view.luminoWidget.node, null);
       view.displayed.then(async () => {
         await new Promise((r) => setTimeout(r, 100));
         window.dispatchEvent(new Event('resize'));
       });
-      MessageLoop.sendMessage(view.pWidget, Widget.Msg.AfterAttach);
+      MessageLoop.sendMessage(view.luminoWidget, Widget.Msg.AfterAttach);
     });
   };
 

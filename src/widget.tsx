@@ -60,7 +60,7 @@ export class FlexLayoutModel extends DOMWidgetModel {
     }
   ): void {
     super.initialize(attributes, options);
-    this.widget_manager.display_model(undefined as any, this, {});
+    this.widget_manager.create_view(this as DOMWidgetModel, {});
   }
 
   static model_name = 'FlexLayoutModel';
