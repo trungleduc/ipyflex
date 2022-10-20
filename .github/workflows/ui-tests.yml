@@ -38,7 +38,7 @@ jobs:
       - name: Launch JupyterLab
         run: |
           cd ui-tests
-          jlpm start-jlab:detached > /tmp/jupyterlab_server.log 2>&1          
+          jlpm start:detached > /tmp/jupyterlab_server.log 2>&1          
 
       - name: Wait for JupyterLab
         uses: ifaxity/wait-on-action@v1
