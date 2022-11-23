@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.2.6
+
+([Full Changelog](https://github.com/trungleduc/ipyflex/compare/v0.2.5...8b827577a6c86501380ef07ec0661b9599efb2e4))
+
+### Maintenance and upkeep improvements
+
+- Bump frontend version [#53](https://github.com/trungleduc/ipyflex/pull/53) ([@trungleduc](https://github.com/trungleduc))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/trungleduc/ipyflex/graphs/contributors?from=2022-10-25&to=2022-11-23&type=c))
+
+[@trungleduc](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Atrungleduc+updated%3A2022-10-25..2022-11-23&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.5
 
 ([Full Changelog](https://github.com/trungleduc/ipyflex/compare/v0.2.4...d6e5da42042d7a05b859b4b53f89d3d0d1b4b747))
@@ -15,8 +31,6 @@
 ([GitHub contributors page for this release](https://github.com/trungleduc/ipyflex/graphs/contributors?from=2022-09-15&to=2022-10-25&type=c))
 
 [@github-actions](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Agithub-actions+updated%3A2022-09-15..2022-10-25&type=Issues) | [@trungleduc](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Atrungleduc+updated%3A2022-09-15..2022-10-25&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.4
 
