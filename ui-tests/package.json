@@ -5,10 +5,10 @@
   "private": true,
   "scripts": {
     "start": "jupyter lab --config ./jupyter_server_config.py",
-    "start:detached": "yarn run start&",
+    "start:detached": "jlpm run start&",
     "clean": "rimraf tests/notebooks/.ipynb_checkpoints && rimraf test-output",
-    "test": "yarn run clean && npx playwright test",
-    "test:debug": "yarn run clean && PWDEBUG=1  npx playwright test",
+    "test": "jlpm run clean && npx playwright test",
+    "test:debug": "jlpm run clean && PWDEBUG=1  npx playwright test",
     "test:update": "npx playwright test --update-snapshots"
   },
   "license": "BSD-3-Clause",

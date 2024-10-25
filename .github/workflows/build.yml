@@ -15,7 +15,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v1
         with:
-          node-version: '16.x'
+          node-version: '18.x'
       - name: Install Python
         uses: actions/setup-python@v2
         with:
@@ -44,15 +44,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install -U pip setuptools codecov flake8
-          npm install -g codecov
-          npm install -g yarn
+          python -m pip install -U pip flake8
+
       - name: Test the extension
         run: |
-          python -m pip install --upgrade -v -e ".[test, examples, docs]"
-          yarn run lint:check
+          python -m pip install --upgrade -v -e ".[test, docs]"
+          jlpm run lint:check
           python -m flake8 ipyflex
           pytest
+
+      - name: Package the extension
+        run: |
+          pip install build
+          python -m build
+          pip uninstall -y "ipyflex" jupyterlab
 
       # - name: Check docs can be build + links
       #   run: |

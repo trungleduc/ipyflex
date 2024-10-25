@@ -171,3 +171,5 @@ ui-tests/test-results
 
 .yarn/
 /docs/source/_static
+
+ipyflex/_version.py
