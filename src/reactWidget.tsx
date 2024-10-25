@@ -23,7 +23,7 @@ import { CommandRegistry } from '@lumino/commands';
 import { uuid } from '@jupyter-widgets/base';
 
 interface IProps {
-  send_msg: ({ action: string, payload: any }) => void;
+  send_msg: (args: { action: string; payload: any }) => void;
   model: any;
   style: IDict;
   editable: boolean;

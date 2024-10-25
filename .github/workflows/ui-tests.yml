@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.9]
       fail-fast: false
 
     steps:
@@ -25,7 +25,7 @@ jobs:
 
       - name: Install ipyflex
         run: |
-          python -m pip install --upgrade jupyterlab~=3.0 ipywidgets jupyter_packaging~=0.10
+          python -m pip install --upgrade jupyterlab~=4.0 ipywidgets 
           python -m pip install .
           cd ui-tests
           jlpm install
@@ -33,12 +33,12 @@ jobs:
       - name: Install browser
         run: |
           cd ui-tests
-          jlpm playwright install chromium
+          npx playwright install chromium
 
       - name: Launch JupyterLab
         run: |
           cd ui-tests
-          jlpm start:detached > /tmp/jupyterlab_server.log 2>&1          
+          jlpm start:detached > /tmp/jupyterlab_server.log 2>&1
 
       - name: Wait for JupyterLab
         uses: ifaxity/wait-on-action@v1
@@ -54,7 +54,7 @@ jobs:
 
       - name: Upload Playwright Test assets
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ipyflex-test-assets
           path: |
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload Playwright Test report
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ipyflex-test-report
           path: |
@@ -79,7 +79,7 @@ jobs:
 
       - name: Upload snapshots
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ipyflex-snapshot
           path: |
@@ -89,4 +89,3 @@ jobs:
         if: always()
         run: |
           cat /tmp/jupyterlab_server.log
-

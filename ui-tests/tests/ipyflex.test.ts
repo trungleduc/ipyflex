@@ -1,5 +1,5 @@
-import { galata, IJupyterLabPageFixture, test } from "@jupyterlab/galata";
-import { expect } from "@playwright/test";
+import { galata, IJupyterLabPageFixture, test } from '@jupyterlab/galata';
+import { expect } from '@playwright/test';
 
 async function renderNotebook(fileName: string, page: IJupyterLabPageFixture) {
   const fullName = `./${fileName}.ipynb`;
@@ -7,7 +7,7 @@ async function renderNotebook(fileName: string, page: IJupyterLabPageFixture) {
   await page.notebook.activate(fullName);
   await page.notebook.run();
   await page.notebook.waitForRun();
-  const dashboard = await page.$("div.lm-Widget.p-Widget.custom-widget");
+  const dashboard = await page.$('div.lm-Widget.p-Widget.custom-widget');
   await new Promise((_) => setTimeout(_, 1000));
   expect(await dashboard.screenshot()).toMatchSnapshot({
     name: `${fileName}.png`,
@@ -15,17 +15,17 @@ async function renderNotebook(fileName: string, page: IJupyterLabPageFixture) {
 }
 
 const notebookList = [
-  "CustomHeader",
-  "CustomStyle",
-  "DashboardWithHeader",
-  "EmptyDashboard",
-  "MultipleSections",
-  "PlaceholderWidgets",
-  "WithWidgets",
-  "WithWidgetsFactory"
+  'CustomHeader',
+  'CustomStyle',
+  'DashboardWithHeader',
+  'EmptyDashboard',
+  'MultipleSections',
+  'PlaceholderWidgets',
+  'WithWidgets',
+  'WithWidgetsFactory',
 ];
 
-test.describe("ipyflex Visual Regression", () => {
+test.describe('ipyflex Visual Regression', () => {
   test.beforeEach(async ({ page }) => {
     page.setViewportSize({ width: 1280, height: 720 });
   });
