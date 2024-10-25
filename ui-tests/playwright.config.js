@@ -5,6 +5,6 @@ module.exports = {
   expect: {
     toMatchSnapshot: { threshold: 0.03 },
   },
-  preserveOutput: 'failures-only', 
-  retries: 0
+  preserveOutput: 'failures-only',
+  retries: 0,
 };

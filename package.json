@@ -40,6 +40,8 @@
     "clean:labextension": "rimraf ipyflex/labextension",
     "clean:nbextension": "rimraf ipyflex/nbextension/static/index.js",
     "lint": "eslint . --ext .ts,.tsx --fix",
+    "prettier": "prettier --no-error-on-unmatched-pattern --write \"**/*{.ts,.tsx,.js,.jsx,.css,.md,.yml}\"",
+    "prettier:check": "prettier --list-different \"**/*{.ts,.tsx,.js,.jsx,.css,.md,.yml}\"",
     "lint:check": "eslint . --ext .ts,.tsx",
     "prepack": "yarn run build:lib",
     "test": "jest",
