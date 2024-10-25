@@ -33,7 +33,7 @@ jobs:
       - name: Install browser
         run: |
           cd ui-tests
-          jlpm playwright install chromium
+          npx playwright install chromium
 
       - name: Launch JupyterLab
         run: |
