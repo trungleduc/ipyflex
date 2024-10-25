@@ -1,5 +1,5 @@
 [build-system]
-requires = ["jupyter_packaging~=0.10", "jupyterlab==3.*", "setuptools>=40.8.0", "wheel"]
+requires = ["jupyter_packaging~=0.10", "jupyterlab==4.*", "setuptools>=40.8.0", "wheel"]
 build-backend = "jupyter_packaging.build_api"
 
 [tool.jupyter-packaging.options]
@@ -33,8 +33,8 @@ tag_template = "v{new_version}"
 skip = ["check-links"]
 
 [tool.jupyter-releaser.hooks]
-before-bump-version = ["python -m pip install jupyterlab~=3.0 jupyter_packaging~=0.10"]
-before-build-npm = ["python -m pip install jupyterlab~=3.0", "jlpm clean", "jlpm build:prod"]
+before-bump-version = ["python -m pip install jupyterlab~=4.0 jupyter_packaging~=0.10"]
+before-build-npm = ["python -m pip install jupyterlab~=4.0", "jlpm clean", "jlpm build:prod"]
 
 [tool.check-manifest]
 ignore = [".binder/**", "docs/**", "examples/**", "*.json", "*.gif", "yarn.lock", "environment.yml", "readthedocs.yml", ".*", "ipyflex/labextension/**", "ipyflex/nbextension/index*", "tests/**", "ui-tests/**", "CHANGELOG.md", "babel.config.js", "codecov.yml", "jest.config.js", "tsconfig.eslint.json"]
