@@ -10,7 +10,7 @@ dependencies:
   - plotly
   - ipygany
   - bqplot
-  - ipydatagrid 
+  - ipydatagrid
   - yfinance
   - nodejs
   - yarn

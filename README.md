@@ -4,16 +4,20 @@
 
 <h2 align="center"> A WYSIWYG layout editor for Jupyter widgets </h1>
 
-Based on the React library [FlexLayout](https://github.com/caplin/FlexLayout), ipyflex allows you to compose the sophisticated dashboard layouts from existing Jupyter widgets without coding. It supports multiple tabs, resizable cards, drag-and-drop layout, save dashboard template to disk, and many more.    
- 
+Based on the React library [FlexLayout](https://github.com/caplin/FlexLayout), ipyflex allows you to compose the sophisticated dashboard layouts from existing Jupyter widgets without coding. It supports multiple tabs, resizable cards, drag-and-drop layout, save dashboard template to disk, and many more.
+
 ## Example
+
 ### Dynamic layout
+
 ![Dynamic layout](./docs/source/images/ipyflex.gif)
 
 ### Widget factory
+
 ![Widget factory](./docs/source/images/ipyflex-factory.gif)
 
 ### Configurable header
+
 https://user-images.githubusercontent.com/4451292/149482302-30579785-4d8e-4d50-9bcc-249bea4a9d95.mp4
 
 ### Stock indexes dashboard
@@ -38,15 +42,24 @@ Or using `conda`:
 conda install -c conda-forge  ipyflex
 ```
 
+And if you use jupyterlab <= 2:
+
+```bash
+mamba install -c conda-forge yarn
+jupyter labextension install @jupyter-widgets/jupyterlab-manager ipyflex
+```
+
 ## Development Installation
 
 Create a dev environment:
+
 ```bash
 conda create -n ipyflex-dev -c conda-forge nodejs yarn python jupyterlab
 conda activate ipyflex-dev
 ```
 
 Install the python. This will also build the TS package.
+
 ```bash
 pip install -e ".[test, examples]"
 ```
@@ -72,7 +85,9 @@ you might also need another flag instead of `--sys-prefix`, but we won't cover t
 of those flags here.
 
 ### How to see your changes
+
 #### Typescript:
+
 If you use JupyterLab to develop then you can watch the source directory and run JupyterLab at the same time in different
 terminals to watch for changes in the extension's source and automatically rebuild the widget.
 
@@ -86,10 +101,12 @@ jupyter lab
 After a change wait for the build to finish and then refresh your browser and the changes should take effect.
 
 #### Python:
+
 If you make a change to the python code then you will need to restart the notebook kernel to have it take effect.
 
-
 ## Thanks
+
 The following libraries / open-source projects were used or inspired in the development of ipyflex:
- * [FlexLayout](https://github.com/caplin/FlexLayout)
- * [CoSApp Lab](https://gitlab.com/cosapp/cosapp_lab)
+
+- [FlexLayout](https://github.com/caplin/FlexLayout)
+- [CoSApp Lab](https://gitlab.com/cosapp/cosapp_lab)

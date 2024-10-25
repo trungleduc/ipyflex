@@ -11,7 +11,7 @@ const rules = [
     exclude: path.resolve(__dirname, 'node_modules'),
   },
   { test: /\.css$/, use: ['style-loader', 'css-loader'] },
-  { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader' }
+  { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader' },
 ];
 
 // Packages that shouldn't be bundled but loaded at runtime
@@ -22,9 +22,9 @@ const resolve = {
   extensions: ['.webpack.js', '.web.js', '.js'],
 };
 
-const plugins =  [
+const plugins = [
   new webpack.ProvidePlugin({
-         process: 'process/browser',
+    process: 'process/browser',
   }),
 ];
 
@@ -49,7 +49,7 @@ module.exports = [
     // devtool: 'source-map',
     externals,
     resolve,
-    plugins
+    plugins,
   },
 
   /**
@@ -77,7 +77,7 @@ module.exports = [
     },
     externals,
     resolve,
-    plugins
+    plugins,
   },
 
   /**
@@ -99,6 +99,6 @@ module.exports = [
     devtool: 'source-map',
     externals,
     resolve,
-    plugins
+    plugins,
   },
 ];
