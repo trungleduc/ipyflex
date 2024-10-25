@@ -154,6 +154,7 @@ ipyflex/labextension/*.tgz
 
 # Packed lab extensions
 ipyflex/labextension
+ipyflex/nbextension
 
 .vscode/
 docs/source/_static/*.txt
@@ -167,3 +168,6 @@ MANIFEST
 #Galata 
 ui-tests/playwright-report
 ui-tests/test-results
+
+.yarn/
+/docs/source/_static
