@@ -1,9 +1,10 @@
 // Copyright (c) Trung Le
 // Distributed under the terms of the Modified BSD License.
 
-import { Application, IPlugin } from '@phosphor/application';
-
-import { Widget } from '@phosphor/widgets';
+import {
+  JupyterFrontEnd,
+  JupyterFrontEndPlugin,
+} from '@jupyterlab/application';
 
 import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
 
@@ -13,12 +14,12 @@ import { MODULE_NAME, MODULE_VERSION } from './version';
 
 const EXTENSION_ID = 'ipyflex:plugin';
 
-const examplePlugin: IPlugin<Application<Widget>, void> = {
+const examplePlugin: JupyterFrontEndPlugin<void> = {
   id: EXTENSION_ID,
   requires: [IJupyterWidgetRegistry],
   activate: activateWidgetExtension,
   autoStart: true,
-} as unknown as IPlugin<Application<Widget>, void>;
+};
 
 export default examplePlugin;
 
@@ -26,7 +27,7 @@ export default examplePlugin;
  * Activate the widget extension.
  */
 function activateWidgetExtension(
-  app: Application<Widget>,
+  app: JupyterFrontEnd,
   registry: IJupyterWidgetRegistry
 ): void {
   registry.registerWidget({

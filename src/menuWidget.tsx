@@ -13,7 +13,7 @@ interface IProps {
   factoryDict: IDict<IDict>;
   addTabToTabset: (name: string, extraData?: IDict) => void;
   model: any;
-  send_msg: ({ action: string, payload: any }) => void;
+  send_msg: (args: { action: string; payload: any }) => void;
 }
 interface IState {
   anchorEl: HTMLElement;
