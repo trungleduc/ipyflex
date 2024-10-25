@@ -2,7 +2,7 @@ name: ipyflex
 channels:
   - conda-forge
 dependencies:
-  - jupyterlab=3
+  - jupyterlab=4
   - bqplot
   - numpy
   - ipywidgets
