@@ -13,4 +13,4 @@ dependencies:
   - ipydatagrid
   - yfinance
   - nodejs
-  - yarn
+  - jlpm

@@ -45,7 +45,7 @@ conda install -c conda-forge  ipyflex
 And if you use jupyterlab <= 2:
 
 ```bash
-mamba install -c conda-forge yarn
+mamba install -c conda-forge jlpm
 jupyter labextension install @jupyter-widgets/jupyterlab-manager ipyflex
 ```
 
@@ -54,7 +54,7 @@ jupyter labextension install @jupyter-widgets/jupyterlab-manager ipyflex
 Create a dev environment:
 
 ```bash
-conda create -n ipyflex-dev -c conda-forge nodejs yarn python jupyterlab
+conda create -n ipyflex-dev -c conda-forge nodejs jlpm python jupyterlab
 conda activate ipyflex-dev
 ```
 
@@ -69,7 +69,7 @@ notebook / lab frontend. For lab, this is done by the command:
 
 ```
 jupyter labextension develop --overwrite .
-yarn run build
+jlpm run build
 ```
 
 For classic notebook, you need to run:
@@ -93,7 +93,7 @@ terminals to watch for changes in the extension's source and automatically rebui
 
 ```bash
 # Watch the source directory in one terminal, automatically rebuilding when needed
-yarn run watch
+jlpm run watch
 # Run JupyterLab in another terminal
 jupyter lab
 ```

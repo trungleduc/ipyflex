@@ -5,9 +5,9 @@
 # Distributed under the terms of the Modified BSD License.
 
 from .flex_layout import FlexLayout
-from ._version import __version__, version_info
+from ._version import __version__
 
-__all__ = ['FlexLayout', 'version_info', '__version__']
+__all__ = ['FlexLayout', '__version__']
 
 
 def _jupyter_labextension_paths():
