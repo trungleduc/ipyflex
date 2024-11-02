@@ -1,4 +1,3 @@
-
 name: ipyflex_docs
 channels:
   - conda-forge
@@ -10,11 +9,11 @@ dependencies:
   - sphinx_rtd_theme
   - nbsphinx
   - nbsphinx-link
-  - yarn
+  - jlpm
   - numpy
   - ipygany
-  - ipywidgets 
+  - ipywidgets
   - plotly
-  - ipydatagrid 
-  - yfinance 
+  - ipydatagrid
+  - yfinance
   - myst-parser

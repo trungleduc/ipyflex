@@ -5,11 +5,10 @@
   "private": true,
   "scripts": {
     "start": "jupyter lab --config ./jupyter_server_config.py",
-    "start:detached": "yarn run start&",
     "clean": "rimraf tests/notebooks/.ipynb_checkpoints && rimraf test-output",
-    "test": "yarn run clean && playwright test",
-    "test:debug": "yarn run clean && PWDEBUG=1  playwright test",
-    "test:update": "playwright test --update-snapshots"
+    "test": "npx playwright test --workers 1",
+    "test:update": "npx playwright test --update-snapshots",
+    "test:debug": "PWDEBUG=1 npx playwright test --workers 1"
   },
   "license": "BSD-3-Clause",
   "author": {
@@ -17,7 +16,7 @@
     "email": "leductrungxf@gmail.com"
   },
   "dependencies": {
-    "@jupyterlab/galata": "^4.0.2",
+    "@jupyterlab/galata": "^5.2.5",
     "rimraf": "^3.0.2"
   }
 }

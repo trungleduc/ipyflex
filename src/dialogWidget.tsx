@@ -18,7 +18,7 @@ class FactoryParameterWidget extends Widget {
     super();
     this._paramInputs = {};
     const params = Object.keys(signature);
-    params.forEach((p) => {
+    params.forEach(p => {
       const id = uuid();
       const inp = document.createElement('input');
       inp.required = true;
@@ -43,7 +43,7 @@ class FactoryParameterWidget extends Widget {
   }
 
   getValue(): IDict<string> {
-    const ret = {};
+    const ret: IDict = {};
     for (const [key, inp] of Object.entries(this._paramInputs)) {
       ret[key] = inp.value;
     }
@@ -66,13 +66,13 @@ export function factoryDialog(
   return {
     title,
     body: new FactoryParameterWidget(signature),
-    buttons: [cancelBtn, saveBtn],
+    buttons: [cancelBtn, saveBtn]
   };
 }
 
 export function dialogBody(
   title: string,
-  defaultValue: string = null,
+  defaultValue: string | null = null,
   saveLabel = 'Save'
 ): {
   title: string;
@@ -89,6 +89,6 @@ export function dialogBody(
   return {
     title,
     body: new TemplateNameWidget(input),
-    buttons: [cancelBtn, saveBtn],
+    buttons: [cancelBtn, saveBtn]
   };
 }

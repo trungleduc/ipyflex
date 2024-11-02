@@ -13,10 +13,10 @@ interface IProps {
   factoryDict: IDict<IDict>;
   addTabToTabset: (name: string, extraData?: IDict) => void;
   model: any;
-  send_msg: ({ action: string, payload: any }) => void;
+  send_msg: (args: { action: string; payload: any }) => void;
 }
 interface IState {
-  anchorEl: HTMLElement;
+  anchorEl: HTMLElement | null;
   widgetList: Array<string>;
   placeholderList: Array<string>;
 }
@@ -28,7 +28,7 @@ export class WidgetMenu extends Component<IProps, IState> {
     this.state = {
       anchorEl: null,
       widgetList: [...props.widgetList, CREATE_NEW],
-      placeholderList: [...props.placeholderList],
+      placeholderList: [...props.placeholderList]
     };
   }
 
@@ -46,40 +46,40 @@ export class WidgetMenu extends Component<IProps, IState> {
     newValue: Array<string>,
     change: any
   ): void => {
-    this.setState((old) => ({
+    this.setState(old => ({
       ...old,
-      placeholderList: newValue,
+      placeholderList: newValue
     }));
   };
 
   on_msg = (data: { action: string; payload: any }, buffer: any[]): void => {
     const { action, payload } = data;
     switch (action) {
-      case MESSAGE_ACTION.UPDATE_CHILDREN:
-        {
-          const wName: string = payload.name;
-          if (
-            !this.state.widgetList.includes(wName) &&
-            !this.state.placeholderList.includes(wName)
-          ) {
-            this.setState((old) => ({
-              ...old,
-              widgetList: [...old.widgetList, wName],
-            }));
-          }
+      case MESSAGE_ACTION.UPDATE_CHILDREN: {
+        const wName: string = payload.name;
+        if (
+          !this.state.widgetList.includes(wName) &&
+          !this.state.placeholderList.includes(wName)
+        ) {
+          this.setState(old => ({
+            ...old,
+            widgetList: [...old.widgetList, wName]
+          }));
         }
-
-        return null;
+        break;
+      }
+      default:
+        return;
     }
   };
 
   handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     const target = event.currentTarget;
-    this.setState((oldState) => ({ ...oldState, anchorEl: target }));
+    this.setState(oldState => ({ ...oldState, anchorEl: target }));
   };
 
   handleClose = (): void => {
-    this.setState((oldState) => ({ ...oldState, anchorEl: null }));
+    this.setState(oldState => ({ ...oldState, anchorEl: null }));
   };
 
   render(): JSX.Element {
@@ -87,7 +87,7 @@ export class WidgetMenu extends Component<IProps, IState> {
     const widgetItems = [];
     for (const name of [
       ...this.state.widgetList,
-      ...this.state.placeholderList,
+      ...this.state.placeholderList
     ]) {
       if (name !== CREATE_NEW) {
         widgetItems.push(
@@ -152,7 +152,7 @@ export class WidgetMenu extends Component<IProps, IState> {
             }
             this.props.send_msg({
               action: MESSAGE_ACTION.ADD_WIDGET,
-              payload: { name: widgetName },
+              payload: { name: widgetName }
             });
           } else {
             return;
@@ -182,11 +182,11 @@ export class WidgetMenu extends Component<IProps, IState> {
           onClose={this.handleClose}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'center',
+            horizontal: 'center'
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'center',
+            horizontal: 'center'
           }}
         >
           {widgetItems}

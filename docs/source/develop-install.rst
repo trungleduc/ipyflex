@@ -22,7 +22,7 @@ Install the python. This will also build the TS package::
 When developing your extensions, you need to manually enable your extensions with the notebook / lab frontend. For lab, this is done by the command::
 
     jupyter labextension develop --overwrite .
-    yarn run build
+    jlpm run build
 
 For classic notebook, you need to run::
 
@@ -39,7 +39,7 @@ If you use JupyterLab to develop then you can watch the source directory and run
 terminals to watch for changes in the extension's source and automatically rebuild the widget::
 
     # Watch the source directory in one terminal, automatically rebuilding when needed
-    yarn run watch
+    jlpm run watch
     # Run JupyterLab in another terminal
     jupyter lab
 

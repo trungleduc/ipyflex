@@ -2,9 +2,15 @@ var baseConfig = require('@jupyterlab/galata/lib/playwright-config');
 
 module.exports = {
   ...baseConfig,
-  expect: {
-    toMatchSnapshot: { threshold: 0.33 },
+  webServer: {
+    command: 'jlpm start',
+    url: 'http://localhost:8888/lab',
+    timeout: 10 * 1000,
+    reuseExistingServer: false
   },
-  preserveOutput: 'failures-only', 
+  expect: {
+    toMatchSnapshot: { maxDiffPixelRatio: 0.03 }
+  },
+  preserveOutput: 'failures-only',
   retries: 0
 };

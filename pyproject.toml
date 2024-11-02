@@ -1,40 +1,93 @@
 [build-system]
-requires = ["jupyter_packaging~=0.10", "jupyterlab==3.*", "setuptools>=40.8.0", "wheel"]
-build-backend = "jupyter_packaging.build_api"
+requires = [
+    "hatchling>=1.5.0",
+    "jupyterlab>=4.0.0,<5",
+    "hatch-nodejs-version",
+    "sphinx",
+    "ruff",
+]
+build-backend = "hatchling.build"
 
-[tool.jupyter-packaging.options]
-skip-if-exists = ["ipyflex/labextension/static/style.js"]
-ensured-targets = ["ipyflex/labextension/static/style.js"]
+[project]
+name = "ipyflex"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Framework :: Jupyter",
+    "Framework :: Jupyter :: JupyterLab",
+    "Framework :: Jupyter :: JupyterLab :: 4",
+    "Framework :: Jupyter :: JupyterLab :: Extensions",
+    "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = ["ipywidgets>=8,<9"]
+dynamic = ["version", "description", "authors", "urls", "keywords"]
 
-[tool.tbump.version]
-current = "0.2.6"
-regex = '''
-  (?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)
-  ((?P<channel>a|b|rc|.dev)(?P<release>\d+))?
-'''
+[tool.hatch.version]
+source = "nodejs"
 
-[[tool.tbump.file]]
-src = "ipyflex/_version.py"
-version_template = '({major}, {minor}, {patch}, "{channel}", "{release}")'
+[tool.hatch.metadata.hooks.nodejs]
+fields = ["description", "authors", "urls"]
 
-[[tool.tbump.field]]
-name = "channel"
-default = ""
+[tool.hatch.build.targets.sdist]
+artifacts = ["ipyflex/labextension"]
+exclude = [".github", "binder"]
 
-[[tool.tbump.field]]
-name = "release"
-default = ""
+[tool.hatch.build.targets.wheel]
+exclude = [".github", "binder"]
 
-[tool.tbump.git]
-message_template = "Bump to {new_version}"
-tag_template = "v{new_version}"
+[tool.hatch.build.targets.wheel.shared-data]
+"ipyflex/labextension" = "share/jupyter/labextensions/ipyflex"
+"install.json" = "share/jupyter/labextensions/ipyflex/install.json"
 
-[tool.jupyter-releaser]
-skip = ["check-links"]
+[tool.hatch.build.hooks.version]
+path = "ipyflex/_version.py"
+
+[tool.hatch.build.hooks.jupyter-builder]
+dependencies = ["hatch-jupyter-builder>=0.5"]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = [
+    "ipyflex/labextension/static/style.js",
+    "ipyflex/labextension/package.json",
+]
+skip-if-exists = [
+    "ipyflex/labextension/static/style.js",
+    "ipyflex/_option.py",
+]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+build_cmd = "build:prod"
+npm = ["jlpm"]
+
+[tool.hatch.build.hooks.jupyter-builder.editable-build-kwargs]
+build_cmd = "install:extension"
+npm = ["jlpm"]
+source_dir = "src"
+build_dir = "ipyflex/labextension"
+
+[tool.jupyter-releaser.options]
+version_cmd = "hatch version"
 
 [tool.jupyter-releaser.hooks]
-before-bump-version = ["python -m pip install jupyterlab~=3.0 jupyter_packaging~=0.10"]
-before-build-npm = ["python -m pip install jupyterlab~=3.0", "jlpm clean", "jlpm build:prod"]
+before-build-npm = [
+    "python -m pip install 'jupyterlab>=4.0.0,<5'",
+    "jlpm",
+    "jlpm build:prod",
+]
+before-build-python = ["jlpm clean:all"]
 
-[tool.check-manifest]
-ignore = [".binder/**", "docs/**", "examples/**", "*.json", "*.gif", "yarn.lock", "environment.yml", "readthedocs.yml", ".*", "ipyflex/labextension/**", "ipyflex/nbextension/index*", "tests/**", "ui-tests/**", "CHANGELOG.md", "babel.config.js", "codecov.yml", "jest.config.js", "tsconfig.eslint.json"]
+[tool.check-wheel-contents]
+ignore = ["W002"]
+
+[tool.ruff]
+respect-gitignore = false
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]

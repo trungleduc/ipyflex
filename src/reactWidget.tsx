@@ -6,7 +6,7 @@ import {
   JUPYTER_BUTTON_CLASS,
   IDict,
   MESSAGE_ACTION,
-  downloadString,
+  downloadString
 } from './utils';
 import { WidgetMenu } from './menuWidget';
 import { WidgetWrapper } from './widgetWrapper';
@@ -14,7 +14,7 @@ import Header from './headerComponent';
 import {
   defaultModelFactoty,
   ILayoutConfig,
-  updateModelEditable,
+  updateModelEditable
 } from './defaultModelFactory';
 import { dialogBody } from './dialogWidget';
 import { showDialog } from '@jupyterlab/apputils';
@@ -23,7 +23,7 @@ import { CommandRegistry } from '@lumino/commands';
 import { uuid } from '@jupyter-widgets/base';
 
 interface IProps {
-  send_msg: ({ action: string, payload: any }) => void;
+  send_msg: (args: { action: string; payload: any }) => void;
   model: any;
   style: IDict;
   editable: boolean;
@@ -83,7 +83,7 @@ export class FlexWidget extends Component<IProps, IState> {
       placeholderList: [],
       factoryDict: this.props.model.get('widget_factories'),
       editable: props.editable,
-      header: props.header,
+      header: props.header
     };
     this.model = props.model;
     this.innerContextMenuCache = new Map<string, ContextMenu>();
@@ -99,7 +99,7 @@ export class FlexWidget extends Component<IProps, IState> {
     this.uuid = uuid();
     this.props.send_msg({
       action: MESSAGE_ACTION.REGISTER_FRONTEND,
-      payload: { uuid: this.uuid },
+      payload: { uuid: this.uuid }
     });
   }
 
@@ -108,9 +108,9 @@ export class FlexWidget extends Component<IProps, IState> {
     newValue: Array<string>,
     change: IDict
   ): void => {
-    this.setState((old) => ({
+    this.setState(old => ({
       ...old,
-      placeholderList: newValue,
+      placeholderList: newValue
     }));
   };
 
@@ -123,9 +123,9 @@ export class FlexWidget extends Component<IProps, IState> {
           !this.state.widgetList.includes(wName) &&
           !this.state.placeholderList.includes(wName)
         ) {
-          this.setState((old) => ({
+          this.setState(old => ({
             ...old,
-            widgetList: [...old.widgetList, wName],
+            widgetList: [...old.widgetList, wName]
           }));
         }
         break;
@@ -143,8 +143,8 @@ export class FlexWidget extends Component<IProps, IState> {
             action: MESSAGE_ACTION.SAVE_TEMPLATE,
             payload: {
               file_name: fileName,
-              json_data: this.state.model.toJson(),
-            },
+              json_data: this.state.model.toJson()
+            }
           });
         }
         break;
@@ -152,9 +152,9 @@ export class FlexWidget extends Component<IProps, IState> {
 
       case MESSAGE_ACTION.LOAD_TEMPLATE_FROM_PYTHON: {
         const template = payload.template;
-        this.setState((old) => ({
+        this.setState(old => ({
           ...old,
-          model: FlexLayout.Model.fromJson(template),
+          model: FlexLayout.Model.fromJson(template)
         }));
         break;
       }
@@ -169,8 +169,8 @@ export class FlexWidget extends Component<IProps, IState> {
       case 'Widget': {
         const selector = '.ipyflex-widget-box';
         const contextMenu = this.individualContextMenuFactory(
-          node.getParent().getId(),
-          node.getParent().getModel(),
+          node.getParent()?.getId(),
+          node.getParent()?.getModel(),
           selector
         );
         return (
@@ -188,8 +188,6 @@ export class FlexWidget extends Component<IProps, IState> {
         return this.generateSection(node, nodeId);
       }
     }
-
-    return null;
   };
 
   generateSection = (node: FlexLayout.TabNode, nodeId: string): JSX.Element => {
@@ -210,8 +208,8 @@ export class FlexWidget extends Component<IProps, IState> {
         this.state.model!.doAction(
           FlexLayout.Actions.updateNodeAttributes(nodeId, {
             config: {
-              model: node.getExtraData().model.toJson(),
-            },
+              model: node.getExtraData().model.toJson()
+            }
           })
         );
         //  node.getConfig().model = node.getExtraData().model.toJson();
@@ -220,7 +218,7 @@ export class FlexWidget extends Component<IProps, IState> {
     return (
       <FlexLayout.Layout
         ref={this.innerlayoutRef[nodeId]}
-        classNameMapper={(className) => {
+        classNameMapper={className => {
           if (className === 'flexlayout__tabset-selected') {
             className =
               'inner__flexlayout__tabset-selected flexlayout__tabset-selected';
@@ -259,7 +257,7 @@ export class FlexWidget extends Component<IProps, IState> {
           event.preventDefault();
           event.stopPropagation();
           const contextMenu = this.innerContextMenuCache.get(node.getId());
-          contextMenu.open(event.nativeEvent);
+          contextMenu?.open(event.nativeEvent);
         }}
       />
     );
@@ -334,10 +332,10 @@ export class FlexWidget extends Component<IProps, IState> {
           nodeId={nodeId}
           tabsetId={tabsetId}
           addTabToTabset={(name: string, extraData?: IDict) => {
-            this.innerlayoutRef[nodeId].current.addTabToTabSet(tabsetId, {
+            this.innerlayoutRef[nodeId].current?.addTabToTabSet(tabsetId, {
               component: 'Widget',
               name: name,
-              config: { layoutID: nodeId, extraData: extraData },
+              config: { layoutID: nodeId, extraData: extraData }
             });
           }}
           model={this.props.model}
@@ -348,9 +346,9 @@ export class FlexWidget extends Component<IProps, IState> {
   };
 
   onAddRow = (): void => {
-    this.layoutRef.current.addTabToActiveTabSet({
+    this.layoutRef.current?.addTabToActiveTabSet({
       component: 'sub',
-      name: 'New section',
+      name: 'New section'
     });
   };
 
@@ -373,7 +371,7 @@ export class FlexWidget extends Component<IProps, IState> {
             height: '25px',
             paddingLeft: 'unset',
             paddingRight: 'unset',
-            margin: 0,
+            margin: 0
           }}
         >
           <i className="fas fa-plus"></i>
@@ -395,8 +393,8 @@ export class FlexWidget extends Component<IProps, IState> {
           action: MESSAGE_ACTION.SAVE_TEMPLATE,
           payload: {
             file_name: result.value,
-            json_data: this.state.model.toJson(),
-          },
+            json_data: this.state.model.toJson()
+          }
         });
       } else {
         alert('Invalid file name!');
@@ -406,7 +404,7 @@ export class FlexWidget extends Component<IProps, IState> {
 
   exportTemplate = async (): Promise<void> => {
     const result = await showDialog<string>(
-      dialogBody('Export template', null, 'Export')
+      dialogBody('Export template', undefined, 'Export')
     );
     if (result.button.label === 'Export') {
       let fileName = result.value;
@@ -422,54 +420,57 @@ export class FlexWidget extends Component<IProps, IState> {
 
   importTemplate = (content: string): void => {
     const model = JSON.parse(content);
-    this.setState((old) => ({
+    this.setState(old => ({
       ...old,
-      model: FlexLayout.Model.fromJson(model),
+      model: FlexLayout.Model.fromJson(model)
     }));
   };
 
   toggleLock = (): void => {
-    this.setState((old) => ({ ...old, editable: !old.editable }));
+    this.setState(old => ({ ...old, editable: !old.editable }));
   };
 
   individualContextMenuFactory = (
-    tabsetId: string,
-    model: FlexLayout.Model,
-    selector: string
+    tabsetId?: string,
+    model?: FlexLayout.Model,
+    selector?: string
   ): ContextMenu => {
     const commands = new CommandRegistry();
+    if (!tabsetId || !model || !selector) {
+      return new ContextMenu({ commands });
+    }
     commands.addCommand('hide-tab-bar', {
       execute: () => {
         model.doAction(
           FlexLayout.Actions.updateNodeAttributes(tabsetId, {
-            enableTabStrip: false,
+            enableTabStrip: false
           })
         );
       },
       label: 'Hide Tab Bar',
-      isEnabled: () => true,
+      isEnabled: () => true
     });
     commands.addCommand('show-tab-bar', {
       execute: () => {
         model.doAction(
           FlexLayout.Actions.updateNodeAttributes(tabsetId, {
-            enableTabStrip: true,
+            enableTabStrip: true
           })
         );
       },
       label: 'Show Tab Bar',
-      isEnabled: () => true,
+      isEnabled: () => true
     });
     const contextMenu = new ContextMenu({ commands });
     contextMenu.addItem({
       command: 'show-tab-bar',
       selector: this.props.editable ? selector : 'null',
-      rank: 0,
+      rank: 0
     });
     contextMenu.addItem({
       command: 'hide-tab-bar',
       selector: this.props.editable ? selector : 'null',
-      rank: 1,
+      rank: 1
     });
     return contextMenu;
   };
@@ -480,7 +481,7 @@ export class FlexWidget extends Component<IProps, IState> {
       headerHeight = 35;
     }
     const mainHeight = `calc(100% - 5px - ${headerHeight}px)`;
-    let titleProps = {};
+    let titleProps: { [key: string]: any } = {};
     if (this.state.header && !(typeof this.state.header === 'boolean')) {
       titleProps = { ...this.state.header };
       if (!titleProps['buttons']) {
@@ -491,7 +492,7 @@ export class FlexWidget extends Component<IProps, IState> {
       }
       if (!this.props.editable) {
         titleProps['buttons'] = (titleProps['buttons'] as Array<string>).filter(
-          (btn) => btn !== 'save'
+          btn => btn !== 'save'
         );
       }
     }
@@ -511,7 +512,7 @@ export class FlexWidget extends Component<IProps, IState> {
           style={{
             width: '100%',
             height: mainHeight,
-            position: 'relative',
+            position: 'relative'
           }}
         >
           <FlexLayout.Layout
@@ -519,7 +520,7 @@ export class FlexWidget extends Component<IProps, IState> {
             model={this.state.model}
             factory={this.factory}
             supportsPopout={true}
-            classNameMapper={(className) => {
+            classNameMapper={className => {
               if (className === 'flexlayout__layout') {
                 className = 'ipyflex flexlayout__layout';
               } else if (className === 'flexlayout__tabset-selected') {
@@ -551,7 +552,7 @@ export class FlexWidget extends Component<IProps, IState> {
   private model: any;
   private layoutConfig: ILayoutConfig;
   private innerContextMenuCache: Map<string, ContextMenu>;
-  private uuid: string;
+  private uuid?: string;
 }
 
 export default FlexWidget;
