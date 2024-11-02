@@ -1,0 +1,12 @@
+version: 2
+
+build:
+  os: 'ubuntu-20.04'
+  tools:
+    python: 'mambaforge-4.10'
+  jobs:
+    post_create_environment:
+      - python -m generate_code.main
+
+conda:
+  environment: docs/environment.yml

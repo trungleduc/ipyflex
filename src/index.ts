@@ -3,3 +3,6 @@
 
 export * from './version';
 export * from './widget';
+import { ipyflexPlugin } from './plugin';
+
+export default [ipyflexPlugin];

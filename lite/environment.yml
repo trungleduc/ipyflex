@@ -1,0 +1,10 @@
+name: xeus-python-kernel
+channels:
+  - https://repo.mamba.pm/emscripten-forge
+  - conda-forge
+dependencies:
+  - xeus-python
+  - ipywidgets
+  - numpy
+  - pip:
+    - ./ipyflex-x.x.x-py3-none-any.whl

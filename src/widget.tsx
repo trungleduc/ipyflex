@@ -5,7 +5,7 @@ import {
   DOMWidgetModel,
   DOMWidgetView,
   ISerializers,
-  unpack_models,
+  unpack_models
 } from '@jupyter-widgets/base';
 
 // import { UUID } from '@lumino/coreutils';
@@ -17,9 +17,9 @@ import { IDict } from './utils';
 import { MODULE_NAME, MODULE_VERSION } from './version';
 import { MessageLoop } from '@lumino/messaging';
 // Import the CSS
-import '../css/widget.css';
-import '../css/application.css';
-import '../css/buttons.css';
+import '../style/widget.css';
+import '../style/application.css';
+import '../style/buttons.css';
 
 export class FlexLayoutModel extends DOMWidgetModel {
   defaults() {
@@ -38,13 +38,13 @@ export class FlexLayoutModel extends DOMWidgetModel {
       style: {},
       template_json: null,
       editable: true,
-      header: false,
+      header: false
     };
   }
 
   static serializers: ISerializers = {
     ...DOMWidgetModel.serializers,
-    children: { deserialize: unpack_models as any },
+    children: { deserialize: unpack_models as any }
     // Add any extra serializers here
   };
 
@@ -118,10 +118,10 @@ export class FlexLayoutView extends DOMWidgetView {
     for (const [key, value] of Object.entries(style)) {
       const fixedKey = key
         .split(/(?=[A-Z])/)
-        .map((s) => s.toLowerCase())
+        .map(s => s.toLowerCase())
         .join('-');
 
-      this.el.style[fixedKey] = value;
+      (this.el.style as any)[fixedKey] = value;
     }
   }
 

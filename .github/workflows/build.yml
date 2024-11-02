@@ -2,67 +2,215 @@ name: Build
 
 on:
   push:
-    branches: master
+    branches: main
   pull_request:
     branches: '*'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install node
-        uses: actions/setup-node@v1
-        with:
-          node-version: '18.x'
-      - name: Install Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-          architecture: 'x64'
+        uses: actions/checkout@v3
 
-      - name: Setup pip cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: pip-3.9-${{ hashFiles('package.json') }}
-          restore-keys: |
-            pip-3.9-
-            pip-
-
-      - name: Get npm cache directory
-        id: npm-cache
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.npm-cache.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      - name: Base Setup
+        uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
       - name: Install dependencies
-        run: |
-          python -m pip install -U pip flake8
+        run: python -m pip install -U "jupyterlab>=4.0.0,<5" markdownify
 
-      - name: Test the extension
+      - name: Lint the extension
         run: |
-          python -m pip install --upgrade -v -e ".[test, docs]"
+          set -eux
+          jlpm
           jlpm run lint:check
-          python -m flake8 ipyflex
-          pytest
+
+      - name: Build the extension
+        run: |
+          set -eux
+          jlpm generate_code
+          python -m pip install .[test]
+
+          jupyter labextension list
+          jupyter labextension list 2>&1 | grep -ie "ipyflex.*OK"
+          python -m jupyterlab.browser_check
 
       - name: Package the extension
         run: |
+          set -eux
+
           pip install build
           python -m build
           pip uninstall -y "ipyflex" jupyterlab
 
-      # - name: Check docs can be build + links
-      #   run: |
-      #     sudo apt install -y pandoc
-      #     pushd docs
-      #     make html
-      #     python -m pytest --check-links
-      #     popd
+      - name: Upload extension packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-artifacts
+          path: dist/ipyflex*
+          if-no-files-found: error
+
+  test_isolated:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+      - uses: actions/download-artifact@v4
+        with:
+          name: extension-artifacts
+      - name: Install and Test
+        run: |
+          set -eux
+          # Remove NodeJS, twice to take care of system and locally installed node versions.
+          sudo rm -rf $(which node)
+          sudo rm -rf $(which node)
+
+          pip install "jupyterlab>=4.0.0,<5" ipyflex*.whl
+
+
+          jupyter labextension list
+          jupyter labextension list 2>&1 | grep -ie "ipyflex.*OK"
+          python -m jupyterlab.browser_check --no-browser-test
+
+  integration-tests:
+    name: Integration tests
+    needs: build
+    runs-on: ubuntu-latest
+
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/pw-browsers
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.5-0'
+          environment-name: ipe
+          create-args: >-
+            python=3.10
+            jupyterlab
+
+      - name: Download extension package
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-artifacts
+
+      - name: Install the extension
+        shell: bash -l {0}
+        run: |
+          set -eux
+          python -m pip install ipyflex*.whl
+
+      - name: Set up browser cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/pw-browsers
+          key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
+
+      - name: Install browser
+        shell: bash -l {0}
+        run: npx playwright install chromium
+        working-directory: ui-tests
+
+      - name: Execute integration tests
+        shell: bash -l {0}
+        working-directory: ui-tests
+        run: |
+          jlpm install
+          npx playwright test
+
+      - name: Upload Playwright Test report
+        id: upload-galata-artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipyflex-playwright-tests
+          path: |
+            ui-tests/test-results
+            ui-tests/playwright-report
+
+  check_links:
+    name: Check Links
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+      - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+      - uses: jupyterlab/maintainer-tools/.github/actions/check-links@v1
+
+  build-lite:
+    name: Build JupyterLite
+    needs: test_isolated
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.5.5-0'
+          environment-name: build-env
+          create-args: >-
+            python=3.10
+            pip=24.0
+            jupyter_server
+            jupyterlite-core>=0.3.0,<0.4.0
+            jupyterlite-xeus>=0.1.8,<0.2
+            ipywidgets
+
+      - name: Download extension package
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-artifacts
+
+      - name: Install the extension
+        shell: bash -l {0}
+        run: |
+          set -eux
+          python -m pip install ipyflex*.whl
+          cp ipyflex*.whl ./lite/ipyflex-x.x.x-py3-none-any.whl
+
+      - name: Build the lite site
+        shell: bash -l {0}
+        working-directory: lite
+        run: |
+          set -eux
+          mkdir -p content && cp -r ../example/. ./content/
+
+          jupyter lite build --contents content --output-dir dist --XeusAddon.mount_jupyterlite_content=True
+
+      - name: Upload artifact
+        id: upload-jupyterlite-artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./lite/dist
+          retention-days: 30
+
+  deploy:
+    needs: build-lite
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

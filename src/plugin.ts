@@ -3,7 +3,7 @@
 
 import {
   JupyterFrontEnd,
-  JupyterFrontEndPlugin,
+  JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
 import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
@@ -14,14 +14,12 @@ import { MODULE_NAME, MODULE_VERSION } from './version';
 
 const EXTENSION_ID = 'ipyflex:plugin';
 
-const examplePlugin: JupyterFrontEndPlugin<void> = {
+export const ipyflexPlugin: JupyterFrontEndPlugin<void> = {
   id: EXTENSION_ID,
   requires: [IJupyterWidgetRegistry],
   activate: activateWidgetExtension,
-  autoStart: true,
+  autoStart: true
 };
-
-export default examplePlugin;
 
 /**
  * Activate the widget extension.
@@ -33,6 +31,6 @@ function activateWidgetExtension(
   registry.registerWidget({
     name: MODULE_NAME,
     version: MODULE_VERSION,
-    exports: widgetExports as any,
+    exports: widgetExports as any
   });
 }

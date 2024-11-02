@@ -6,7 +6,7 @@ import { IconFactory, IconType } from './icons';
 const buttonTitle: { [key: string]: string } = {
   save: 'Save template',
   import: 'Import template from disk',
-  export: 'Export template to disk',
+  export: 'Export template to disk'
 };
 
 export default function Header(props: {
@@ -20,7 +20,7 @@ export default function Header(props: {
   const buttonList: IconType[] = [];
   const availableButtons: IconType[] = ['save', 'export', 'import'];
   const fileRef = React.createRef<HTMLInputElement>();
-  (props.buttons || []).forEach((button) => {
+  (props.buttons || []).forEach(button => {
     if (
       availableButtons.includes(button as IconType) &&
       !buttonList.includes(button as IconType)
@@ -32,17 +32,20 @@ export default function Header(props: {
   callbacks.set('save', props.saveTemplate);
   callbacks.set('export', props.exportTemplate);
   callbacks.set('import', async () => {
-    fileRef.current.click();
+    fileRef.current?.click();
   });
 
   React.useEffect(() => {
-    fileRef.current.onchange = (e) => {
-      const files = fileRef.current.files;
-      if (files.length > 0) {
+    if (!fileRef.current) {
+      return;
+    }
+    fileRef.current.onchange = e => {
+      const files = fileRef.current!.files;
+      if (files?.length && files.length > 0) {
         const reader = new FileReader();
         reader.onload = () => {
           props.importTemplate(reader.result as string);
-          (e.target as HTMLInputElement).value = null;
+          (e.target as HTMLInputElement).value = '';
         };
         reader.readAsText(files[0]);
       }
@@ -52,12 +55,12 @@ export default function Header(props: {
     <div
       className={'ipyflex-header'}
       style={{
-        ...(props.style || {}),
+        ...(props.style || {})
       }}
     >
       <div>{props.title || ''}</div>
       <div style={{ display: 'flex' }}>
-        {buttonList.map((btn) => (
+        {buttonList.map(btn => (
           <IconButton
             key={btn}
             color="primary"
