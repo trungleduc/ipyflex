@@ -40,7 +40,7 @@ test.describe('ipyflex Visual Regression', () => {
     page.setViewportSize({ width: 1280, height: 720 });
     page.on('console', message => {
       if (message.type() === 'error') {
-        console.error('###########', message.text())
+        console.error('###########', message.text());
       }
     });
   });

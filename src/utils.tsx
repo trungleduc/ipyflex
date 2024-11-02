@@ -14,7 +14,7 @@ export const MESSAGE_ACTION = {
   ADD_WIDGET: 'add_widget',
   SAVE_TEMPLATE_FROM_PYTHON: 'save_template_from_python',
   LOAD_TEMPLATE_FROM_PYTHON: 'load_template_from_python',
-  REGISTER_FRONTEND: 'register_frontend',
+  REGISTER_FRONTEND: 'register_frontend'
 };
 
 export function downloadString(

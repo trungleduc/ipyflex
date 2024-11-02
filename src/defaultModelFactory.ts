@@ -17,7 +17,7 @@ export function defaultModelFactoty(
       type: 'border',
       location: 'left',
       size: 250,
-      children: [],
+      children: []
     });
   }
   if (borderRight) {
@@ -25,7 +25,7 @@ export function defaultModelFactoty(
       type: 'border',
       location: 'right',
       size: 250,
-      children: [],
+      children: []
     });
   }
   const globaleDict = {
@@ -33,7 +33,7 @@ export function defaultModelFactoty(
     tabEnableClose: editable,
     tabSetEnableClose: editable,
     tabEnableDrag: editable,
-    tabSetEnableDrag: editable,
+    tabSetEnableDrag: editable
   };
   const defaultModel = {
     global: globaleDict,
@@ -45,18 +45,18 @@ export function defaultModelFactoty(
           type: 'tabset',
           id: '#2',
           children: [],
-          active: true,
-        },
-      ],
+          active: true
+        }
+      ]
     },
-    borders,
+    borders
   };
 
   const defaultOuterModel = {
     global: {
       ...globaleDict,
       tabSetTabLocation: 'bottom',
-      tabSetEnableTabStrip: true,
+      tabSetEnableTabStrip: true
     },
 
     layout: {
@@ -84,20 +84,20 @@ export function defaultModelFactoty(
                         type: 'tabset',
                         id: '#3',
                         children: [],
-                        active: true,
-                      },
-                    ],
+                        active: true
+                      }
+                    ]
                   },
-                  borders,
-                },
-              },
-            },
+                  borders
+                }
+              }
+            }
           ],
-          active: true,
-        },
-      ],
+          active: true
+        }
+      ]
     },
-    borders: [],
+    borders: []
   };
   return { defaultOuterModel, defaultModel };
 }
@@ -113,7 +113,7 @@ export function updateModelEditable(
     tabSetEnableClose: editable,
     tabSetEnableMaximize: editable,
     tabEnableDrag: editable,
-    tabSetEnableDrag: editable,
+    tabSetEnableDrag: editable
     // tabSetEnableTabStrip: !!model.tabSetEnableTabStrip,
   };
 
@@ -122,7 +122,7 @@ export function updateModelEditable(
   if ('global' in model) {
     model.global = {
       ...globaleDict,
-      tabSetTabLocation: 'bottom',
+      tabSetTabLocation: 'bottom'
     };
   }
   const tabsetList = model['layout']['children'];
@@ -133,7 +133,7 @@ export function updateModelEditable(
       child['config']['model']['global'] = {
         ...globaleDict,
         ...child['config']['model']['global'],
-        splitterSize,
+        splitterSize
       };
     }
   }

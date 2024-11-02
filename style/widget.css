@@ -10,7 +10,9 @@
   height: calc(100% - 12px);
   width: calc(100% - 10px);
   margin: 0px 5px 10px 5px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
   border-width: 0px 0px 0px 0px;
   border-style: solid;
   border-color: #e2e2e2;
@@ -78,7 +80,9 @@
 div.inner__flexlayout__tabset > div.flexlayout__tabset_tabbar_outer_top {
   margin-left: 5px;
   margin-right: 5px;
-  box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
+  box-shadow:
+    0 3px 6px rgb(0 0 0 / 16%),
+    0 3px 6px rgb(0 0 0 / 23%);
   border-width: 1px 0px 0px 0px;
   border-style: solid;
   border-color: #e2e2e2;
@@ -125,8 +129,10 @@ hr.ipyflex-divider {
 .ipyflex-header {
   height: 35px;
   margin-bottom: 5px;
-  box-shadow: rgb(0 0 0 / 20%) 0px 2px 4px -1px,
-    rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px;
+  box-shadow:
+    rgb(0 0 0 / 20%) 0px 2px 4px -1px,
+    rgb(0 0 0 / 14%) 0px 4px 5px 0px,
+    rgb(0 0 0 / 12%) 0px 1px 10px 0px;
   padding: 0px 24px;
   color: white;
   font-weight: 500;
