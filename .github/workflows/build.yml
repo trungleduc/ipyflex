@@ -186,7 +186,7 @@ jobs:
         working-directory: lite
         run: |
           set -eux
-          mkdir -p content && cp -r ../example/. ./content/
+          mkdir -p content && cp -r ../examples/. ./content/
 
           jupyter lite build --contents content --output-dir dist --XeusAddon.mount_jupyterlite_content=True
 
