@@ -2,6 +2,12 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.3.0
+
+No merged PRs
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.6
 
 ([Full Changelog](https://github.com/trungleduc/ipyflex/compare/v0.2.5...8b827577a6c86501380ef07ec0661b9599efb2e4))
@@ -15,8 +21,6 @@
 ([GitHub contributors page for this release](https://github.com/trungleduc/ipyflex/graphs/contributors?from=2022-10-25&to=2022-11-23&type=c))
 
 [@trungleduc](https://github.com/search?q=repo%3Atrungleduc%2Fipyflex+involves%3Atrungleduc+updated%3A2022-10-25..2022-11-23&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.5
 
